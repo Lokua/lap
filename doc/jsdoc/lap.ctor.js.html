@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lap.ctor.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lap.ctor.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** @namespace  Lap */
+'use strict';
+
+var Handler = require('./handler'),
+    u       = require('./utils');
+
+module.exports = Lap;
+window.Lap = Lap;
+
+/**
+ * @type {Number}
+ * @memberOf  Lap
+ * @static
+ */
+Lap.idGen = (Lap.idGen || 0) + 1;
+
+/**
+ * Instantiate a new Lokua Audio Player. See the {@tutorial settings} and {@tutorial lib}
+ * tutorials for configuration instructions.
+ * 
+ * @param {jQuery} container    the main wrapper div for the player
+ * @param {(Object|JSON)} lib   a JSON or plain old object specifying songs, etc.
+ *                              see {@link Audio.Player#lib}
+ * @param {Object} options      custom options that override this player's defaults
+ * @class Lap
+ * @constructor
+ */
+function Lap(container, lib, options) {
+
+  var lap = this;
+  lap.name = 'Lokua Audio Player';
+  lap.version = '0.0.5';
+  lap.doc = 'http://lokua.net/lap/0.0.5/doc/';
+  lap.handler = new Handler(this);
+  /**
+   * Utility class, only available in browser through this reference.
+   * @type {Object}
+   */
+  lap.utils = u;
+
+  var _defaults = {
+    debug: false,
+    startingTrackIndex: 0,
+    startingAlbumIndex: 0,
+    volumeInterval: 0.05,
+    seekInterval: 5, // seconds
+    seekTime: 250, // milliseconds
+    prependTrackNumbers: true,
+    trackNumberPostfix: ' - ',
+    replacementText: void 0,
+    elements: {
+      playPause:      '.lap-play-pause',
+      prev:           '.lap-prev',
+      next:           '.lap-next',
+      volumeUp:       '.lap-volume-up',
+      volumeDown:     '.lap-volume-down',
+      volumeButton:   '.lap-volume-button',
+      volumeSlider:   '.lap-volume-slider',
+      volumeRead:     '.lap-volume-read',
+      currentTime:    '.lap-current-time',
+      duration:       '.lap-duration',
+      seekBackward:   '.lap-seek-backward',
+      seekForward:    '.lap-seek-forward',
+      seekbar:        '.lap-seekbar',
+      artist:         '.lap-artist',
+      trackTitle:     '.lap-track-title',
+      albumTitle:     '.lap-album-title',
+      playlist:       '.lap-playlist',
+      playlistButton: '.lap-playlist-button',
+      prevAlbum:      '.lap-prev-album', 
+      nextAlbum:      '.lap-next-album',
+      info:           '.lap-info',
+      discog:         '.lap-discog',
+      cover:          '.lap-cover'
+    },
+    callbacks: {}
+  };
+
+  /**
+   * Psuedo constructor
+   * @inner
+   */
+  var init = (function() {
+
+    /**
+     * the id of this player. note that player id counting starts at 1, and that
+     * this id refers to the last time this &lt;code>new Lap(...)&lt;/code> was called, regardless
+     * of the reference it was assigned to.
+     * @example
+     * var lap_1 = new Lap() //=> id === 1
+     * var lap_2 = new Lap() //=> id === 2
+     * lap_1 = new Lap(...)  //=> id === 3! not 1!
+     * @name id
+     * @memberOf  Lap
+     * @instance
+     * @type {number}
+     */
+    lap.id = Lap.idGen++;
+
+    /**
+     * Settings are the combination of defaults extended with the options
+     * passed into the class constructor. See the {@tutorial settings} example for a complete list.
+     * @name settings
+     * @memberOf  Lap
+     * @instance
+     * @type {Object.&lt;Object, ?>}
+     */
+    lap.settings = $.extend(true, {}, _defaults, options);
+    // lap.debug('debug mode is on');
+    /**
+     * The upper-most parent element of the player as passed to the constructor.
+     * @name $container
+     * @memberOf  Lap
+     * @instance
+     * @type {jQuery}
+     */
+    lap.$container = container instanceof $ ? container : $(container);
+    /**
+     * Provides the audio file source(s) and data in a number of different ways.
+     * See the {@tutorial lib} example tutorial.
+     * @name lib
+     * @memberOf  Lap
+     * @instance
+     * @type {Object}
+     * @see  Lap.libType
+     */
+    lap.lib = lib;
+    /**
+     * the type of player library we dealing with:&lt;br>
+     * &lt;code>&lt;b>string&lt;/b>&lt;/code> signifies a single track player&lt;br>
+     * &lt;code>&lt;b>object&lt;/b>&lt;/code> signifies a single album&lt;br>
+     * &lt;code>&lt;b>array&lt;/b>&lt;/code> represents a mutliple albums&lt;br>
+     * @name libType
+     * @memberOf  Lap
+     * @instance
+     * @type {string}
+     * @see  Lap.lib
+     */
+    lap.libType = u.toType(lap.lib);
+    /**
+     * holds a reference to the currently selected album's files.
+     * @name  files
+     * @memberOf  Lap
+     * @instance
+     * @type {Array}
+     */
+    lap.files = [];
+    /**
+     * holds a reference to the currently selected album's trackTitles
+     * @name  trackTitles
+     * @memberOf  Lap
+     * @instance
+     * @type {Array}
+     */
+    lap.trackTitles = [];
+    /**
+     * The physical control and properties visible to the user
+     * @name AudioPlayer
+     * @memberOf  Lap#$els
+     * @instance
+     * @type {Object.&lt;Object, jQuery>}
+     */
+    lap.$els = lap.settings.elements;
+    /**
+     * @name handlers
+     * @memberOf  Lap
+     * @instance
+     * @type {Object.&lt;string, Array.&lt;callback>>}
+     */
+    lap.handlers = {};
+    /**
+     * @name audio
+     * @memberOf  Lap
+     * @instance
+     * @type {Audio}
+     */
+    lap.audio = {};
+    /**
+     * "track" and "file" refer to the same thing - 
+     * the currently qued song-file
+     * @name index
+     * @memberOf  Lap
+     * @instance
+     * @type {number}
+     */
+    lap.trackIndex = lap.settings.startingTrackIndex;
+    /**
+     * Only relevant if libType === 'array'
+     * @name albumIndex
+     * @memberOf  Lap
+     * @instance
+     * @type {number}
+     */
+    lap.albumIndex = lap.settings.startingAlbumIndex;
+    /**
+     * the number of tracks/files {@link AudioPlayer#lib} contains
+     * @name trackCount
+     * @memberOf  Lap
+     * @instance
+     * @type {number}
+     */
+    lap.trackCount = {};
+
+    lap.albumTitle  = undefined;
+    lap.trackTitle  = undefined;
+    lap.artist      = undefined;
+    lap.cover       = undefined;
+    lap.replacement = undefined;
+
+    lap.updateCurrent();
+    lap.initAudio();
+    lap.initElements(_defaults.elements);
+    lap.addListeners();
+    lap.handler.registerCallbacks(lap.settings.callbacks);
+    lap.load();
+  })();
+
+  return lap;
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Handler.html">Handler</a></li><li><a href="Lap.html">Lap</a></li></ul><h3>Namespaces</h3><ul><li><a href="utils.html">utils</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-lib.html">lib</a></li><li><a href="tutorial-settings.html">settings</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a> on Wed Aug 06 2014 03:56:35 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
