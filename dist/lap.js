@@ -206,7 +206,21 @@ require.register("lokua-utils/index.js", function(exports, require, module){
  * @namespace  utils
  * @type {Object}
  */
-module.exports = { /** @lends utils */
+module.exports = {
+
+  /**
+   * Function version of String.format / sprintf
+   * @see  http://stackoverflow.com/a/4673436/2416000
+   * @param  {String} format
+   * @return {String} 
+   * @memberOf utils
+   */
+  format: function(format) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return format.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined' ? args[number] : match;
+    });
+  },
 
   /**
    * scale a number from one range to another
@@ -885,8 +899,8 @@ Lap.prototype = (function() {
         if (u.toType(t.replacement[0]) !== 'regexp') {
           var flags = t.replacement[2];
           t.replacement[0] = (flags !== undefined) ? 
-              new RegExp(t.replacement[0], flags) 
-            : new RegExp(t.replacement[0], 'g');
+            new RegExp(t.replacement[0], flags) : 
+            new RegExp(t.replacement[0], 'g');
         }
       }
 

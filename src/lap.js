@@ -386,8 +386,8 @@ Lap.prototype = (function() {
         if (u.toType(t.replacement[0]) !== 'regexp') {
           var flags = t.replacement[2];
           t.replacement[0] = (flags !== undefined) ? 
-              new RegExp(t.replacement[0], flags) 
-            : new RegExp(t.replacement[0], 'g');
+            new RegExp(t.replacement[0], flags) : 
+            new RegExp(t.replacement[0], 'g');
         }
       }
 
