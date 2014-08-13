@@ -51,5 +51,5 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['copy:main', 'uglify:main']);
   grunt.registerTask('build', ['shell:build', 'default']);
-  grunt.registerTask('build_push', ['build', 'shell:push']);
+  grunt.registerTask('push', ['build', 'shell:push']);
 };
