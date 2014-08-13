@@ -1235,7 +1235,7 @@ Lap.prototype = (function() {
     },
 
     trackChange: function() {
-      this.executeHandler('trackChange');
+      this.handler.executeHandler('trackChange');
     },
 
     /**
