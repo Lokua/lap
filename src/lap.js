@@ -57,8 +57,8 @@ function Lap(container, lib, options) {
       next:           '.lap-next',
       nextAlbum:      '.lap-next-album',
       playPause:      '.lap-play-pause',
-      playlist:       '.lap-playlist',
-      playlistPanel:  '.lap-playlist-panel', // button
+      playlist:       '.lap-playlist', // button
+      playlistPanel:  '.lap-playlist-panel',
       prev:           '.lap-prev',
       prevAlbum:      '.lap-prev-album',
       seekBackward:   '.lap-seek-backward',
