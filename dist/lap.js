@@ -1135,9 +1135,14 @@ Lap.prototype = (function() {
      * Populates the tracklist with the current album's trackNames
      * 
      * @return {Object} `this` for chaining
+     * @deprecated this method is too implementation specific (beyond the core purpose)
+     *             use #playlistFormatted instead
      * @memberOf  Lap
      */
     populatePlaylist: function() {
+      // temporary fix - TODO remove from addListeners callbacks
+      if (true) return;
+
       var t = this,
           items = [],
           i,
