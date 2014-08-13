@@ -387,114 +387,114 @@ module.exports = Handler;
  * @constructor
  * @param {Object} context the value of `this` in handler callbacks
  *                         basically the owner of the function to be called.
+ * @param {Array} handlers  reference of handlers, in case Handler is being inherited
  */
-function Handler(context) {
+function Handler(context, handlers) {
   this.context = context || this;
-  this.handlers = {};
+  this.handlers = handlers || {};
   return this;
 }
 
-Handler.prototype = (function() {
-  return {
+Handler.prototype = {
 
-    /**
-     * Change the context (value of `this`) from which handler methods are called.
-     * ie, Handler needs to know who is calling her.
-     * 
-     * @param  {Object} context   the object that owns the execution method
-     * @return {Object} `this` for chaining
-     * @memberOf  Handler
-     * @instance
-     * @method
-     */
-    setContext: function(context) {
-      this.context = context;
-      return this;
-    },
+  /**
+   * Change the context (value of `this`) from which handler methods are called.
+   * ie, Handler needs to know who is calling her.
+   * 
+   * @param  {Object} context   the object that owns the execution method
+   * @return {Object} `this` for chaining
+   * @memberOf  Handler
+   * @instance
+   * @method
+   */
+  setContext: function(context) {
+    this.context = context;
+    return this;
+  },
 
-    /**
-     * Register an event handler for a named function.
-     * 
-     * @param  {String|Function} fn   the function that will call the handler when executed
-     * @param  {callback}   handler the handler that we be called by the named function
-     * @return {Object} `this` for chaining
-     * @memberOf  Handler
-     * @instance
-     * @method
-     */
-    on: function(fn, handler) {
-      if (this.handlers[fn] === undefined) {
-        this.handlers[fn] = [];
-      }
-      this.handlers[fn].push(handler);
-      return this;
-    },
+  /**
+   * Register an event handler for a named function.
+   * 
+   * @param  {String|Function} fn   the function that will call the handler when executed
+   * @param  {callback}   handler the handler that we be called by the named function
+   * @return {Object} `this` for chaining
+   * @memberOf  Handler
+   * @instance
+   * @method
+   */
+  on: function(fn, handler) {
+    if (this.handlers[fn] === undefined) {
+      this.handlers[fn] = [];
+    }
+    this.handlers[fn].push(handler);
+    return this;
+  },
 
-    /**
-     * executes all handlers attached to the name function.
-     * 
-     * @param  {(String|Object)} fn the name of the method to executeHandlerute
-     * @return {Object} `this` for chaining
-     * @memberOf  Handler
-     * @instance
-     * @method
-     */
-    executeHandler: function(fn) {
-      var handler = this.handlers[fn] || [],
-          len = handler.length,
-          i;
-      for (i = 0; i < len; i++) {
-        handler[i].apply(this.context, []);
-      }
-      return this;
-    },
+  /**
+   * executes all handlers attached to the name function.
+   * 
+   * @param  {(String|Object)} fn the name of the method to execute
+   * @return {Object} `this` for chaining
+   * @memberOf  Handler
+   * @instance
+   * @method
+   */
+  executeHandler: function(fn) {
+    var handler = this.handlers[fn] || [],
+        len = handler.length,
+        i;
+    for (i = 0; i < len; i++) {
+      handler[i].apply(this.context, []);
+    }
+    return this;
+  },
 
-    /**
-     * Helper function. Add a click event handler to an element only if that element exists.
-     * @param  {jQuery|Object}  $el   the element
-     * @param  {Function}       cb    the function to be called by the event handler
-     * @return {Object} `this` for chaining
-     * @memberOf  Handler
-     * @instance
-     * @method
-     */
-    registerClick: function($el, cb) {
-      var t = this;
-      if (!($el instanceof $)) $el = $($el);
-      if (typeof cb === 'function') {
-        $el.on('click', function() {
-          cb.call(t.context);
-        });
-      }
-      return t;
-    },
+  /**
+   * Helper function. Add a click event handler to an element only if that element exists.
+   * @param  {jQuery|Object}  $el   the element
+   * @param  {Function}       cb    the function to be called by the event handler
+   * @return {Object} `this` for chaining
+   * @memberOf  Handler
+   * @instance
+   * @method
+   */
+  registerClick: function($el, cb) {
+    var t = this;
+    if (!($el instanceof $)) $el = $($el);
+    if (typeof cb === 'function') {
+      $el.on('click', function() {
+        cb.call(t.context);
+      });
+    }
+    return t;
+  },
 
-    /**
-     * Add callbacks to the list of handlers. The callbacks must be an object collection of 
-     * key-value pairs where the identifier key is the name of a function that calls the executeHandler
-     * method with the same name as the key, while the value is the callback 
-     * function itself. This method should not be used if only registering a single callback, 
-     * for that use {@link #on}.
-     * 
-     * @param  {Object} callbacks a (preferrably object literal) collection callback functions
-     * @return {Object} `this` for chaining
-     * @memberOf  Handler
-     * @instance
-     * @method
-     */
-    registerCallbacks: function(callbacks) {
-      var t = this;
-      if (callbacks !== undefined) {
-        for (var h in callbacks) {
-          if (callbacks.hasOwnProperty(h)) {
-            t.on(h, callbacks[h]);
-          }
+  /**
+   * Add callbacks to the list of handlers. The callbacks must be an object collection of 
+   * key-value pairs where the identifier key is the name of a function that calls the executeHandler
+   * method with the same name as the key, while the value is the callback 
+   * function itself. This method should not be used if only registering a single callback, 
+   * for that use {@link #on}.
+   * 
+   * @param  {Object} callbacks a (preferrably object literal) collection callback functions
+   * @return {Object} `this` for chaining
+   * @memberOf  Handler
+   * @instance
+   * @method
+   */
+  registerCallbacks: function(callbacks) {
+    var t = this;
+    if (callbacks !== undefined) {
+      for (var h in callbacks) {
+        if (callbacks.hasOwnProperty(h)) {
+          t.on(h, callbacks[h]);
         }
       }
-      return t;
     }
-  };
-})();
+    return t;
+  }
+};
+
 });
 require.register("lap/src/lap.js", function(exports, require, module){
 /** @namespace  Lap */
@@ -558,16 +558,17 @@ function Lap(container, lib, options) {
       seekBackward:   '.lap-seek-backward',
       seekForward:    '.lap-seek-forward',
       seekbar:        '.lap-seekbar',
-      artist:         '.lap-artist',
-      trackTitle:     '.lap-track-title',
-      albumTitle:     '.lap-album-title',
-      playlist:       '.lap-playlist',
-      playlistButton: '.lap-playlist-button',
+      playlist:       '.lap-playlist-panel',
+      playlistButton: '.lap-playlist', // button
       prevAlbum:      '.lap-prev-album', 
       nextAlbum:      '.lap-next-album',
-      info:           '.lap-info',
       discog:         '.lap-discog',
-      cover:          '.lap-cover'
+      cover:          '.lap-cover',
+      info:           '.lap-info', // button
+      infoPanel:      '.lap-info-panel',
+      artist:         '.lap-artist',
+      trackTitle:     '.lap-track-title',
+      albumTitle:     '.lap-album-title'
     },
     callbacks: {}
   };
@@ -732,39 +733,49 @@ Lap.prototype = (function() {
     },
     /**
      * wrapper for handler.* call
-     * @see Handler.executeHandler
-     * @memberOf  Lap
+     * 
      * @return {Object} `this` for chaining
+     * @memberOf  Lap
+     * @see Handler.executeHandler
      */
     executeHandler: function(fn) {
       return this.handler.executeHandler();
     },
     /**
      * wrapper for handler.* call
-     * @see Handler.registerClick
-     * @memberOf  Lap
+     * 
      * @return {Object} `this` for chaining
-     */
-    registerClick: function($el, cb) {
-      return this.handler.registerClick($el, cb);
-    },
-    /**
-     * wrapper for handler.* call
+     * @memberOf  Lap
      * @see Handler.registerCallbacks
-     * @memberOf  Lap
-     * @return {Object} `this` for chaining
      */
     registerCallbacks: function(callbacks) {
       return this.handler.registerCallbacks(callbacks);
+    },
+    /**
+     * convenience method
+     * 
+     * @return {Object} `this` for chaining
+     * @memberOf  Lap
+     */
+    registerClick: function($el, cb) {
+      var t = this;
+      if (!($el instanceof $)) $el = $($el);
+      if (typeof cb === 'function') {
+        $el.on('click', function() {
+          cb.call(t.context);
+        });
+      }
+      return t;
     },
 
     /**
      * Turn the registered DOM player control elements into jQuery selections
      * if they arent' already. In the case that $els === 'auto', the default class
      * names for controls will be used (this is most efficient way).
+     * 
      * @param  {Array.<String>} defaultEls  the list of default class names
-     * @memberOf  Lap
      * @return {Object} `this` for chaining
+     * @memberOf  Lap
      */
     initElements: function(defaultEls) {
       var t = this;
@@ -920,10 +931,10 @@ Lap.prototype = (function() {
      */
     addListeners: function() {
       var t = this, 
-        $els = t.$els,
-        // audio events do not bubble and are not delegatable;
-        // they to be attached to the actual DOM <audio> element
-        $audio = $(t.audio);
+          $els = t.$els,
+          // audio events do not bubble and are not delegatable;
+          // they to be attached to the actual DOM <audio> element
+          $audio = $(t.audio);
 
       // --- audio listeners
       $audio
@@ -1009,6 +1020,7 @@ Lap.prototype = (function() {
      */
     load: function() {
       this.handler.executeHandler('load');
+      return this;
     },
 
     /**
@@ -1017,6 +1029,7 @@ Lap.prototype = (function() {
      */
     updateTrackTitleEl: function() {
       this.$els.trackTitle.text(this.trackTitles[this.trackIndex]);
+      return this;
     },
 
     // TODO: adapt updateCurrent for multiple artist arrays
@@ -1026,6 +1039,7 @@ Lap.prototype = (function() {
      */
     updateArtistEl: function() {
       this.$els.artist.text(this.artist);
+      return this;
     },
 
     /**
@@ -1034,6 +1048,7 @@ Lap.prototype = (function() {
      */
     updateAlbumEl: function() {
       this.$els.albumTitle.text(this.album);
+      return this;
     },
 
     /**
@@ -1042,6 +1057,7 @@ Lap.prototype = (function() {
      */
     updateCover: function() {
       this.$els.cover.find('img').attr('src', this.cover);
+      return this;
     },
 
     /**
@@ -1068,7 +1084,6 @@ Lap.prototype = (function() {
       this.audio.play();
       this.handler.executeHandler('play');
       return this;
-
     },
 
 
@@ -1103,14 +1118,15 @@ Lap.prototype = (function() {
 
     /**
      * Populates the tracklist with the current album's trackNames
+     * 
      * @return {Object} `this` for chaining
      * @memberOf  Lap
      */
     populatePlaylist: function() {
       var t = this,
-        items = [],
-        i,
-        s; // temp string
+          items = [],
+          i,
+          s; // temp string
       t.$els.playlist.empty();
       for (i = 0; i < t.trackCount; i++) {
         s = t.settings.prependTrackNumbers ? t.trackNumberFormatted(i+1) : '';
@@ -1142,7 +1158,7 @@ Lap.prototype = (function() {
      */
     updateCurrentPlaylistItem: function() {
       var t = this, 
-        items = t.$container.find('.lap-playlist-item');
+          items = t.$container.find('.lap-playlist-item');
       items.each(function() {
         var $t = $(this);
         if ($t.attr('data-index') == t.trackIndex) {
@@ -1184,7 +1200,7 @@ Lap.prototype = (function() {
     },
 
     trackChange: function() {
-      this.handler.executeHandler('trackChange');
+      this.executeHandler('trackChange');
     },
 
     /**
@@ -1224,7 +1240,7 @@ Lap.prototype = (function() {
      * @memberOf  Lap
      */
     albumChange: function() {
-      this.handler.executeHandler('albumChange');
+      this.executeHandler('albumChange');
     },
 
     /**
@@ -1388,7 +1404,7 @@ Lap.prototype = (function() {
      * var formatted = lapInstance.currentTimeFormatted(); //=> 0:01:02
      */
     currentTimeFormatted: function() {
-      var formatted =  u.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
+      var formatted = u.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
       if (this.audio.duration < 3600) {
         return formatted.slice(2);
       }
@@ -1405,7 +1421,7 @@ Lap.prototype = (function() {
      * var formatted = lapInstance.durationFormatted(); //=> 0:02:31
      */
     durationFormatted: function() {
-      var formatted =  u.formatTime(Math.floor(this.audio.duration.toFixed(1)));
+      var formatted = u.formatTime(Math.floor(this.audio.duration.toFixed(1)));
       if (this.audio.duration < 3600) {
         return formatted.slice(2);
       }

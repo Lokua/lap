@@ -59,16 +59,17 @@ function Lap(container, lib, options) {
       seekBackward:   '.lap-seek-backward',
       seekForward:    '.lap-seek-forward',
       seekbar:        '.lap-seekbar',
-      artist:         '.lap-artist',
-      trackTitle:     '.lap-track-title',
-      albumTitle:     '.lap-album-title',
-      playlist:       '.lap-playlist',
-      playlistButton: '.lap-playlist-button',
+      playlist:       '.lap-playlist-panel',
+      playlistButton: '.lap-playlist', // button
       prevAlbum:      '.lap-prev-album', 
       nextAlbum:      '.lap-next-album',
-      info:           '.lap-info',
       discog:         '.lap-discog',
-      cover:          '.lap-cover'
+      cover:          '.lap-cover',
+      info:           '.lap-info', // button
+      infoPanel:      '.lap-info-panel',
+      artist:         '.lap-artist',
+      trackTitle:     '.lap-track-title',
+      albumTitle:     '.lap-album-title'
     },
     callbacks: {}
   };
@@ -233,18 +234,20 @@ Lap.prototype = (function() {
     },
     /**
      * wrapper for handler.* call
-     * @see Handler.executeHandler
-     * @memberOf  Lap
+     * 
      * @return {Object} `this` for chaining
+     * @memberOf  Lap
+     * @see Handler.executeHandler
      */
     executeHandler: function(fn) {
       return this.handler.executeHandler();
     },
     /**
      * wrapper for handler.* call
-     * @see Handler.registerCallbacks
-     * @memberOf  Lap
+     * 
      * @return {Object} `this` for chaining
+     * @memberOf  Lap
+     * @see Handler.registerCallbacks
      */
     registerCallbacks: function(callbacks) {
       return this.handler.registerCallbacks(callbacks);
@@ -252,8 +255,8 @@ Lap.prototype = (function() {
     /**
      * convenience method
      * 
-     * @memberOf  Lap
      * @return {Object} `this` for chaining
+     * @memberOf  Lap
      */
     registerClick: function($el, cb) {
       var t = this;
@@ -270,9 +273,10 @@ Lap.prototype = (function() {
      * Turn the registered DOM player control elements into jQuery selections
      * if they arent' already. In the case that $els === 'auto', the default class
      * names for controls will be used (this is most efficient way).
+     * 
      * @param  {Array.<String>} defaultEls  the list of default class names
-     * @memberOf  Lap
      * @return {Object} `this` for chaining
+     * @memberOf  Lap
      */
     initElements: function(defaultEls) {
       var t = this;
@@ -428,10 +432,10 @@ Lap.prototype = (function() {
      */
     addListeners: function() {
       var t = this, 
-        $els = t.$els,
-        // audio events do not bubble and are not delegatable;
-        // they to be attached to the actual DOM <audio> element
-        $audio = $(t.audio);
+          $els = t.$els,
+          // audio events do not bubble and are not delegatable;
+          // they to be attached to the actual DOM <audio> element
+          $audio = $(t.audio);
 
       // --- audio listeners
       $audio
@@ -517,6 +521,7 @@ Lap.prototype = (function() {
      */
     load: function() {
       this.handler.executeHandler('load');
+      return this;
     },
 
     /**
@@ -525,6 +530,7 @@ Lap.prototype = (function() {
      */
     updateTrackTitleEl: function() {
       this.$els.trackTitle.text(this.trackTitles[this.trackIndex]);
+      return this;
     },
 
     // TODO: adapt updateCurrent for multiple artist arrays
@@ -534,6 +540,7 @@ Lap.prototype = (function() {
      */
     updateArtistEl: function() {
       this.$els.artist.text(this.artist);
+      return this;
     },
 
     /**
@@ -542,6 +549,7 @@ Lap.prototype = (function() {
      */
     updateAlbumEl: function() {
       this.$els.albumTitle.text(this.album);
+      return this;
     },
 
     /**
@@ -550,6 +558,7 @@ Lap.prototype = (function() {
      */
     updateCover: function() {
       this.$els.cover.find('img').attr('src', this.cover);
+      return this;
     },
 
     /**
@@ -576,7 +585,6 @@ Lap.prototype = (function() {
       this.audio.play();
       this.handler.executeHandler('play');
       return this;
-
     },
 
 
@@ -611,14 +619,15 @@ Lap.prototype = (function() {
 
     /**
      * Populates the tracklist with the current album's trackNames
+     * 
      * @return {Object} `this` for chaining
      * @memberOf  Lap
      */
     populatePlaylist: function() {
       var t = this,
-        items = [],
-        i,
-        s; // temp string
+          items = [],
+          i,
+          s; // temp string
       t.$els.playlist.empty();
       for (i = 0; i < t.trackCount; i++) {
         s = t.settings.prependTrackNumbers ? t.trackNumberFormatted(i+1) : '';
@@ -650,7 +659,7 @@ Lap.prototype = (function() {
      */
     updateCurrentPlaylistItem: function() {
       var t = this, 
-        items = t.$container.find('.lap-playlist-item');
+          items = t.$container.find('.lap-playlist-item');
       items.each(function() {
         var $t = $(this);
         if ($t.attr('data-index') == t.trackIndex) {
@@ -692,7 +701,7 @@ Lap.prototype = (function() {
     },
 
     trackChange: function() {
-      this.handler.executeHandler('trackChange');
+      this.executeHandler('trackChange');
     },
 
     /**
@@ -732,7 +741,7 @@ Lap.prototype = (function() {
      * @memberOf  Lap
      */
     albumChange: function() {
-      this.handler.executeHandler('albumChange');
+      this.executeHandler('albumChange');
     },
 
     /**
