@@ -59,17 +59,17 @@ function Lap(container, lib, options) {
       seekBackward:   '.lap-seek-backward',
       seekForward:    '.lap-seek-forward',
       seekbar:        '.lap-seekbar',
-      playlist:       '.lap-playlist-panel',
-      playlistButton: '.lap-playlist', // button
       prevAlbum:      '.lap-prev-album', 
       nextAlbum:      '.lap-next-album',
+      playlist:       '.lap-playlist',
+      playlistPanel:  '.lap-playlist-panel', // button
       discog:         '.lap-discog',
-      cover:          '.lap-cover',
       info:           '.lap-info', // button
       infoPanel:      '.lap-info-panel',
       artist:         '.lap-artist',
       trackTitle:     '.lap-track-title',
-      albumTitle:     '.lap-album-title'
+      albumTitle:     '.lap-album-title',
+      cover:          '.lap-cover',
     },
     callbacks: {}
   };
