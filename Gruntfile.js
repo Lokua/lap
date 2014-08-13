@@ -15,6 +15,9 @@ module.exports = function(grunt) {
       },
       build: {
         command: 'component build'
+      },
+      push: {
+        command: 'git commit -a -m "***generated push***" && git push -u origin master'
       }
     },
 
@@ -48,4 +51,5 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['copy:main', 'uglify:main']);
   grunt.registerTask('build', ['shell:build', 'default']);
+  grunt.registerTask('build_push', ['build', 'shell:push']);
 };
