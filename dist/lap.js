@@ -914,6 +914,7 @@ Lap.prototype = (function() {
 
     /**
      * Places relative file names in place of an empty or mismatched trackTitles array.
+     * Also applies any regex specified in settings.replacement
      * @memberOf  Lap
      */
     matchTrackTitles: function() {
@@ -1151,6 +1152,21 @@ Lap.prototype = (function() {
         }
       }
       t.$els.playlistPanel.append(items);
+    },
+
+    /**
+     * @return {Object} `this` for chaining
+     * @memberOf  Lap
+     */
+    playlistFormatted: function() {
+      var t = this,
+          items = [],
+          i;
+      for (i = 0; i < t.trackCount; i++) {
+        items[i] = t.settings.prependTrackNumbers ? t.trackNumberFormatted(i+1) : '';
+        items[i] += t.trackTitles[i];
+      }
+      return items;
     },
 
     /**
