@@ -628,7 +628,7 @@ Lap.prototype = (function() {
           items = [],
           i,
           s; // temp string
-      t.$els.playlist.empty();
+      t.$els.playlistPanel.empty();
       for (i = 0; i < t.trackCount; i++) {
         s = t.settings.prependTrackNumbers ? t.trackNumberFormatted(i+1) : '';
         s += t.trackTitles[i];
@@ -637,7 +637,7 @@ Lap.prototype = (function() {
           items[i].addClass('lap-current');
         }
       }
-      t.$els.playlist.append(items);
+      t.$els.playlistPanel.append(items);
     },
 
     /**

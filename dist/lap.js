@@ -543,32 +543,32 @@ function Lap(container, lib, options) {
     trackNumberPostfix: ' - ',
     replacementText: void 0,
     elements: {
-      controls:       '.lap-controls', 
-      control:        '.lap-control', 
-      playPause:      '.lap-play-pause',
-      prev:           '.lap-prev',
-      next:           '.lap-next',
-      volumeUp:       '.lap-volume-up',
-      volumeDown:     '.lap-volume-down',
-      volumeButton:   '.lap-volume-button',
-      volumeSlider:   '.lap-volume-slider',
-      volumeRead:     '.lap-volume-read',
+      albumTitle:     '.lap-album-title',
+      artist:         '.lap-artist',
+      control:        '.lap-control',
+      controls:       '.lap-controls',
+      cover:          '.lap-cover',
       currentTime:    '.lap-current-time',
+      discog:         '.lap-discog',
       duration:       '.lap-duration',
+      info:           '.lap-info', // button
+      infoPanel:      '.lap-info-panel',
+      next:           '.lap-next',
+      nextAlbum:      '.lap-next-album',
+      playPause:      '.lap-play-pause',
+      playlist:       '.lap-playlist',
+      playlistPanel:  '.lap-playlist-panel', // button
+      prev:           '.lap-prev',
+      prevAlbum:      '.lap-prev-album',
       seekBackward:   '.lap-seek-backward',
       seekForward:    '.lap-seek-forward',
       seekbar:        '.lap-seekbar',
-      prevAlbum:      '.lap-prev-album', 
-      nextAlbum:      '.lap-next-album',
-      playlist:       '.lap-playlist',
-      playlistPanel:  '.lap-playlist-panel', // button
-      discog:         '.lap-discog',
-      info:           '.lap-info', // button
-      infoPanel:      '.lap-info-panel',
-      artist:         '.lap-artist',
       trackTitle:     '.lap-track-title',
-      albumTitle:     '.lap-album-title',
-      cover:          '.lap-cover',
+      volumeButton:   '.lap-volume-button',
+      volumeDown:     '.lap-volume-down',
+      volumeRead:     '.lap-volume-read',
+      volumeSlider:   '.lap-volume-slider',
+      volumeUp:       '.lap-volume-up'
     },
     callbacks: {}
   };
@@ -1127,7 +1127,7 @@ Lap.prototype = (function() {
           items = [],
           i,
           s; // temp string
-      t.$els.playlist.empty();
+      t.$els.playlistPanel.empty();
       for (i = 0; i < t.trackCount; i++) {
         s = t.settings.prependTrackNumbers ? t.trackNumberFormatted(i+1) : '';
         s += t.trackTitles[i];
@@ -1136,7 +1136,7 @@ Lap.prototype = (function() {
           items[i].addClass('lap-current');
         }
       }
-      t.$els.playlist.append(items);
+      t.$els.playlistPanel.append(items);
     },
 
     /**
