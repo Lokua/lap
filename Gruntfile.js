@@ -12,7 +12,7 @@ module.exports = function(grunt) {
     concat: {
       build: {
         src: [
-          'node_modules/tooly/dist/tooly.js', 
+          'node_modules/tooly/dist/tooly-raw.js', 
           'node_modules/handler/src/handler.js',
           src
         ],
