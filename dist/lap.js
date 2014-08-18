@@ -1,219 +1,160 @@
-
 /**
- * Require the given path.
- *
- * @param {String} path
- * @return {Object} exports
- * @api public
+ * lap - version 0.0.5 (built: 2014-08-18)
+ * html5 audio player
+ * https://github.com/Lokua/lap.git
+ * Copyright (c) 2014 Joshua Kleckner <dev@lokua.net>
+ * Licensed under the MIT license.
+ * http://www.opensource.org/licenses/MIT
  */
 
-function require(path, parent, orig) {
-  var resolved = require.resolve(path);
-
-  // lookup failed
-  if (null == resolved) {
-    orig = orig || path;
-    parent = parent || 'root';
-    var err = new Error('Failed to require "' + orig + '" from "' + parent + '"');
-    err.path = orig;
-    err.parent = parent;
-    err.require = true;
-    throw err;
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define('Lap', [], function () {
+      return (root.returnExportsGlobal = factory());
+    });
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like enviroments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    root['Lap'] = factory();
   }
-
-  var module = require.modules[resolved];
-
-  // perform real require()
-  // by invoking the module's
-  // registered function
-  if (!module._resolving && !module.exports) {
-    var mod = {};
-    mod.exports = {};
-    mod.client = mod.component = true;
-    module._resolving = true;
-    module.call(this, mod.exports, require.relative(resolved), mod);
-    delete module._resolving;
-    module.exports = mod.exports;
-  }
-
-  return module.exports;
-}
+}(this, function () {
 
 /**
- * Registered modules.
- */
-
-require.modules = {};
-
-/**
- * Registered aliases.
- */
-
-require.aliases = {};
-
-/**
- * Resolve `path`.
- *
- * Lookup:
- *
- *   - PATH/index.js
- *   - PATH.js
- *   - PATH
- *
- * @param {String} path
- * @return {String} path or null
- * @api private
- */
-
-require.resolve = function(path) {
-  if (path.charAt(0) === '/') path = path.slice(1);
-
-  var paths = [
-    path,
-    path + '.js',
-    path + '.json',
-    path + '/index.js',
-    path + '/index.json'
-  ];
-
-  for (var i = 0; i < paths.length; i++) {
-    var path = paths[i];
-    if (require.modules.hasOwnProperty(path)) return path;
-    if (require.aliases.hasOwnProperty(path)) return require.aliases[path];
-  }
-};
-
-/**
- * Normalize `path` relative to the current path.
- *
- * @param {String} curr
- * @param {String} path
- * @return {String}
- * @api private
- */
-
-require.normalize = function(curr, path) {
-  var segs = [];
-
-  if ('.' != path.charAt(0)) return path;
-
-  curr = curr.split('/');
-  path = path.split('/');
-
-  for (var i = 0; i < path.length; ++i) {
-    if ('..' == path[i]) {
-      curr.pop();
-    } else if ('.' != path[i] && '' != path[i]) {
-      segs.push(path[i]);
-    }
-  }
-
-  return curr.concat(segs).join('/');
-};
-
-/**
- * Register module at `path` with callback `definition`.
- *
- * @param {String} path
- * @param {Function} definition
- * @api private
- */
-
-require.register = function(path, definition) {
-  require.modules[path] = definition;
-};
-
-/**
- * Alias a module definition.
- *
- * @param {String} from
- * @param {String} to
- * @api private
- */
-
-require.alias = function(from, to) {
-  if (!require.modules.hasOwnProperty(from)) {
-    throw new Error('Failed to alias "' + from + '", it does not exist');
-  }
-  require.aliases[to] = from;
-};
-
-/**
- * Return a require function relative to the `parent` path.
- *
- * @param {String} parent
- * @return {Function}
- * @api private
- */
-
-require.relative = function(parent) {
-  var p = require.normalize(parent, '..');
-
-  /**
-   * lastIndexOf helper.
-   */
-
-  function lastIndexOf(arr, obj) {
-    var i = arr.length;
-    while (i--) {
-      if (arr[i] === obj) return i;
-    }
-    return -1;
-  }
-
-  /**
-   * The relative require() itself.
-   */
-
-  function localRequire(path) {
-    var resolved = localRequire.resolve(path);
-    return require(resolved, parent, path);
-  }
-
-  /**
-   * Resolve relative to the parent.
-   */
-
-  localRequire.resolve = function(path) {
-    var c = path.charAt(0);
-    if ('/' == c) return path.slice(1);
-    if ('.' == c) return require.normalize(p, path);
-
-    // resolve deps by returning
-    // the dep in the nearest "deps"
-    // directory
-    var segs = parent.split('/');
-    var i = lastIndexOf(segs, 'deps') + 1;
-    if (!i) i = 0;
-    path = segs.slice(0, i + 1).join('/') + '/deps/' + path;
-    return path;
-  };
-
-  /**
-   * Check if module is defined at `path`.
-   */
-
-  localRequire.exists = function(path) {
-    return require.modules.hasOwnProperty(localRequire.resolve(path));
-  };
-
-  return localRequire;
-};
-require.register("lokua-utils/index.js", function(exports, require, module){
-'use strict';
-
-/**
- * @namespace  utils
+ * @namespace  tooly
  * @type {Object}
  */
-module.exports = {
+var tooly = {
+
+  /**
+   * append content to HTML element(s)
+   *
+   * @param  {String}  content    the content to append
+   * @param  {Element} el         the element(s) to append content to
+   * @return {Object} tooly for chaining
+   */
+  append: function(content, el) {
+    el = el || document;
+    if (tooly.toType(el) === 'array') {
+      for (var i = 0, len = el.length; i < len; i++) {
+        if (el[i].nodeType === 1) {
+          el[i].innerHTML = el[i].innerHTML + content;
+        }
+      }
+      return tooly;
+    }
+    // if node is not ELEMENT_NODE or DOCUMENT_NODE, do nothing
+    if (el.nodeType !== 1 && el.nodeType !== 9) {
+      return tooly;
+    }
+    el.innerHTML = el.innerHTML + content;
+    return tooly;
+  },
+
+  /**
+   * fill DOM element `el` with `content`.
+   * *note - replaces existing content
+   * 
+   * @param  {(String|Element)} content
+   * @param  {Element} el      
+   * @return {Object} tooly for chaining
+   */
+  html: function(el, content) {
+    el = el || document;
+    if (tooly.toType(el) === 'array') {
+      for (var i = 0, len = el.length; i < len; i++) {
+        if (el[i].nodeType === 1) {
+          el[i].innerHTML = content;
+        }
+      }
+      return tooly
+    }
+    // if node is not ELEMENT_NODE or DOCUMENT_NODE, do nothing
+    if (el.nodeType !== 1 && el.nodeType !== 9) {
+      return tooly
+    }
+    el.innerHTML = content;
+    return tooly
+  },
+
+  /**
+   * prepend content to HTML element(s)
+   *
+   * @param  {String}  content    the content to prepend
+   * @param  {Element} el         the element(s) to prepend content to
+   * @return {Object} tooly for chaining
+   */
+  prepend: function(content, el) {
+    el = el || document;
+    if (tooly.toType(el) === 'array') {
+      for (var i = 0, len = el.length; i < len; i++) {
+        if (el[i].nodeType === 1) {
+          el[i].innerHTML = content + el[i].innerHTML;
+        }
+      }
+      return tooly
+    }
+    // if node is not ELEMENT_NODE or DOCUMENT_NODE, do nothing
+    if (el.nodeType !== 1 && el.nodeType !== 9) {
+      return tooly
+    }
+    el.innerHTML = content + el.innerHTML;
+    return tooly
+  },
+
+  /**
+   * wrapper for HTML5 `querySelector`
+   * 
+   * @param  {String} selector
+   * @param  {Object} context,  the parent element to start searching from 
+   *                            defaults to document if blank 
+   * @return {Element|null}     the first matched element or null if no match
+   */
+  select: function(selector, context) {
+    context = context || document;
+    return context.querySelector(selector);
+  },
+
+  /**
+   * wrapper for HTML5 `querySelectorAll`
+   * 
+   * @param  {String} selector
+   * @param  {Object} context,      the parent element to start searching from 
+   *                                defaults to document if blank 
+   * @return {Array.<Element>|null} an array of matched elements or an empty array if no match
+   */
+  selectAll: function(selector, context) {
+    var list = (context || document).querySelectorAll(selector),
+        els = [],
+        i = 0, len = list.length;
+    for (i; i < len; i++) {
+      els[i] = list[i];
+    }
+    return els;
+  },
+
+
+  /**
+   * Function version of ECMAScript6 String.prototype.endsWith
+   * @param  {String} str    the string to check
+   * @param  {String} suffix the "endWith" we are seeking
+   * @return {Boolean}       true if str ends with suffix
+   * @see <a href="http://stackoverflow.com/a/2548133">stackoverflow thread</a>
+   * @memberOf tooly
+   */
+  endsWith: function(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+  },
 
   /**
    * Function version of String.format / sprintf
    * @see  http://stackoverflow.com/a/4673436/2416000
    * @param  {String} format
    * @return {String} 
-   * @memberOf utils
+   * @memberOf tooly
    */
   format: function(format) {
     var args = Array.prototype.slice.call(arguments, 1);
@@ -223,55 +164,11 @@ module.exports = {
   },
 
   /**
-   * scale a number from one range to another
-   * 
-   * @param  {Number} n      the number to scale
-   * @param  {Number} oldMin 
-   * @param  {Number} oldMax 
-   * @param  {Number} min    the new min
-   * @param  {Number} max    the new max
-   * @return {Number}        the scaled number
-   * @memberOf utils
-   */
-  scale: function(n, oldMin, oldMax, min, max) {
-    return (((n-oldMin)*(max-min)) / (oldMax-oldMin)) + min; 
-  },
-
-  /**
-   * Function version of ECMAScript6 String.prototype.repeat without the silly
-   * range error checks etc.
-   * 
-   * @param  {String} str   the string to repeat
-   * @param  {Number} n     the number of times to repeat
-   * @return {String}       the string repeated, or an empty string if n is 0
-   * @memberOf utils
-   */
-  repeat: function(str, n) {
-    var s = '';
-    for (var i = 0; i < n; i++) {
-      s += str;
-    }
-    return s;
-  },
-
-  /**
-   * Function version of ECMAScript6 String.prototype.endsWith
-   * @param  {String} str    the string to check
-   * @param  {String} suffix the "endWith" we are seeking
-   * @return {Boolean}       true if str ends with suffix
-   * @see <a href="http://stackoverflow.com/a/2548133">stackoverflow thread</a>
-   * @memberOf utils
-   */
-  endsWith: function(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
-  },
-
-  /**
    * Utility method to convert milliseconds into human readable time format hh:mm:ss
    * 
    * @param  {Number} time - the time value in milliseconds
    * @return {String}      - human readable time
-   * @memberOf utils
+   * @memberOf tooly
    */
   formatTime: function(time) {
     var
@@ -285,26 +182,146 @@ module.exports = {
   },
 
   /**
+   * Object literal assignment results in creating an an object with Object.prototype
+   * as the prototype. This allows us to assign a different prototype while keeping the convenience
+   * of literal literation.
+   * 
+   * @param  {Object} prototype
+   * @param  {Object} object    
+   * @return {Object}
+   * @author Yehuda Katz (slightly modified)
+   * @see http://yehudakatz.com/2011/08/12/understanding-prototypes-in-javascript/ 
+   */
+  fromPrototype: function(prototype, object) {
+    var newObject = tooly.objectCreate(prototype),
+        prop;
+   
+    for (prop in object) {
+      if (object.hasOwnProperty(prop)) {
+        newObject[prop] = object[prop];      
+      }
+    }
+   
+    return newObject;
+  },
+
+  /**
+   * alias for #fromPrototype
+   */
+  fromProto: function(prototype, object) {
+    return tooly.fromPrototype(prototype, object);
+  },
+
+
+  /**
+   * note - overwrites original child.prototype
+   * note - the child's constructor needs to call `parent.call(this)`
+   * 
+   * @param  {Function} parent
+   * @param  {Function} child  
+   * @param  {Object} extend additional methods to add to prototype
+   */
+  inherit: function(parent, child, extend) {
+
+    child.prototype = new parent();
+    child.prototype.constructor = child;
+
+    for (var prop in extend) {
+      if (extend.hasOwnProperty(prop)) {
+        child.prototype[prop] = extend[prop];
+      }
+    }
+  },
+
+  /**
+   * function version of ECMA5 Object.create
+   * 
+   * @param  {Object} o  the object/base prototype
+   * @return {Object}    new object based on o prototype
+   */
+  objectCreate: function(o) {
+    var F = function() {};
+    F.prototype = o;
+    return new F();
+  },
+  
+  /**
+   * Equivalent of Object.keys(obj).length
+   * 
+   * @param  {Object} obj the object whose ownProperties we are counting
+   * @return {number}     the number of "ownProperties" in the object
+   * @memberOf tooly
+   */
+  propCount: function(obj) {
+    var count = 0;
+    for (var o in obj) {
+      if (obj.hasOwnProperty(o)) {
+        count++;
+      }
+    }
+    return count;
+  },
+
+  /**
+   * get an array of an object's "ownProperties"
+   * 
+   * @param  {Object} obj     the object of interest
+   * @return {Array.<Object>} the "hasOwnProperties" of obj
+   * @memberOf tooly
+   */
+  propsOf: function(obj) {
+    var props = [];
+    for (var o in obj) {
+      if (obj.hasOwnProperty(o)) {
+        props.push(o);
+      }
+    }
+    return props;
+  },
+
+  /**
+   * Function version of ECMAScript6 String.prototype.repeat without the silly
+   * range error checks etc.
+   * 
+   * @param  {String} str   the string to repeat
+   * @param  {Number} n     the number of times to repeat
+   * @return {String}       the string repeated, or an empty string if n is 0
+   * @memberOf tooly
+   */
+  repeat: function(str, n) {
+    var s = '';
+    for (var i = 0; i < n; i++) {
+      s += str;
+    }
+    return s;
+  },
+
+  /**
+   * scale a number from one range to another
+   * 
+   * @param  {Number} n      the number to scale
+   * @param  {Number} oldMin 
+   * @param  {Number} oldMax 
+   * @param  {Number} min    the new min
+   * @param  {Number} max    the new max
+   * @return {Number}        the scaled number
+   * @memberOf tooly
+   */
+  scale: function(n, oldMin, oldMax, min, max) {
+    return (((n-oldMin)*(max-min)) / (oldMax-oldMin)) + min; 
+  },
+
+  /**
    * Extracts final relative part of url, optionally keeping forward,
    * backward, or both slashes. By default both front and trailing slashes are removed
    *
    * @param {String}  url           the url or filepath
    * @param {Boolean} preSlash      keeps slash before relative part if true
-   * @param {Boolean} trailingSlash keeps last slash after relative part if true
-   * @example
-   * var url = 'http://momentsound.com/nreleases/m01_garo/';
-   * u.sliceRel(url);               //=> m01_garo
-   * u.sliceRel(url, false, false); //=> m01_garo
-   * u.sliceRel(url, false, true);  //=> m01_garo/
-   * u.sliceRel(url, true, true);   //=> /m01_garo/
-   * u.sliceRel(url, true, false);  //=> /m01_garo
-   *
-   * // sliceRel does not add a trailing slash if it wasn't
-   * // there to begin with
-   * url = 'http://momentsound.com/nreleases/m01_garo';
-   * u.sliceRel(url, false, true); //=> m01_garo
-   * u.sliceRel(url, true, true);  //=> /m01_garo
-   * @memberOf utils
+   * @param {Boolean} trailingSlash keeps last slash after relative part if true.
+   *                                note thatsliceRel does not add a trailing slash if it wasn't
+   *                                there to begin with
+   * @return {String}                               
+   * @memberOf tooly
    */
   sliceRel: function(url, preSlash, trailingSlash) {
     var hasTrailing = false;
@@ -329,6 +346,7 @@ module.exports = {
 
   /**
    * a more useful alternative to the typeof operator
+   * 
    * @param  {Object} obj the object
    * @return {String}     the type of object
    * @author Angus Croll
@@ -336,100 +354,37 @@ module.exports = {
    * "http://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/">
    * related article
    * </a>
-   * @memberOf utils
+   * @memberOf tooly
    */
   toType: function(obj) {
     return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
-  },
-
-  /**
-   * Equivalent of Object.keys(obj).length
-   * 
-   * @param  {Object} obj the object whose ownProperties we are counting
-   * @return {number}     the number of "ownProperties" in the object
-   * @memberOf utils
-   */
-  propCount: function(obj) {
-    var count = 0;
-    for (var o in obj) {
-      if (obj.hasOwnProperty(o)) {
-        count++;
-      }
-    }
-    return count;
-  },
-
-  /**
-   * get an array of an object's "ownProperties"
-   * 
-   * @param  {Object} obj     the object of interest
-   * @return {Array.<Object>} the "hasOwnProperties" of obj
-   * @memberOf utils
-   */
-  propsOf: function(obj) {
-    var props = [];
-    for (var o in obj) {
-      if (obj.hasOwnProperty(o)) {
-        props.push(o);
-      }
-    }
-    return props;
-  },
-
-  /**
-   * function version of ECMA5 Object.create
-   * 
-   * @param  {Object} o  the object/base prototype
-   * @return {Object}    new object based on o prototype
-   */
-  objectCreate: function(o) {
-    var F = function() {};
-    F.prototype = o;
-    return new F();
   }
 };
-});
-require.register("lokua-handler/src/handler.js", function(exports, require, module){
 'use strict';
-
-module.exports = Handler;
 
 /**
  * Constructor.
  * 
  * @class  Handler
  * @constructor
- * @param {Object} context the value of `this` in handler callbacks
- *                         basically the owner of the function to be called.
- * @param {Array} handlers  reference of handlers, in case Handler is being inherited
+ * @param {Object}  context   (optional) designates the owner of the `handlers` array that holds 
+ *                            all callbacks. When blank the Handler instance uses its own internal
+ *                            array. If you'd like to keep track of the handlers outside of Handler,
+ *                            pass the parent owner of @param `handler` as context.
  */
-function Handler(context, handlers) {
+function Handler(context) {
   this.context = context || this;
-  this.handlers = handlers || {};
+  this.context.handlers = [];
+  this.handlers = this.context.handlers;
   return this;
 }
 
 Handler.prototype = {
 
   /**
-   * Change the context (value of `this`) from which handler methods are called.
-   * ie, Handler needs to know who is calling her.
-   * 
-   * @param  {Object} context   the object that owns the execution method
-   * @return {Object} `this` for chaining
-   * @memberOf  Handler
-   * @instance
-   * @method
-   */
-  setContext: function(context) {
-    this.context = context;
-    return this;
-  },
-
-  /**
    * Register an event handler for a named function.
    * 
-   * @param  {String|Function} fn   the function that will call the handler when executed
+   * @param  {(String|Function)} fn   the function that will call the handler when executed
    * @param  {callback}   handler the handler that we be called by the named function
    * @return {Object} `this` for chaining
    * @memberOf  Handler
@@ -464,23 +419,11 @@ Handler.prototype = {
   },
 
   /**
-   * Helper function. Add a click event handler to an element only if that element exists.
-   * @param  {jQuery|Object}  $el   the element
-   * @param  {Function}       cb    the function to be called by the event handler
-   * @return {Object} `this` for chaining
-   * @memberOf  Handler
-   * @instance
-   * @method
+   * alias for #executeHandler
+   * @see  #executeHandler
    */
-  registerClick: function($el, cb) {
-    var t = this;
-    if (!($el instanceof $)) $el = $($el);
-    if (typeof cb === 'function') {
-      $el.on('click', function() {
-        cb.call(t.context);
-      });
-    }
-    return t;
+  exec: function(fn) {
+    return this.executeHandler(fn);
   },
 
   /**
@@ -490,7 +433,7 @@ Handler.prototype = {
    * function itself. This method should not be used if only registering a single callback, 
    * for that use {@link #on}.
    * 
-   * @param  {Object} callbacks a (preferrably object literal) collection callback functions
+   * @param  {Object} handlers  collection of callback functions
    * @return {Object} `this` for chaining
    * @memberOf  Handler
    * @instance
@@ -506,18 +449,18 @@ Handler.prototype = {
       }
     }
     return t;
+  },
+
+  toString: function() { 
+    return "[Handler ' " + this + " ']"; 
   }
 };
 
-});
-require.register("lap/src/lap.js", function(exports, require, module){
-/** @namespace  Lap */
 'use strict';
 
-var Handler = require('handler'),
-    u = require('utils');
+/** DEVELOPMENT */
 
-module.exports = Lap;
+/** @namespace  Lap */
 
 /**
  * @type {Number}
@@ -538,13 +481,14 @@ Lap.idGen = (Lap.idGen || 0) + 1;
  * @constructor
  */
 function Lap(container, lib, options) {
+  // init parent's instance
+  Handler.call(this);
 
   var lap = this;
+
   lap.name = 'Lokua Audio Player';
   lap.version = '0.0.5';
   lap.doc = 'http://lokua.net/lap/0.0.5/doc/';
-  lap.handler = new Handler(this);
-  lap.utils = u;
 
   var _defaults = {
     debug: false,
@@ -617,15 +561,18 @@ function Lap(container, lib, options) {
      * @type {Object.<Object, ?>}
      */
     lap.settings = $.extend(true, {}, _defaults, options);
-    // lap.debug('debug mode is on');
+
+    lap.debug('debug mode is on');
+
     /**
      * The upper-most parent element of the player as passed to the constructor.
      * @name $container
      * @memberOf  Lap
      * @instance
-     * @type {jQuery}
+     * @type {Object}
      */
-    lap.$container = container instanceof $ ? container : $(container);
+    lap.$container = (container.nodeType === 1) ? container : tooly.select(container);
+
     /**
      * Provides the audio file source(s) and data in a number of different ways.
      * See the {@tutorial lib} example tutorial.
@@ -647,7 +594,7 @@ function Lap(container, lib, options) {
      * @type {string}
      * @see  Lap.lib
      */
-    lap.libType = u.toType(lap.lib);
+    lap.libType = tooly.toType(lap.lib);
     /**
      * holds a reference to the currently selected album's files.
      * @name  files
@@ -712,59 +659,30 @@ function Lap(container, lib, options) {
      */
     lap.trackCount = {};
 
-    lap.albumTitle  = undefined;
-    lap.trackTitle  = undefined;
-    lap.artist      = undefined;
-    lap.cover       = undefined;
-    lap.replacement = undefined;
+    lap.albumTitle  = '';
+    lap.trackTitle  = '';
+    lap.artist      = '';
+    lap.cover       = '';
+    lap.replacement = '';
 
     lap.updateCurrent();
     lap.initAudio();
     lap.initElements(_defaults.elements);
     lap.addListeners();
-    lap.handler.registerCallbacks(lap.settings.callbacks);
+    lap.registerCallbacks(lap.settings.callbacks);
     lap.load();
   })();
 
   return lap;
 }
 
-Lap.prototype = (function() {
+tooly.inherit(Handler, Lap, (function() {
 
   var seeking = false,
       mouseDownTimer;
 
   return {
     
-    /**
-     * wrapper for handler.* call
-     * @see Handler.on
-     * @memberOf  Lap
-     * @return {Object} `this` for chaining
-     */
-    on: function(fn, handler) {
-      return this.handler.on(fn, handler);
-    },
-    /**
-     * wrapper for handler.* call
-     * 
-     * @return {Object} `this` for chaining
-     * @memberOf  Lap
-     * @see Handler.executeHandler
-     */
-    executeHandler: function(fn) {
-      return this.handler.executeHandler();
-    },
-    /**
-     * wrapper for handler.* call
-     * 
-     * @return {Object} `this` for chaining
-     * @memberOf  Lap
-     * @see Handler.registerCallbacks
-     */
-    registerCallbacks: function(callbacks) {
-      return this.handler.registerCallbacks(callbacks);
-    },
     /**
      * convenience method
      * 
@@ -783,27 +701,28 @@ Lap.prototype = (function() {
     },
 
     /**
-     * Turn the registered DOM player control elements into jQuery selections
+     * Turn the registered DOM player control elements into selections
      * if they arent' already. In the case that $els === 'auto', the default class
-     * names for controls will be used (this is most efficient way).
+     * names for controls will be used (this is preferred).
      * 
      * @param  {Array.<String>} defaultEls  the list of default class names
      * @return {Object} `this` for chaining
      * @memberOf  Lap
      */
     initElements: function(defaultEls) {
-      var t = this;
-      if (u.toType(t.$els) === 'string' && t.$els.toLowerCase() === 'auto')  {
+      var t = this,
+          o, e;
+      if (tooly.toType(t.$els) === 'string' && t.$els.toLowerCase() === 'auto')  {
         t.$els = [];
-        for (var o in defaultEls) {
+        for (o in defaultEls) {
           if (defaultEls.hasOwnProperty(o)) {
-            t.$els[o] = t.$container.find(defaultEls[o]);
+            t.$els[o] = tooly.select(o, t.$container);
           }
         }
       } else {
-        for (var e in t.$els) {
+        for (e in t.$els) {
           if (t.$els.hasOwnProperty(e)) {
-            t.$els[e] = t.$container.find(t.$els[e]);
+            t.$els[e] = tooly.select(t.$els[e], t.$container);
           }
         }
       }
@@ -837,9 +756,12 @@ Lap.prototype = (function() {
     updateCurrent: function() {
       var t = this;
 
+      // either something stupid is happening or we are testing
+      if (t.libType === 'null' || t.libType === 'undefined') return;
+
       if (t.libType === 'string') {
 
-        if (u.endsWith(t.lib.toLowerCase(), '.json')) {
+        if (tooly.endsWith(t.lib.toLowerCase(), '.json')) {
           $.ajax({ url: t.lib, dataType: 'json', async: false,
             success: function(res) {
               t.lib = res;
@@ -848,14 +770,14 @@ Lap.prototype = (function() {
           // at this point t.lib is a regular js object, and is either a single unnamed object
           // representing a single album, or a named array containing mutliple albums.
           // using "data" for the array name...
-          if (t.lib.data !== undefined && u.toType(t.lib.data) === 'array') {
+          if (t.lib.data !== 'undefined' && tooly.toType(t.lib.data) === 'array') {
             t.lib = t.lib.data; // no point in hanging on to object-wrapped array
-            t.libType = u.toType(t.lib); // reset to correct type
+            t.libType = tooly.toType(t.lib); // reset to correct type
             // call this function again to proceed to the ===array block
             t.updateCurrent();
             return;
           }
-          t.libType = u.toType(t.lib);
+          t.libType = tooly.toType(t.lib);
           if (t.libType === 'object') {
             // call this function again to proceed to the ===object block
             t.updateCurrent();
@@ -891,12 +813,12 @@ Lap.prototype = (function() {
       if (t.replacement !== undefined) {
         // t.replacement may be a single string or regexp for a match without a supplied
         // replacement value, in which case we assume to replace with empty string
-        if (u.toType(t.replacement) === 'string') {
+        if (tooly.toType(t.replacement) === 'string') {
           t.replacement = [t.replacement, ''];
         }
 
         // replacement may contain string-wrapped regexp (from json), convert if so
-        if (u.toType(t.replacement[0]) !== 'regexp') {
+        if (tooly.toType(t.replacement[0]) !== 'regexp') {
           var flags = t.replacement[2];
           t.replacement[0] = (flags !== undefined) ? 
             new RegExp(t.replacement[0], flags) : 
@@ -904,7 +826,7 @@ Lap.prototype = (function() {
         }
       }
 
-      if (u.toType(t.files) === 'string') {
+      if (tooly.toType(t.files) === 'string') {
         t.trackCount = 1;
       } else {
         t.trackCount = t.files.length;
@@ -923,7 +845,7 @@ Lap.prototype = (function() {
       if (t.trackTitles === undefined || t.trackCount > t.trackTitles.length) {
         t.trackTitles = [];
         for (i = 0; i < t.trackCount; i++) {
-          t.trackTitles[i] = u.sliceRel(t.files[i].replace('.' + t.getFileType(), ''));
+          t.trackTitles[i] = tooly.sliceRel(t.files[i].replace('.' + t.getFileType(), ''));
           if (t.replacement !== undefined) {
             t.trackTitles[i] = t.trackTitles[i].replace(t.replacement[0], t.replacement[1]);
           }
@@ -954,14 +876,14 @@ Lap.prototype = (function() {
       // --- audio listeners
       $audio
         .on('timeupdate', function() {
-          $els.currentTime.text(t.currentTimeFormatted());
-          t.handler.executeHandler('timeUpdate');
+          tooly.html($els.currentTime, t.currentTimeFormatted());
+          t.executeHandler('timeUpdate');
         })
         .on('durationchange', function() {
-          $els.duration.text(t.durationFormatted());
+          tooly.html($els.duration, t.durationFormatted());
         })
         .on('volumechange', function() {
-          $els.volumeRead.text(t.volumeFormatted());
+          tooly.html($els.volumeRead, t.volumeFormatted());
         })
         .on('ended', function() {
           t.next();
@@ -969,40 +891,48 @@ Lap.prototype = (function() {
         });
 
       // --- action listeners
-      t.handler.registerClick($els.playPause, t.togglePlay);
-      t.handler.registerClick($els.prev, t.prev);
-      t.handler.registerClick($els.next, t.next);
-      t.handler.registerClick($els.volumeUp, t.incVolume);
-      t.handler.registerClick($els.prevAlbum, t.prevAlbum);
-      t.handler.registerClick($els.nextAlbum, t.nextAlbum);
-      t.handler.registerClick($els.seekbar, t.seekFromSeekbar);
+      t.registerClick($els.playPause, t.togglePlay);
+      t.registerClick($els.prev, t.prev);
+      t.registerClick($els.next, t.next);
+      t.registerClick($els.volumeUp, t.incVolume);
+      t.registerClick($els.prevAlbum, t.prevAlbum);
+      t.registerClick($els.nextAlbum, t.nextAlbum);
+      t.registerClick($els.seekbar, t.seekFromSeekbar);
 
-      t.$container.on('click', function(e) {
+      t.$container.addEventListener('click', function(e) {
         var $targ = $(e.target);
         if ($targ.is('.lap-playlist-item')) {
           var wasPlaying = !t.audio.paused;
-          t.trackIndex = u.int($targ.attr('data-index'));
+          t.trackIndex = tooly.int($targ.attr('data-index'));
           t.setSource();
-          t.handler.executeHandler('trackChange');
+          t.executeHandler('trackChange');
           if (wasPlaying) t.audio.play();
         }
       });
-         
-      $els.seekForward.add($els.seekBackward)
-        .on('mousedown', function(e) {
+
+      console.log($els);
+
+      function addSeekHandlers(el) {
+        if (el === null) return;
+
+        el.addEventListener('mousedown', function(e) {
           seeking = true;
           if ($(this).is($els.seekForward)) {
             t.seekForward();
           } else {
             t.seekBackward();
           }
-        })
-        .on('mouseup', function(e) {
+        });
+
+        el.addEventListener('mouseup', function(e) {
           seeking = false;
           clearTimeout(mouseDownTimer);
         });
+      }
+      addSeekHandlers($els.seekForward);
+      addSeekHandlers($els.seekBackward);
 
-      t.handler
+      this
         .on('load', function() {
           t.updateTrackTitleEl();
           t.updateArtistEl();
@@ -1034,7 +964,7 @@ Lap.prototype = (function() {
      * @memberOf  Lap
      */
     load: function() {
-      this.handler.executeHandler('load');
+      this.executeHandler('load');
       return this;
     },
 
@@ -1043,7 +973,7 @@ Lap.prototype = (function() {
      * @return {Object} `this` for chaining
      */
     updateTrackTitleEl: function() {
-      this.$els.trackTitle.text(this.trackTitles[this.trackIndex]);
+      tooly.html(this.$els.trackTitle, this.trackTitles[this.trackIndex]);
       return this;
     },
 
@@ -1053,7 +983,7 @@ Lap.prototype = (function() {
      * @return {Object} `this` for chaining
      */
     updateArtistEl: function() {
-      this.$els.artist.text(this.artist);
+      tooly.html(this.$els.artist, this.artist);
       return this;
     },
 
@@ -1062,7 +992,7 @@ Lap.prototype = (function() {
      * @return {Object} `this` for chaining
      */
     updateAlbumEl: function() {
-      this.$els.albumTitle.text(this.album);
+      tooly.html(this.$els.albumTitle, this.album);
       return this;
     },
 
@@ -1071,7 +1001,9 @@ Lap.prototype = (function() {
      * @return {Object} `this` for chaining
      */
     updateCover: function() {
-      this.$els.cover.find('img').attr('src', this.cover);
+      if (this.$els.cover !== null) {
+        this.$els.cover.src = this.cover;
+      }
       return this;
     },
 
@@ -1087,7 +1019,7 @@ Lap.prototype = (function() {
       } else {
         t.pause();
       }
-      t.handler.executeHandler('togglePlay');
+      t.executeHandler('togglePlay');
       return t;
     },
 
@@ -1097,7 +1029,7 @@ Lap.prototype = (function() {
      */
     play: function() {
       this.audio.play();
-      this.handler.executeHandler('play');
+      this.executeHandler('play');
       return this;
     },
 
@@ -1108,7 +1040,7 @@ Lap.prototype = (function() {
      */
     pause: function() {
       this.audio.pause();
-      this.handler.executeHandler('pause');
+      this.executeHandler('pause');
       return this;
     },
 
@@ -1183,7 +1115,7 @@ Lap.prototype = (function() {
      */
     trackNumberFormatted: function(n) {
       var padCount = (this.trackCount+'').length - (n+'').length;
-      return u.repeat('0', padCount) + n + this.settings.trackNumberPostfix;
+      return tooly.repeat('0', padCount) + n + this.settings.trackNumberPostfix;
     },
 
     /**
@@ -1235,7 +1167,7 @@ Lap.prototype = (function() {
     },
 
     trackChange: function() {
-      this.handler.executeHandler('trackChange');
+      this.executeHandler('trackChange');
     },
 
     /**
@@ -1264,7 +1196,7 @@ Lap.prototype = (function() {
       t.albumIndex = (t.albumIndex+1 >= t.lib.length) ? 0 : t.albumIndex+1;
       t.updateCurrent();
       if (wasPlaying) t.audio.play();
-      // t.handler.executeHandler('nextAlbum');
+      // t.executeHandler('nextAlbum');
       t.albumChange();
       return this;
     },
@@ -1330,7 +1262,7 @@ Lap.prototype = (function() {
      * @memberOf  Lap
      */
     volumeChange: function() {
-      this.handler.executeHandler('volumeChange');
+      this.executeHandler('volumeChange');
       return this;
     },
 
@@ -1383,7 +1315,7 @@ Lap.prototype = (function() {
         applied = lap.audio.currentTime + (lap.settings.seekInterval * -1);
         lap.audio.currentTime = (applied <= 0) ? 0 : applied;
       }
-      this.handler.executeHandler('seek');
+      this.executeHandler('seek');
       return this;
     },
 
@@ -1398,7 +1330,7 @@ Lap.prototype = (function() {
       var t = this,
           rect = t.$els.seekbar.getBoundingClientRect();
       t.audio.currentTime = ((e.clientX - rect.left) / rect.width) * t.audio.duration;
-      t.handler.executeHandler('seek');
+      t.executeHandler('seek');
       return this;
     },
 
@@ -1426,7 +1358,8 @@ Lap.prototype = (function() {
           file = this.lib[this.albumIndex].files[this.trackIndex];
         }
       }
-      return file.slice(file.length-3);
+
+      return (file === undefined) ? '"unknown filetype"' : file.slice(file.length-3);
     },
 
     /**
@@ -1439,7 +1372,7 @@ Lap.prototype = (function() {
      * var formatted = lapInstance.currentTimeFormatted(); //=> 0:01:02
      */
     currentTimeFormatted: function() {
-      var formatted = u.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
+      var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
       if (this.audio.duration < 3600) {
         return formatted.slice(2);
       }
@@ -1456,7 +1389,7 @@ Lap.prototype = (function() {
      * var formatted = lapInstance.durationFormatted(); //=> 0:02:31
      */
     durationFormatted: function() {
-      var formatted = u.formatTime(Math.floor(this.audio.duration.toFixed(1)));
+      var formatted = tooly.formatTime(Math.floor(this.audio.duration.toFixed(1)));
       if (this.audio.duration < 3600) {
         return formatted.slice(2);
       }
@@ -1507,18 +1440,10 @@ Lap.prototype = (function() {
       return Object.getOwnPropertyNames(this);
     }
   }; // end return
-})();
-});
+})()); // end anon }, end wrapper ), call wrapper (), end tooly.inherit );
 
 
+return Lap;
 
 
-require.alias("lokua-utils/index.js", "lap/deps/utils/index.js");
-require.alias("lokua-utils/index.js", "lap/deps/utils/index.js");
-require.alias("lokua-utils/index.js", "utils/index.js");
-require.alias("lokua-utils/index.js", "lokua-utils/index.js");
-require.alias("lokua-handler/src/handler.js", "lap/deps/handler/src/handler.js");
-require.alias("lokua-handler/src/handler.js", "lap/deps/handler/index.js");
-require.alias("lokua-handler/src/handler.js", "handler/index.js");
-require.alias("lokua-handler/src/handler.js", "lokua-handler/index.js");
-require.alias("lap/src/lap.js", "lap/index.js");
+}));

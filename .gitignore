@@ -4,7 +4,4 @@ bower_components
 legacy
 doc/sftp-config.json
 *.sass-cache
-components
-build
-demos
 doc

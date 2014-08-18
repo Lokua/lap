@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>test</title>
+  <script src="../bower_components/jquery/dist/jquery.js"></script>
+  <script src="../dist/lap.js"></script>
+</head>
+<style>
+  body {
+    padding: 64px;
+  }
+  #player {
+    display: inline-block;
+    border: 1px solid green;
+    padding: 8px;
+  }
+  span {
+    font-family: Consolas;
+    color: #444;
+    border: 1px solid #DADADA;
+    cursor: pointer;
+  }
+  .lap-play {
+    color: gray;
+  }
+  .lap-pause {
+    color: green;
+  }
+</style>
+<body>
+
+  <div id="player">
+    <span class="lap-play-pause">PLAY/PAUSE</span>
+  </div>
+
+<script>
+
+$(function() {
+
+  var lap = new Lap('#player', 'lib.json', {debug:true, elements:'auto'});
+
+});
+
+</script>
+</body>
+</html>

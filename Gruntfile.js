@@ -2,43 +2,75 @@
 
 module.exports = function(grunt) {
 
-  // doesn't work with watch for some reason?
-  require('load-grunt-tasks')(grunt);
+  var dev = true;
+  var src = (dev) ? 'src/lap_dev.js' : 'src/lap.js';
 
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
 
-    shell: {
-      jsdoc: {
-        command: 'rm -rf doc/jsdoc && jsdoc -c conf.json'
-      },
+    concat: {
       build: {
-        command: 'component build'
-      },
-      push: {
-        command: 'git commit -a -m "***generated push***" && git push -u origin master'
-      }
-    },
-
-    copy: {
-      main: {
-        src: 'build/build.js',
+        src: [
+          'node_modules/tooly/src/tooly.js', 
+          'node_modules/handler/src/handler.js',
+          src
+        ],
         dest: 'dist/lap.js'
       }
     },
 
+    shell: {
+      jsdoc: {
+        command: 'rm -rf doc/jsdoc && jsdoc -c conf.json'
+      },
+      push: {
+        command: 'git commit -a -m "-auto-" && git push -u origin master'
+      }
+    },
+
     uglify: {
-      main: {
-        src: '<%= copy.main.dest %>',
+      build: {
+        src: 'dist/lap.js',
         dest: 'dist/lap.min.js'
       }
     },
 
+    umd: {
+      build: {
+        src: 'dist/lap.js',
+        // dest: 'dist/lap.js',
+        objectToExport: 'Lap',
+        amdModuleId: 'Lap',
+        // indent: '  '
+        deps: {
+          // 'default': ['tooly', 'Handler'],
+        }
+      }
+    },
+
+    usebanner: {
+      options: {
+        position: 'top',
+        banner: require('./banner'),
+        linebreak: true
+      },
+      build: {
+        files: {
+          src: ['dist/lap.js']
+        }
+      },
+      post: {
+        files: {
+          src: ['dist/lap.min.js']
+        }
+      }
+    },
+
     watch: {
-      main: {
+      build: {
         files: 'src/*',
-        tasks: ['copy:main', 'uglify:main']
+        tasks: ['build']
       },
       doc: {
         files: 'src/*.js',
@@ -47,9 +79,21 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-banner');
+  grunt.loadNpmTasks('grunt-umd');
+  grunt.loadNpmTasks('grunt-shell');
 
-  grunt.registerTask('default', ['copy:main', 'uglify:main']);
-  grunt.registerTask('build', ['shell:build', 'default']);
-  grunt.registerTask('push', ['build', 'shell:push']);
+  grunt.registerTask('default', ['build']);
+  grunt.registerTask('build', [
+    'concat:build',
+    'umd:build', 
+    'usebanner:build', 
+    'uglify:build', 
+    'usebanner:post'
+  ]);
+  // grunt.registerTask('push', ['build', 'shell:push']);
 };

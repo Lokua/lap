@@ -9,21 +9,28 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://Lokua@bitbucket.org/Lokua/lap.git"
+    "url": "https://github.com/Lokua/lap.git"
   },
   "keywords": [
     "html5",
     "audio",
     "player"
   ],
-  "author": "Lokua <lokua@lokua.net>",
-  "license": "MIT",
+  "author": "Joshua Kleckner <dev@lokua.net>",
+  "license": {
+    "type": "MIT",
+    "url": "http://www.opensource.org/licenses/MIT"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-uglify": "~0.5.1",
     "grunt-shell": "~0.7.0",
-    "grunt-contrib-copy": "~0.5.0",
-    "load-grunt-tasks": "~0.6.0"
+    "grunt-umd": "~2.0.0",
+    "grunt-banner": "~0.2.3",
+    "grunt-contrib-concat": "~0.5.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "tooly": "git+https://git@github.com/Lokua/tooly.git",
+    "handler": "git+https://git@github.com/Lokua/handler.git"
+  }
 }

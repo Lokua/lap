@@ -1,5 +1,7 @@
 'use strict';
 
+/** DEVELOPMENT */
+
 /** @namespace  Lap */
 
 /**
