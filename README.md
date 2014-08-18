@@ -8,9 +8,4 @@ Lap does not implement an actual interface. It is meant to provide the logical p
 visual implementation using [Raphael.js](http://raphaeljs.com/) can be found at the 
 [https://github.com/Lokua/lap-controls](https://github.com/Lokua/lap-controls) repo. 
 
-## Installation
-
-  Install with [component(1)](http://component.io):
-
-    $ component install lokua/lap-controls
 
