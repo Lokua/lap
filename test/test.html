@@ -14,11 +14,11 @@
     border: 1px solid green;
     padding: 8px;
   }
-  span {
+  span, div {
     font-family: Consolas;
     color: #444;
-    border: 1px solid #DADADA;
     cursor: pointer;
+    clear: both;
   }
   .lap-play {
     color: gray;
@@ -26,11 +26,31 @@
   .lap-pause {
     color: green;
   }
+  .read span {
+    color: blue;
+  }
 </style>
 <body>
 
   <div id="player">
     <span class="lap-play-pause">PLAY/PAUSE</span>
+    <span class="lap-prev">PREV</span>
+    <span class="lap-next">NEXT</span>
+    <span class="lap-seek-backward">REWIND</span>
+    <span class="lap-seek-forward">FAST-FORWARD</span>
+    <span class="lap-volume-up">VOL UP</span>
+    <span class="lap-volume-down">VOL DOWN</span>
+    <span class="lap-volume-read"></span>
+    <div class="read">
+      <span class="lap-current-time"></span><b> / </b>
+      <span class="lap-duration"></span>
+      <span class="lap-buffered"></span>
+      <span class="lap-artist"></span>
+      <span class="lap-track-title"></span>
+      <span class="lap-album-title"></span>
+    </div>
+
+    <div class="lap-playlist-panel"></div>
   </div>
 
 <script>

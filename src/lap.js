@@ -1,5 +1,3 @@
-'use strict';
-
 /** @namespace  Lap */
 
 /**
@@ -12,8 +10,11 @@ Lap.idGen = (Lap.idGen || 0) + 1;
 /**
  * Instantiate a new Lokua Audio Player. See the {@tutorial settings} and {@tutorial lib}
  * tutorials for configuration instructions.
+ *
+ * Note about the code: though we are not using jQuery, we are still prepending the $ to
+ * variables that represent dom elements to more easily differentiate.
  * 
- * @param {jQuery} container    the main wrapper div for the player
+ * @param {Object} container    the main wrapper div for the player
  * @param {(Object|JSON)} lib   a JSON or plain old object specifying songs, etc.
  *                              see {@link Audio.Player#lib}
  * @param {Object} options      custom options that override this player's defaults
@@ -43,6 +44,7 @@ function Lap(container, lib, options) {
     elements: {
       albumTitle:     '.lap-album-title',
       artist:         '.lap-artist',
+      buffered:       '.lap-buffered',
       control:        '.lap-control',
       controls:       '.lap-controls',
       cover:          '.lap-cover',
@@ -222,23 +224,6 @@ tooly.inherit(Handler, Lap, (function() {
       mouseDownTimer;
 
   return {
-    
-    /**
-     * convenience method
-     * 
-     * @return {Object} `this` for chaining
-     * @memberOf  Lap
-     */
-    registerClick: function($el, cb) {
-      var t = this;
-      if (!($el instanceof $)) $el = $($el);
-      if (typeof cb === 'function') {
-        $el.on('click', function() {
-          cb.call(t.context);
-        });
-      }
-      return t;
-    },
 
     /**
      * Turn the registered DOM player control elements into selections
@@ -250,20 +235,28 @@ tooly.inherit(Handler, Lap, (function() {
      * @memberOf  Lap
      */
     initElements: function(defaultEls) {
-      var t = this,
-          o, e;
+      var t = this, 
+          elems, el; // temps
+
       if (tooly.toType(t.$els) === 'string' && t.$els.toLowerCase() === 'auto')  {
         t.$els = [];
-        for (o in defaultEls) {
-          if (defaultEls.hasOwnProperty(o)) {
-            t.$els[o] = tooly.select(o, t.$container);
-          }
-        }
+        elems = defaultEls;
+        // for (o in defaultEls) {
+        //   if (defaultEls.hasOwnProperty(o)) {
+        //     t.$els[o] = tooly.select(defaultEls[o], t.$container);
+        //   }
+        // }
       } else {
-        for (e in t.$els) {
-          if (t.$els.hasOwnProperty(e)) {
-            t.$els[e] = tooly.select(t.$els[e], t.$container);
-          }
+        elems = t.$els;
+        // for (e in t.$els) {
+        //   if (t.$els.hasOwnProperty(e)) {
+        //     t.$els[e] = tooly.select(t.$els[e], t.$container);
+        //   }
+        // }
+      }
+      for (el in elems) {
+        if (elems.hasOwnProperty(el)) {
+          t.$els[el] = tooly.select(elems[el], t.$container);
         }
       }
     },
@@ -277,8 +270,9 @@ tooly.inherit(Handler, Lap, (function() {
      */
     initAudio: function() {
       this.audio = new Audio();
-      var fileType = this.getFileType();
-      var canPlay = this.audio.canPlayType('audio/' + fileType);
+      this.audio.preload = 'auto';
+      var fileType = this.getFileType(),
+          canPlay = this.audio.canPlayType('audio/' + fileType);
       if (canPlay === 'probably' || canPlay === 'maybe') {
         this.setSource();
         this.audio.volume = 0.80;
@@ -409,61 +403,59 @@ tooly.inherit(Handler, Lap, (function() {
     addListeners: function() {
       var t = this, 
           $els = t.$els,
-          // audio events do not bubble and are not delegatable;
-          // they to be attached to the actual DOM <audio> element
-          $audio = $(t.audio);
+          audio = this.audio;
 
-      // --- audio listeners
-      $audio
-        .on('timeupdate', function() {
-          tooly.html($els.currentTime, t.currentTimeFormatted());
-          t.executeHandler('timeUpdate');
-        })
-        .on('durationchange', function() {
-          tooly.html($els.duration, t.durationFormatted());
-        })
-        .on('volumechange', function() {
-          tooly.html($els.volumeRead, t.volumeFormatted());
-        })
-        .on('ended', function() {
-          t.next();
-          if (t.audio.paused) t.audio.play();
-        });
+      // audio.addEventListener('canplaythrough', function() {
+      //   t.debug('addListeners', 'canplaythrough');
+      // });
 
-      // --- action listeners
+      audio.addEventListener('timeupdate', function() {
+        tooly.html($els.currentTime, t.currentTimeFormatted());
+      });
+
+      audio.addEventListener('durationchange', function() {
+        tooly.html($els.duration, t.durationFormatted());        
+      });
+
+      audio.addEventListener('volumechange', function() {
+        tooly.html($els.volumeRead, t.volumeFormatted());
+      });
+
+      audio.addEventListener('ended', function() {
+        t.next();
+        if (t.audio.paused) t.audio.play();
+      });
+      
       t.registerClick($els.playPause, t.togglePlay);
       t.registerClick($els.prev, t.prev);
       t.registerClick($els.next, t.next);
       t.registerClick($els.volumeUp, t.incVolume);
+      t.registerClick($els.volumeDown, t.decVolume);
       t.registerClick($els.prevAlbum, t.prevAlbum);
       t.registerClick($els.nextAlbum, t.nextAlbum);
       t.registerClick($els.seekbar, t.seekFromSeekbar);
 
       t.$container.addEventListener('click', function(e) {
-        var $targ = $(e.target);
-        if ($targ.is('.lap-playlist-item')) {
+        var $targ = e.target;
+        if (tooly.hasClass($targ, 'lap-playlist-item')) {
           var wasPlaying = !t.audio.paused;
-          t.trackIndex = tooly.int($targ.attr('data-index'));
+          t.trackIndex = parseInt($targ.getAttribute('lap-data-index'));
           t.setSource();
           t.executeHandler('trackChange');
           if (wasPlaying) t.audio.play();
         }
       });
 
-      console.log($els);
-
       function addSeekHandlers(el) {
         if (el === null) return;
-
         el.addEventListener('mousedown', function(e) {
           seeking = true;
-          if ($(this).is($els.seekForward)) {
+          if (tooly.hasClass(e.target, 'lap-seek-forward')) {
             t.seekForward();
           } else {
             t.seekBackward();
           }
         });
-
         el.addEventListener('mouseup', function(e) {
           seeking = false;
           clearTimeout(mouseDownTimer);
@@ -479,13 +471,15 @@ tooly.inherit(Handler, Lap, (function() {
           t.updateAlbumEl();
           t.updateCover();
           t.populatePlaylist();
-          $els.playPause.addClass('lap-play');
+          tooly.addClass($els.playPause, 'lap-play');
         })
         .on('play', function() {
-          $els.playPause.removeClass('lap-play').addClass('lap-pause');
+          tooly.removeClass($els.playPause, 'lap-play')
+            .addClass($els.playPause, 'lap-pause');
         })
         .on('pause', function() {
-          $els.playPause.removeClass('lap-pause').addClass('lap-play');
+          tooly.removeClass($els.playPause, 'lap-pause')
+            .addClass($els.playPause, 'lap-play');
         })
         .on('trackChange', function() {
           t.updateTrackTitleEl();
@@ -499,6 +493,21 @@ tooly.inherit(Handler, Lap, (function() {
           t.populatePlaylist();
         });
     },
+
+    /**
+     * convenience method
+     * 
+     * @return {Object} `this` for chaining
+     * @memberOf  Lap
+     */
+    registerClick: function($el, cb) {
+      var t = this;
+      if (!$el) return t;
+      $el.addEventListener('click', function() {
+        cb.call(t);
+      });
+      return t;
+    },    
 
     /**
      * @memberOf  Lap
@@ -607,28 +616,35 @@ tooly.inherit(Handler, Lap, (function() {
      * Populates the tracklist with the current album's trackNames
      * 
      * @return {Object} `this` for chaining
-     * @deprecated this method is too implementation specific (beyond the core purpose)
+     * @deprecated this method is too implementation specific (beyond the core purpose of Lap)
      *             use #playlistFormatted instead
      * @memberOf  Lap
      */
     populatePlaylist: function() {
       // temporary fix - TODO remove from addListeners callbacks
-      if (true) return;
+      // if (true) return;
+      var t = this, 
+          items = [], 
+          i = 0,
+          html = '';
 
-      var t = this,
-          items = [],
-          i,
-          s; // temp string
-      t.$els.playlistPanel.empty();
+      tooly.html(t.$els.playlistPanel, '');
+
       for (i = 0; i < t.trackCount; i++) {
-        s = t.settings.prependTrackNumbers ? t.trackNumberFormatted(i+1) : '';
-        s += t.trackTitles[i];
-        items[i] = $('<div class="lap-playlist-item" data-index="'+i+'">').text(s);
-        if (i === t.trackIndex) {
-          items[i].addClass('lap-current');
-        }
+
+        html += tooly.format('<div>{0}{1}{2}</div>',
+          // 0
+          (t.settings.prependTrackNumbers) ? 
+            '<span class="lap-track-number">' + t.trackNumberFormatted(i+1) + '</span>' : '',
+          // 1
+          '<span class="lap-playlist-item' + ((i === t.trackIndex) ? ' lap-current' : '') + 
+            '" lap-data-index="' + i + '">',
+          // 2
+          t.trackTitles[i].trim() + '</span>'
+        );
       }
-      t.$els.playlistPanel.append(items);
+
+      tooly.append(t.$els.playlistPanel, html);
     },
 
     /**
@@ -638,9 +654,9 @@ tooly.inherit(Handler, Lap, (function() {
     playlistFormatted: function() {
       var t = this,
           items = [],
-          i;
-      for (i = 0; i < t.trackCount; i++) {
-        items[i] = t.settings.prependTrackNumbers ? t.trackNumberFormatted(i+1) : '';
+          i = 0;
+      for (; i < t.trackCount; i++) {
+        items[i] = (t.settings.prependTrackNumbers) ? t.trackNumberFormatted(i+1) : '';
         items[i] += t.trackTitles[i];
       }
       return items;
@@ -661,18 +677,21 @@ tooly.inherit(Handler, Lap, (function() {
     /**
      * add 'lap-current' class to playlist item that matches currentIndex.
      * Used as callback by prev, and next methods.
+     * 
      * @memberOf Lap
      */
     updateCurrentPlaylistItem: function() {
       var t = this, 
-          items = t.$container.find('.lap-playlist-item');
-      items.each(function() {
-        var $t = $(this);
-        if ($t.attr('data-index') == t.trackIndex) {
-          items.removeClass('lap-current');
-          $t.addClass('lap-current');
+          items = tooly.selectAll('.lap-playlist-item', t.$container),
+          len = items.length,
+          i = 0;
+      for (; i < len; i++)  {
+        if (items[i].getAttribute('lap-data-index') == t.trackIndex) {
+          tooly.removeClass(items, 'lap-current'); // wastefull, fixme
+          tooly.addClass(items[i], 'lap-current');
+          return t;
         }
-      });
+      }
       return t;
     },
 
@@ -784,13 +803,13 @@ tooly.inherit(Handler, Lap, (function() {
      * @memberOf  Lap
      */
     setVolume: function(up) {
-      // this.debug('setVolume called');
       var vol = this.audio.volume,
-        ival = this.settings.volumeInterval;
-      // this.debug('vol, ival: ' + vol + ', ' + ival);
-      this.audio.volume = up ?
-        (vol + ival >= 1) ? 1 : vol + ival
-        : (vol - ival <= 0) ? 0 : vol - ival;
+          interval = this.settings.volumeInterval;
+      if (up) {
+        this.audio.volume = (vol + interval >= 1) ? 1 : vol + interval;
+      } else {
+        this.audio.volume = (vol - interval <= 0) ? 0 : vol - interval;
+      }
       this.volumeChange();
       return this;
     },
@@ -798,6 +817,7 @@ tooly.inherit(Handler, Lap, (function() {
     /**
      * called by {@link Lap.setVolume}, thie method handles the DOM reaction.
      * Rather pointless, as we can just listen to the native audio `volumechange` event
+     * 
      * @return {Object} `this` for chaining
      * @memberOf  Lap
      */
@@ -904,6 +924,7 @@ tooly.inherit(Handler, Lap, (function() {
 
     /**
      * Get the current track's currentTime property in human readable format
+     * 
      * @return {String} human readable time in hh:mm:ss format
      * @see #formatTime
      * @memberOf  Lap
@@ -914,13 +935,14 @@ tooly.inherit(Handler, Lap, (function() {
     currentTimeFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
       if (this.audio.duration < 3600) {
-        return formatted.slice(2);
+        return formatted.slice(3); // two digits and the colon
       }
       return formatted;
     },
 
     /**
      * Get the current track's duration property in human readable format
+     * 
      * @return {String} human readable time in hh:mm:ss format
      * @see #formatTime
      * @memberOf  Lap
@@ -931,7 +953,7 @@ tooly.inherit(Handler, Lap, (function() {
     durationFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.duration.toFixed(1)));
       if (this.audio.duration < 3600) {
-        return formatted.slice(2);
+        return formatted.slice(3);
       }
       return formatted;
     },
@@ -949,7 +971,7 @@ tooly.inherit(Handler, Lap, (function() {
      */
     debug: function(message, object) {
       if (this.settings.debug) {
-        var mess = 'Lap[id:' + this.id + '] DEBUG\t' + message;
+        var mess = 'Lap[id:' + this.id + '] DEBUG\t\t' + message;
         console.log(mess + (arguments.length === 2 ? ': ' + object : ''));
         if (object instanceof $) {
           console.log(object);

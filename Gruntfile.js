@@ -2,7 +2,7 @@
 
 module.exports = function(grunt) {
 
-  var dev = true;
+  var dev = false;
   var src = (dev) ? 'src/lap_dev.js' : 'src/lap.js';
 
   grunt.initConfig({
@@ -17,6 +17,15 @@ module.exports = function(grunt) {
           src
         ],
         dest: 'dist/lap.js'
+      }
+    },
+
+    connect: {
+      main: {
+        options: {
+          port: 9140,
+          keepalive: true
+        }
       }
     },
 

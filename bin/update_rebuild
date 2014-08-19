@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# used when simultaneously working on tooly
+../tooly/bin/update
+bin/update_deps
+grunt build
