@@ -5,3 +5,4 @@ legacy
 doc/sftp-config.json
 *.sass-cache
 doc
+bin

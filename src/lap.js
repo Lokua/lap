@@ -437,7 +437,7 @@ tooly.inherit(Handler, Lap, (function() {
       t.registerClick($els.volumeDown, t.decVolume);
       t.registerClick($els.prevAlbum, t.prevAlbum);
       t.registerClick($els.nextAlbum, t.nextAlbum);
-      t.registerClick($els.seekbar, t.seekFromSeekbar);
+      // t.registerClick($els.seekbar, t.seekFromSeekbar);
 
       t.$container.addEventListener('click', function(e) {
         var $targ = e.target;
@@ -962,8 +962,11 @@ tooly.inherit(Handler, Lap, (function() {
      */
     seekFromSeekbar: function(e) {
       var t = this,
-          rect = t.$els.seekbar.getBoundingClientRect();
-      t.audio.currentTime = ((e.clientX - rect.left) / rect.width) * t.audio.duration;
+          seekbar = t.$els.seekbar,
+          rect = seekbar.getBoundingClientRect(),
+          x = e.clientX - rect.left;
+      t.audio.currentTime = (x / rect.width) * t.audio.duration;
+      // t.audio.currentTime = tooly.scale(x, 0, seekbar.width, 0, t.audio.duration);
       t.executeHandler('seek');
       return this;
     },

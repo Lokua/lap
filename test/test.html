@@ -18,7 +18,9 @@
         <div class="wrap">
           <span class="lap-control lap-play-pause">play-pause</span>
           <span class="lap-read">buffered: <span class="read lap-buffered"></span></span>
-          <div class="wrap canvas-wrap"><canvas width="256" height="12"></canvas></div>
+          <div class="wrap canvas-wrap">
+            <canvas class="lap-seekbar" width="256" height="12"></canvas>
+          </div>
         </div>
 
         <div class="wrap">
@@ -108,7 +110,7 @@ window.onload = function() {
   });
 
   var progressBar = lap.plugins.progressBar;
-  console.log(progressBar);
+  // console.log(progressBar);
 
   var info = tooly.select('#info');
   function append(key) {
