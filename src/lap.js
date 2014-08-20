@@ -32,6 +32,7 @@ function Lap(container, lib, options) {
   lap.doc = 'http://lokua.net/lap/0.0.5/doc/';
 
   var _defaults = {
+    trace: false, // ultra specific logging
     debug: false,
     startingTrackIndex: 0,
     startingAlbumIndex: 0,
@@ -42,35 +43,38 @@ function Lap(container, lib, options) {
     trackNumberPostfix: ' - ',
     replacementText: void 0,
     elements: {
-      albumTitle:     '.lap-album-title',
-      artist:         '.lap-artist',
-      buffered:       '.lap-buffered',
-      control:        '.lap-control',
-      controls:       '.lap-controls',
-      cover:          '.lap-cover',
-      currentTime:    '.lap-current-time',
-      discog:         '.lap-discog',
-      duration:       '.lap-duration',
-      info:           '.lap-info', // button
-      infoPanel:      '.lap-info-panel',
-      next:           '.lap-next',
-      nextAlbum:      '.lap-next-album',
-      playPause:      '.lap-play-pause',
-      playlist:       '.lap-playlist', // button
-      playlistPanel:  '.lap-playlist-panel',
-      prev:           '.lap-prev',
-      prevAlbum:      '.lap-prev-album',
-      seekBackward:   '.lap-seek-backward',
-      seekForward:    '.lap-seek-forward',
-      seekbar:        '.lap-seekbar',
-      trackTitle:     '.lap-track-title',
-      volumeButton:   '.lap-volume-button',
-      volumeDown:     '.lap-volume-down',
-      volumeRead:     '.lap-volume-read',
-      volumeSlider:   '.lap-volume-slider',
-      volumeUp:       '.lap-volume-up'
+      albumTitle:           '.lap-album-title',
+      artist:               '.lap-artist',
+      buffered:             '.lap-buffered',
+      control:              '.lap-control',
+      controls:             '.lap-controls',
+      cover:                '.lap-cover',
+      currentTime:          '.lap-current-time',
+      discog:               '.lap-discog',
+      duration:             '.lap-duration',
+      info:                 '.lap-info', // button
+      infoPanel:            '.lap-info-panel',
+      next:                 '.lap-next',
+      nextAlbum:            '.lap-next-album',
+      playPause:            '.lap-play-pause',
+      playlist:             '.lap-playlist', // button
+      playlistPanel:        '.lap-playlist-panel',
+      playlistTrackNumber:  '.lap-playlist-track-number',
+      prev:                 '.lap-prev',
+      prevAlbum:            '.lap-prev-album',
+      seekBackward:         '.lap-seek-backward',
+      seekForward:          '.lap-seek-forward',
+      seekbar:              '.lap-seekbar',
+      trackNumber:          '.lap-track-number', // the currently cued track
+      trackTitle:           '.lap-track-title',
+      volumeButton:         '.lap-volume-button',
+      volumeDown:           '.lap-volume-down',
+      volumeRead:           '.lap-volume-read',
+      volumeSlider:         '.lap-volume-slider',
+      volumeUp:             '.lap-volume-up'
     },
-    callbacks: {}
+    callbacks: {},
+    plugins: {}
   };
 
   /**
@@ -97,13 +101,15 @@ function Lap(container, lib, options) {
     /**
      * Settings are the combination of defaults extended with the options
      * passed into the class constructor. See the {@tutorial settings} example for a complete list.
+     * 
      * @name settings
      * @memberOf  Lap
      * @instance
      * @type {Object.<Object, ?>}
      */
-    lap.settings = $.extend(true, {}, _defaults, options);
+    lap.settings = tooly.extend({}, true, _defaults, options);
 
+    lap.trace('trace mode is on');
     lap.debug('debug mode is on');
 
     /**
@@ -212,6 +218,7 @@ function Lap(container, lib, options) {
     lap.initElements(_defaults.elements);
     lap.addListeners();
     lap.registerCallbacks(lap.settings.callbacks);
+    lap.initPlugins();
     lap.load();
   })();
 
@@ -222,6 +229,23 @@ tooly.inherit(Handler, Lap, (function() {
 
   var seeking = false,
       mouseDownTimer;
+
+  function _parseReplacement(replacement) {
+    if (replacement !== undefined) {
+      // replacement may be a single string or regexp.
+      // for replacment without value specified, assume to replace with empty string
+      if (tooly.toType(replacement) === 'string') {
+        replacement = [replacement, ''];
+      }
+      // replacement may contain string-wrapped regexp (from json), convert if so
+      if (tooly.toType(replacement[0]) !== 'regexp') {
+        var flags = replacement[2];
+        replacement[0] = (flags !== undefined) ? 
+          new RegExp(replacement[0], flags) : 
+          new RegExp(replacement[0], 'g');
+      }
+    }      
+  }      
 
   return {
 
@@ -237,22 +261,11 @@ tooly.inherit(Handler, Lap, (function() {
     initElements: function(defaultEls) {
       var t = this, 
           elems, el; // temps
-
       if (tooly.toType(t.$els) === 'string' && t.$els.toLowerCase() === 'auto')  {
         t.$els = [];
         elems = defaultEls;
-        // for (o in defaultEls) {
-        //   if (defaultEls.hasOwnProperty(o)) {
-        //     t.$els[o] = tooly.select(defaultEls[o], t.$container);
-        //   }
-        // }
       } else {
         elems = t.$els;
-        // for (e in t.$els) {
-        //   if (t.$els.hasOwnProperty(e)) {
-        //     t.$els[e] = tooly.select(t.$els[e], t.$container);
-        //   }
-        // }
       }
       for (el in elems) {
         if (elems.hasOwnProperty(el)) {
@@ -289,40 +302,39 @@ tooly.inherit(Handler, Lap, (function() {
      */
     updateCurrent: function() {
       var t = this;
-
       // either something stupid is happening or we are testing
       if (t.libType === 'null' || t.libType === 'undefined') return;
 
       if (t.libType === 'string') {
 
         if (tooly.endsWith(t.lib.toLowerCase(), '.json')) {
-          $.ajax({ url: t.lib, dataType: 'json', async: false,
-            success: function(res) {
-              t.lib = res;
-            }
-          });
+
+          tooly.getJSON(t.lib, function(data) {
+            t.lib = JSON.parse(data);
+          }, false); // sync
+
           // at this point t.lib is a regular js object, and is either a single unnamed object
           // representing a single album, or a named array containing mutliple albums.
           // using "data" for the array name...
           if (t.lib.data !== 'undefined' && tooly.toType(t.lib.data) === 'array') {
             t.lib = t.lib.data; // no point in hanging on to object-wrapped array
-            t.libType = tooly.toType(t.lib); // reset to correct type
+            t.libType = tooly.toType(t.lib);
+            t.albumCount = t.lib.length;
             // call this function again to proceed to the ===array block
             t.updateCurrent();
             return;
           }
           t.libType = tooly.toType(t.lib);
           if (t.libType === 'object') {
+            t.albumCount = tooly.propCount(t.lib);
             // call this function again to proceed to the ===object block
             t.updateCurrent();
             return;
           }
         }
-
         // if we end up here, lib is (or should be) just a single file-string
         t.files = [t.lib];
         t.trackTitles = [t.lib]; // TODO: fixme
-
         // make sure nothing stupid is set
         t.trackIndex = 0;
         t.albumIndex = 0;
@@ -343,22 +355,7 @@ tooly.inherit(Handler, Lap, (function() {
           t.doc + 'tutorial-lib.html');
       }
 
-
-      if (t.replacement !== undefined) {
-        // t.replacement may be a single string or regexp for a match without a supplied
-        // replacement value, in which case we assume to replace with empty string
-        if (tooly.toType(t.replacement) === 'string') {
-          t.replacement = [t.replacement, ''];
-        }
-
-        // replacement may contain string-wrapped regexp (from json), convert if so
-        if (tooly.toType(t.replacement[0]) !== 'regexp') {
-          var flags = t.replacement[2];
-          t.replacement[0] = (flags !== undefined) ? 
-            new RegExp(t.replacement[0], flags) : 
-            new RegExp(t.replacement[0], 'g');
-        }
-      }
+      _parseReplacement(t.replacement);
 
       if (tooly.toType(t.files) === 'string') {
         t.trackCount = 1;
@@ -393,7 +390,14 @@ tooly.inherit(Handler, Lap, (function() {
      * @memberOf  Lap
      */
     setSource: function() {
-      this.audio.src = this.files[this.trackIndex];
+      var audio = this.audio;
+      audio.src = this.files[this.trackIndex];
+
+      // this.audio.load(); // TODO: why not?
+       
+      // ugly hack, force buffer the entire track (doesn't work anyway)
+      // audio.play();
+      // setTimeout(audio.pause(), 10);
     },
 
     /**
@@ -405,9 +409,9 @@ tooly.inherit(Handler, Lap, (function() {
           $els = t.$els,
           audio = this.audio;
 
-      // audio.addEventListener('canplaythrough', function() {
-      //   t.debug('addListeners', 'canplaythrough');
-      // });
+      audio.addEventListener('progress', function() {
+        tooly.html($els.buffered, t.bufferFormatted());
+      });
 
       audio.addEventListener('timeupdate', function() {
         tooly.html($els.currentTime, t.currentTimeFormatted());
@@ -467,31 +471,58 @@ tooly.inherit(Handler, Lap, (function() {
       this
         .on('load', function() {
           t.updateTrackTitleEl();
+          t.updateTrackNumberEl();
           t.updateArtistEl();
           t.updateAlbumEl();
           t.updateCover();
           t.populatePlaylist();
-          tooly.addClass($els.playPause, 'lap-play');
+          tooly.addClass($els.playPause, 'lap-paused');
         })
         .on('play', function() {
-          tooly.removeClass($els.playPause, 'lap-play')
-            .addClass($els.playPause, 'lap-pause');
+          tooly.removeClass($els.playPause, 'lap-paused').addClass($els.playPause, 'lap-playing');
         })
         .on('pause', function() {
-          tooly.removeClass($els.playPause, 'lap-pause')
-            .addClass($els.playPause, 'lap-play');
+          tooly.removeClass($els.playPause, 'lap-playing').addClass($els.playPause, 'lap-paused');
         })
         .on('trackChange', function() {
           t.updateTrackTitleEl();
+          t.updateTrackNumberEl();
           t.updateCurrentPlaylistItem();
         })
         .on('albumChange', function() {
           t.updateTrackTitleEl();
+          t.updateTrackNumberEl();
           t.updateArtistEl();
           t.updateAlbumEl();
           t.updateCover();
           t.populatePlaylist();
         });
+    },
+
+    /**
+     * Initialize plugins passed to the constructor. This must 
+     * be called after a Lap instance has been created.
+     * 
+     * @return {Object} this
+     * @memberOf Lap
+     */
+    initPlugins: function() {
+      if (!this.settings.plugins) return;
+      this.plugins = this.plugins || {};
+      var lap = this,
+          plugins = lap.settings.plugins, plugin, plug, name,
+          args = [],  
+          len = plugins.length, i = 0;
+      for (; i < len; i++) {
+        plugin = plugins[i];
+        if (plugin.ctor && plugin.args) {
+          args = args.concat(lap, plugin.args);
+          name = plugin.name ? plugin.name : plugin.ctor + '_' + Math.random();
+          lap.plugins[name] = tooly.construct(plugin.ctor, args);
+          lap.plugins[name].init();
+        }
+      }
+      return this;
     },
 
     /**
@@ -523,6 +554,15 @@ tooly.inherit(Handler, Lap, (function() {
      */
     updateTrackTitleEl: function() {
       tooly.html(this.$els.trackTitle, this.trackTitles[this.trackIndex]);
+      return this;
+    },
+
+    /**
+     * @memberOf  Lap
+     * @return {Object} `this` for chaining
+     */
+    updateTrackNumberEl: function() {
+      tooly.html(this.$els.trackNumber, this.trackIndex+1);
       return this;
     },
 
@@ -595,7 +635,8 @@ tooly.inherit(Handler, Lap, (function() {
 
     /**
      * set the currently qued track/file
-     * 
+     *
+     * @deprecated ?? do we ever use this ??
      * @param {number} index the new index; under/overflow will be clamped
      * @memberOf  Lap
      * @return {Object} `this` for chaining
@@ -608,7 +649,7 @@ tooly.inherit(Handler, Lap, (function() {
       } else {
         this.trackIndex = index;
       }
-      this.trackChange();
+      this.executeHandler('trackChange');
       return this;
     },
 
@@ -635,7 +676,7 @@ tooly.inherit(Handler, Lap, (function() {
         html += tooly.format('<div>{0}{1}{2}</div>',
           // 0
           (t.settings.prependTrackNumbers) ? 
-            '<span class="lap-track-number">' + t.trackNumberFormatted(i+1) + '</span>' : '',
+            '<span class="lap-playlist-track-number">'+t.trackNumberFormatted(i+1)+'</span>' : '',
           // 1
           '<span class="lap-playlist-item' + ((i === t.trackIndex) ? ' lap-current' : '') + 
             '" lap-data-index="' + i + '">',
@@ -660,6 +701,32 @@ tooly.inherit(Handler, Lap, (function() {
         items[i] += t.trackTitles[i];
       }
       return items;
+    },
+
+    /**
+     * for use with mutli-album library. get an array of the passed key for all
+     * objects in the lib, like 'album' or 'artist'.
+     * 
+     * @param  {String} prop    the property key
+     * @return {Array<String>|Array.<Array>}  an array of all values specified by key
+     */
+    property: function(key) {
+      if (this.libType === 'object') {
+        if (this.lib.hasOwnProperty(key)) {
+          return this.lib[key];
+        }
+      }
+      if (this.libType === 'array') {
+        var list = [], 
+            len = this.lib.length,
+            i = 0;
+        for (; i < len; i++) {
+          if (this.lib[i].hasOwnProperty(key)) {
+            list[i] = this.lib[i][key];
+          }
+        }
+        return list;
+      }
     },
 
     /**
@@ -706,7 +773,7 @@ tooly.inherit(Handler, Lap, (function() {
       t.trackIndex = (t.trackIndex-1 < 0) ? t.trackCount-1 : t.trackIndex-1;
       t.setSource();
       if (wasPlaying) t.audio.play();
-      t.trackChange();
+      this.executeHandler('trackChange');
       return this; 
     },
 
@@ -721,10 +788,11 @@ tooly.inherit(Handler, Lap, (function() {
       t.trackIndex = (t.trackIndex+1 >= t.trackCount) ? 0 : t.trackIndex+1;
       t.setSource();
       if (wasPlaying) t.audio.play();
-      t.trackChange();
+      this.executeHandler('trackChange');
       return this;
     },
 
+    // TODO: find occurances then delete me
     trackChange: function() {
       this.executeHandler('trackChange');
     },
@@ -737,10 +805,14 @@ tooly.inherit(Handler, Lap, (function() {
     prevAlbum: function() {
       var t = this;
       var wasPlaying = !t.audio.paused;
-      t.albumIndex = (t.albumIndex-1 <= 0) ? 0 : t.albumIndex-1;
+      t.albumIndex = (t.albumIndex-1 < 0) ? t.albumCount-1 : t.albumIndex-1;
       t.updateCurrent();
+
+      t.trackIndex = 0;
+      t.setSource();
+
       if (wasPlaying) t.audio.play();
-      t.albumChange();
+      this.executeHandler('albumChange');
       return this;
     },
 
@@ -752,18 +824,20 @@ tooly.inherit(Handler, Lap, (function() {
     nextAlbum: function() {
       var t = this;
       var wasPlaying= !t.audio.paused;
-      t.albumIndex = (t.albumIndex+1 >= t.lib.length) ? 0 : t.albumIndex+1;
+      t.albumIndex = (t.albumIndex+1 > t.albumCount-1) ? 0 : t.albumIndex+1;
       t.updateCurrent();
+
+      t.trackIndex = 0;
+      t.setSource();
+
       if (wasPlaying) t.audio.play();
-      // t.executeHandler('nextAlbum');
-      t.albumChange();
+      this.executeHandler('albumChange');
       return this;
     },
 
 
     /**
-     * @return {Object} `this` for chaining
-     * @memberOf  Lap
+     * TODO: find usages, delete me
      */
     albumChange: function() {
       this.executeHandler('albumChange');
@@ -900,17 +974,14 @@ tooly.inherit(Handler, Lap, (function() {
      */
     getFileType: function() {
       var file;
-
       if (this.libType === 'string') { // lib itself is the file
         file = this.lib;
-
       } else if (this.libType === 'object') { // full album
         if (this.trackCount === 1) {
           file = this.lib.files;
         } else {
           file = this.lib.files[this.trackIndex];
         }
-
       } else if (this.libType === 'array') { // array of albums
         if (this.trackCount === 1) {
           file = this.lib[this.albumIndex].files;
@@ -918,8 +989,21 @@ tooly.inherit(Handler, Lap, (function() {
           file = this.lib[this.albumIndex].files[this.trackIndex];
         }
       }
-
       return (file === undefined) ? '"unknown filetype"' : file.slice(file.length-3);
+    },
+
+    bufferFormatted: function() {
+      var buffered,
+          audio = this.audio;
+      try {
+        // buffered = audio.buffered.end(audio.buffered.length-1);
+        buffered = audio.buffered.end(audio.buffered.length-1);
+      } catch(e) {
+        this.trace('bufferFormatted', e.name);
+      }
+      this.trace('buffered: ' + buffered + ' / ' + audio.duration);
+      var formatted = Math.round(tooly.scale(buffered, 0, audio.duration, 0, 100));
+      return isNaN(formatted) ? 0 : formatted;
     },
 
     /**
@@ -963,6 +1047,39 @@ tooly.inherit(Handler, Lap, (function() {
     },
 
     /**
+     * tooly.js in the Lap build is not global, so here we provide access.
+     * 
+     * @return {Object} tooly
+     */
+    getTooly: function() {
+      return tooly;
+    },
+
+    /**
+     * Proxy to {@link console.log}. Requires {@link Lap#settings}[{@linkcode trace}] to be 
+     * true.
+     * @param  {(String|Object)} message - the subject we are logging
+     * @memberOf  Lap
+     * 
+     */
+    trace: function(message, object) {
+      if (this.settings.trace) {
+        try {
+          var mess = 'Lap[id:' + this.id + '] TRACE\t\t' + message;
+          console.log(mess + (arguments.length === 2 ? ': ' + object : ''));
+          // chrome provides different reads when element is not concatenated
+          // lets see that too
+          if (object !== undefined && object.nodeType === 1) {
+            console.log(object);
+          }
+        } catch(e) {
+          console.log(e.name);
+        }
+      }
+      return this;
+    },
+
+    /**
      * Proxy to {@link console.log}. Requires {@link Lap#settings}[{@linkcode debug}] to be 
      * true.
      * @param  {(String|Object)} message - the subject we are logging
@@ -971,23 +1088,16 @@ tooly.inherit(Handler, Lap, (function() {
      */
     debug: function(message, object) {
       if (this.settings.debug) {
-        var mess = 'Lap[id:' + this.id + '] DEBUG\t\t' + message;
-        console.log(mess + (arguments.length === 2 ? ': ' + object : ''));
-        if (object instanceof $) {
-          console.log(object);
-        }
-      }
-      return this;
-    },
-
-    /**
-     * @memberOf  Lap
-     * @return {Object} `this` for chaining
-     */
-    debugProps: function(obj, prefix, postfix) {
-      for (var o in obj) {
-        if (obj.hasOwnProperty(o)) {
-          this.debug((prefix ? prefix : '') + o + (postfix ? postfix : ''));
+        try {
+          var mess = 'Lap[id:' + this.id + '] DEBUG\t\t' + message;
+          console.log(mess + (arguments.length === 2 ? ': ' + object : ''));
+          // chrome provides different reads when element is not concatenated
+          // lets see that too
+          if (object !== undefined && object.nodeType === 1) {
+            console.log(object);
+          }
+        } catch(e) {
+          console.log(e.name);
         }
       }
       return this;

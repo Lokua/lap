@@ -29,6 +29,17 @@ module.exports = function(grunt) {
       }
     },
 
+    sass: {
+      test: {
+        options: {
+          style: 'expanded'
+        },
+        files: {
+          'test/test.css' : 'test/test.scss'
+        }
+      }
+    },
+
     shell: {
       jsdoc: {
         command: 'rm -rf doc/jsdoc && jsdoc -c conf.json'
@@ -84,12 +95,17 @@ module.exports = function(grunt) {
       doc: {
         files: 'src/*.js',
         tasks: ['shell:jsdoc']
+      },
+      styles: {
+        files: 'test/*.scss',
+        tasks: ['sass:test']
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-banner');
