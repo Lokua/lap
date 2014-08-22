@@ -439,11 +439,10 @@ tooly.inherit(Handler, Lap, (function() {
       t.registerClick($els.nextAlbum, t.nextAlbum);
       // t.registerClick($els.seekbar, t.seekFromSeekbar);
 
-      t.$container.addEventListener('click', function(e) {
-        var $targ = e.target;
-        if (tooly.hasClass($targ, 'lap-playlist-item')) {
+      t.$els.playlist('click', function(e) {
+        if (tooly.hasClass(e.target, 'lap-playlist-item')) {
           var wasPlaying = !t.audio.paused;
-          t.trackIndex = parseInt($targ.getAttribute('lap-data-index'));
+          t.trackIndex = parseInt(e.target.getAttribute('lap-data-index'));
           t.setSource();
           t.executeHandler('trackChange');
           if (wasPlaying) t.audio.play();
@@ -500,8 +499,9 @@ tooly.inherit(Handler, Lap, (function() {
     },
 
     /**
-     * Initialize plugins passed to the constructor. This must 
-     * be called after a Lap instance has been created.
+     * Initialize plugins passed to the constructor.
+     * Pass plugin constructor that conforms to the following interface:
+     * Plugin(lapInstance, args...)
      * 
      * @return {Object} this
      * @memberOf Lap

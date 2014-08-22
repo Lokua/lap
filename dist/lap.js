@@ -74,13 +74,8 @@ var tooly = (function() {
       if (!el) return false;      
       if (_proc_1(el, klass, tooly.hasClass)) return true;
       if (el.nodeType === 1) {
-        var classes;
-        if (el.className) {
-          classes = el.className.split(_ws);
-        } else {
-          return false;
-        }
         var re = _re(klass),
+            classes = el.className.split(_ws),
             len = classes.length,
             i = 0;
         for (; i < len; i++) {
@@ -100,7 +95,6 @@ var tooly = (function() {
      */
     addClass: function(el, klass) {
       if (!el) return tooly;
-
       _proc_1(el, klass, tooly.addClass);
       if (el.nodeType === 1) {
         el.className += ' ' + klass;
@@ -117,7 +111,6 @@ var tooly = (function() {
      */
     removeClass: function(el, klass) {
       if (!el) return tooly;
-
       _proc_1(el, klass, tooly.removeClass);
       if (el.nodeType === 1) {
         el.className = el.className.replace(_re(klass), ' ');
@@ -134,7 +127,6 @@ var tooly = (function() {
      */
     prepend: function(el, content) {
       if (!el) return tooly;
-
       _proc_2(el, content, tooly.prepend);
       if (el.nodeType === 1 || el.nodeType === 9) {
         el.innerHTML = content + el.innerHTML;
@@ -151,7 +143,6 @@ var tooly = (function() {
      */
     append: function(el, content) {
       if (!el) return tooly;
-
       _proc_2(el, content, tooly.append);
       if (el.nodeType === 1 || el.nodeType === 9) {
         el.innerHTML += content;
@@ -169,7 +160,6 @@ var tooly = (function() {
      */
     html: function(el, content) {
       if (!el) return tooly;
-
       if (arguments.length === 1)  {
         return (_type(el) === 'array') ? el[i].innerHTML : el.innerHTML;
       }
@@ -1107,11 +1097,10 @@ tooly.inherit(Handler, Lap, (function() {
       t.registerClick($els.nextAlbum, t.nextAlbum);
       // t.registerClick($els.seekbar, t.seekFromSeekbar);
 
-      t.$container.addEventListener('click', function(e) {
-        var $targ = e.target;
-        if (tooly.hasClass($targ, 'lap-playlist-item')) {
+      t.$els.playlist('click', function(e) {
+        if (tooly.hasClass(e.target, 'lap-playlist-item')) {
           var wasPlaying = !t.audio.paused;
-          t.trackIndex = parseInt($targ.getAttribute('lap-data-index'));
+          t.trackIndex = parseInt(e.target.getAttribute('lap-data-index'));
           t.setSource();
           t.executeHandler('trackChange');
           if (wasPlaying) t.audio.play();
@@ -1168,8 +1157,9 @@ tooly.inherit(Handler, Lap, (function() {
     },
 
     /**
-     * Initialize plugins passed to the constructor. This must 
-     * be called after a Lap instance has been created.
+     * Initialize plugins passed to the constructor.
+     * Pass plugin constructor that conforms to the following interface:
+     * Plugin(lapInstance, args...)
      * 
      * @return {Object} this
      * @memberOf Lap
