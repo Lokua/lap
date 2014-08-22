@@ -1,4 +1,11 @@
-'use strict';
+/**
+ * lap - version 0.0.5 (built: 2014-08-22)
+ * html5 audio player
+ * https://github.com/Lokua/lap.git
+ * Copyright (c) 2014 Joshua Kleckner <dev@lokua.net>
+ * Licensed under the MIT license.
+ * http://www.opensource.org/licenses/MIT
+ */
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
