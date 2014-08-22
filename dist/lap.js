@@ -1097,7 +1097,7 @@ tooly.inherit(Handler, Lap, (function() {
       t.registerClick($els.nextAlbum, t.nextAlbum);
       // t.registerClick($els.seekbar, t.seekFromSeekbar);
 
-      t.$els.playlist('click', function(e) {
+      t.$els.playlist.addEventListener('click', function(e) {
         if (tooly.hasClass(e.target, 'lap-playlist-item')) {
           var wasPlaying = !t.audio.paused;
           t.trackIndex = parseInt(e.target.getAttribute('lap-data-index'));
