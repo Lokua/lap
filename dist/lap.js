@@ -57,9 +57,43 @@ var tooly = (function() {
   }
 
   function _node(el) {
-    return el && el.nodeType === 1;
+    return el && (el.nodeType === 1 || el.nodeType === 9);
   }
   
+  var _slice = Array.prototype.slice;
+
+  function _checkCaller(args) {
+    var name = args.callee.caller.name;
+    if (!name) {
+      var ret = '<anonymous>';
+      if (tooly.logger.traceAnonymous) {
+        return  ret + ' ' + args.callee.caller + '\n';
+      }
+      return ret;
+    }
+    return name;
+  }
+
+  function _log(level, caller, args) {
+    if (level < tooly.logger.level) return;
+
+    var logger = tooly.logger,
+        args = _slice.call(args, 0),
+        caller = caller + ' \t',
+        s = '%c%s%c%s%o',
+        callerCSS = 'color: #0080FF; font-style: italic';
+
+    switch(level) {
+      case 0: return;
+      case 1: console.trace(s, 'color: #800080;', '[TRACE] ', callerCSS, caller, args); break;
+      case 2: console.log  (s, 'color: #008000;', '[DEBUG] ', callerCSS, caller, args); break;
+      case 3: console.info (s, 'color: #0000FF;', '[INFO] ',  callerCSS, caller, args); break;      
+      case 4: console.warn (s, 'color: #FFA500;', '[WARN] ',  callerCSS, caller, args); break;
+      case 5: console.error(s, 'color: #FF0000;', '[ERROR] ', callerCSS, caller, args); break;
+      default: return; // level = 0 = off
+    }
+  }
+
   return {
 
 // --- begin dom module    
@@ -72,7 +106,7 @@ var tooly = (function() {
      * @throws {TypeError} If el is not of nodeType: 1
      */
     hasClass: function(el, klass) {
-      if (!el || el.nodeType !== 1) return false;      
+      if (!_node()) return false;
       if (_proc_1(el, klass, tooly.hasClass)) return true;
       if (el.nodeType === 1) {
         var re = _re(klass),
@@ -94,11 +128,9 @@ var tooly = (function() {
      * @return {Object} `tooly` for chaining
      */
     addClass: function(el, klass) {
-      if (!el) return tooly;
+      if (!_node()) return tooly;
       _proc_1(el, klass, tooly.addClass);
-      if (el.nodeType === 1) {
-        el.className += ' ' + klass;
-      }
+      el.className += ' ' + klass;
       return tooly;
     },
 
@@ -110,11 +142,9 @@ var tooly = (function() {
      * @return {Object} `tooly` for chaining
      */
     removeClass: function(el, klass) {
-      if (!el) return tooly;
+      if (!_node()) return tooly;
       _proc_1(el, klass, tooly.removeClass);
-      if (el.nodeType === 1) {
-        el.className = el.className.replace(_re(klass), ' ');
-      }
+      el.className = el.className.replace(_re(klass), ' ');
       return tooly;
     },
 
@@ -126,11 +156,9 @@ var tooly = (function() {
      * @return {Object} `tooly` for chaining
      */
     prepend: function(el, content) {
-      if (!el) return tooly;
+      if (!_node()) return tooly;
       _proc_2(el, content, tooly.prepend);
-      if (el.nodeType === 1 || el.nodeType === 9) {
-        el.innerHTML = content + el.innerHTML;
-      }
+      el.innerHTML = content + el.innerHTML;
       return tooly
     },
 
@@ -142,11 +170,9 @@ var tooly = (function() {
      * @return {Object} `tooly` for chaining
      */
     append: function(el, content) {
-      if (!el) return tooly;
+      if (!_node()) return tooly;
       _proc_2(el, content, tooly.append);
-      if (el.nodeType === 1 || el.nodeType === 9) {
-        el.innerHTML += content;
-      }
+      el.innerHTML += content;
       return tooly;
     },
 
@@ -159,14 +185,12 @@ var tooly = (function() {
      * @return {Object|String} tooly for chaining, or el.innerHTML, or undefined if el is null
      */
     html: function(el, content) {
-      if (!el) return tooly;
+      if (!_node()) return tooly;
       if (arguments.length === 1)  {
         return (_type(el) === 'array') ? el[i].innerHTML : el.innerHTML;
       }
       _proc_1(el, content, tooly.html);
-      if (el.nodeType === 1 || el.nodeType === 9) {
-        el.innerHTML = content;
-      }
+      el.innerHTML = content;
       return tooly
     },
 
@@ -429,6 +453,24 @@ var tooly = (function() {
       req.send();
     },
 // --- end xhr module
+
+// --- begin logger module
+    /**
+     * configuration options for logging methods.
+     * levels: 0:off, 1:trace, 2:debug, 3:info, 4:warn, 5:error
+     * @type {Object}
+     */
+    logger: {
+      level: 1,
+      traceAnonymous: true
+    },
+
+    trace: function() { _log(1, _checkCaller(arguments), arguments); },
+    debug: function() { _log(2, _checkCaller(arguments), arguments); },
+    info : function() { _log(3, _checkCaller(arguments), arguments); },
+    warn : function() { _log(4, _checkCaller(arguments), arguments); },
+    error: function() { _log(5, _checkCaller(arguments), arguments); },
+// --- end logger module
 
 // --- begin core module    
     /**
