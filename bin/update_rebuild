@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # used when simultaneously working on tooly
-cd ../tooly
-bin/update
-cd ../lap
-bin/update_deps
-grunt build
+# rebuild and push the tooly repo
+cd ../tooly && bin/update && \
+# reinstall handler + tooly, rebuild lap
+cd ../lap && bin/update_deps && grunt build
