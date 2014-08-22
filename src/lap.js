@@ -439,8 +439,8 @@ tooly.inherit(Handler, Lap, (function() {
       t.registerClick($els.nextAlbum, t.nextAlbum);
       // t.registerClick($els.seekbar, t.seekFromSeekbar);
 
-      t.$els.playlist.addEventListener('click', function(e) {
-        if (tooly.hasClass(e.target, 'lap-playlist-item')) {
+      t.$container.addEventListener('click', function(e) {
+        if (tooly.hasClass('lap-playlist-item', e.target)) {
           var wasPlaying = !t.audio.paused;
           t.trackIndex = parseInt(e.target.getAttribute('lap-data-index'));
           t.setSource();
@@ -478,10 +478,12 @@ tooly.inherit(Handler, Lap, (function() {
           tooly.addClass($els.playPause, 'lap-paused');
         })
         .on('play', function() {
-          tooly.removeClass($els.playPause, 'lap-paused').addClass($els.playPause, 'lap-playing');
+          tooly.removeClass($els.playPause, 'lap-paused')
+            .addClass($els.playPause, 'lap-playing');
         })
         .on('pause', function() {
-          tooly.removeClass($els.playPause, 'lap-playing').addClass($els.playPause, 'lap-paused');
+          tooly.removeClass($els.playPause, 'lap-playing')
+            .addClass($els.playPause, 'lap-paused');
         })
         .on('trackChange', function() {
           t.updateTrackTitleEl();
