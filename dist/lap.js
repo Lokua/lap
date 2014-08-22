@@ -74,8 +74,13 @@ var tooly = (function() {
       if (!el) return false;      
       if (_proc_1(el, klass, tooly.hasClass)) return true;
       if (el.nodeType === 1) {
+        var classes;
+        if (el.className) {
+          classes = el.className.split(_ws);
+        } else {
+          return false;
+        }
         var re = _re(klass),
-            classes = el.className.split(_ws),
             len = classes.length,
             i = 0;
         for (; i < len; i++) {
