@@ -1004,9 +1004,9 @@ tooly.inherit(Handler, Lap, (function() {
         // buffered = audio.buffered.end(audio.buffered.length-1);
         buffered = audio.buffered.end(audio.buffered.length-1);
       } catch(e) {
-        this.trace('bufferFormatted', e.name);
+        tooly.trace('bufferFormatted', e.name);
       }
-      this.trace('buffered: ' + buffered + ' / ' + audio.duration);
+      tooly.trace('buffered: ' + buffered + ' / ' + audio.duration);
       var formatted = Math.round(tooly.scale(buffered, 0, audio.duration, 0, 100));
       return isNaN(formatted) ? 0 : formatted;
     },
