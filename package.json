@@ -33,7 +33,6 @@
     "grunt-umd": "~2.0.0"
   },
   "dependencies": {
-    "tooly": "git+https://git@github.com/Lokua/tooly.git",
-    "handler": "git+https://git@github.com/Lokua/handler.git"
+    "tooly": "git+https://git@github.com/Lokua/tooly.git"
   }
 }

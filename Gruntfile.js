@@ -34,6 +34,13 @@ module.exports = function(grunt) {
           '<%= concat.controls.dest %>'
         ],
         dest: 'dist/lap-bundle.js'
+      },
+      raphlap: {
+        src: [
+          'bower_components/raphael/raphael.js',
+          '<%= concat.bundle.dest %>'
+        ],
+        dest: 'dist/lap-raphael-bundle.js'
       }
     },
 
@@ -77,6 +84,10 @@ module.exports = function(grunt) {
       build: {
         src: 'dist/lap.js',
         dest: 'dist/lap.min.js'
+      },
+      raphlap: {
+        src: '<%= concat.raphlap.dest %>',
+        dest: 'dist/lap-raphael-bundle.min.js'
       }
     },
 
@@ -112,6 +123,11 @@ module.exports = function(grunt) {
       post: {
         files: {
           src: ['dist/lap.min.js']
+        }
+      },
+      raphlap: {
+        files: {
+          src: ['<%= uglify.raphlap.dest %>']
         }
       }
     },
@@ -162,11 +178,17 @@ module.exports = function(grunt) {
     'uglify:build', 
     'usebanner:post'
   ]);
+  grunt.registerTask('raphlap', [
+    'concat:raphlap',
+    'uglify:raphlap',
+    'usebanner:raphlap'
+  ]);
   grunt.registerTask('bundle', [
     'concat:build', 
     'concat:controls', 
     'concat:bundle',
     'umd:bundle',
-    'lineremover:strict'
+    'lineremover:strict',
+    'raphlap'
   ]);
 };
