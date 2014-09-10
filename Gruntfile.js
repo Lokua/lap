@@ -3,28 +3,48 @@
 module.exports = function(grunt) {
 
   var dev = false;
-  var src = (dev) ? 'src/lap_dev.js' : 'src/lap.js';
+  var lap_src = (dev) ? 'src/lap_dev.js' : 'src/lap.js';
+  var raphael_source = 'src/controls/raphael-controls/';
 
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
 
     concat: {
+      options: {
+        separator: '\n\n'
+      },
       build: {
         src: [
           'node_modules/tooly/dist/tooly-raw.js', 
           'node_modules/handler/src/handler.js',
-          src
+          lap_src
         ],
         dest: 'dist/lap.js'
+      },
+      controls: {
+        src: [
+          raphael_source + 'raphael-controls.js',
+          raphael_source + 'components/*.js'
+        ],
+        dest: 'dist/controls/raphael-controls/raphael-controls.js'
+      },
+      bundle: {
+        src: [
+          '<%= concat.build.dest %>',
+          '<%= concat.controls.dest %>'
+        ],
+        dest: 'dist/lap-bundle.js'
       }
     },
 
-    connect: {
-      main: {
+    connect: { main: { options: { port: 9140, keepalive: true } } },
+
+    lineremover: {
+      strict: {
+        files: {'<%= concat.bundle.dest %>': '<%= concat.bundle.dest %>'},
         options: {
-          port: 9140,
-          keepalive: true
+          exclusionPattern: /'use strict';/g
         }
       }
     },
@@ -36,6 +56,11 @@ module.exports = function(grunt) {
         },
         files: {
           'test/test.css' : 'test/test.scss'
+        }
+      },
+      controls: {
+        files: {
+          'src/controls/raphael-controls/style.css':'src/controls/raphael-controls/sass/style.scss'
         }
       }
     },
@@ -59,13 +84,18 @@ module.exports = function(grunt) {
     umd: {
       build: {
         src: 'dist/lap.js',
-        // dest: 'dist/lap.js',
         objectToExport: 'Lap',
         amdModuleId: 'Lap',
-        // indent: '  '
-        deps: {
-          // 'default': ['tooly', 'Handler'],
-        }
+      },
+      controls: {
+        src: 'dist/controls/raphael-controls/raphael-controls.js',
+        objectToExport: 'Lap',
+        amdModuleId: 'Lap',
+      },
+      bundle: {
+        src: '<%= concat.bundle.dest %>',
+        objectToExport: 'Lap',
+        amdModuleId: 'Lap'
       }
     },
 
@@ -88,17 +118,29 @@ module.exports = function(grunt) {
     },
 
     watch: {
-      build: {
-        files: 'src/*',
-        tasks: ['build']
+      // build: {
+      //   files: 'src/*',
+      //   tasks: ['build']
+      // },
+      // doc: {
+      //   files: 'src/*.js',
+      //   tasks: ['shell:jsdoc']
+      // },
+      // styles: {
+      //   files: 'test/*.scss',
+      //   tasks: ['sass:test']
+      // },
+      controls: {
+        files: raphael_source + 'sass/*.scss',
+        tasks: ['sass:controls']
       },
-      doc: {
-        files: 'src/*.js',
-        tasks: ['shell:jsdoc']
-      },
-      styles: {
-        files: 'test/*.scss',
-        tasks: ['sass:test']
+      lap: { 
+        files: [
+          'src/*.js', 
+          raphael_source + '*.js', 
+          raphael_source + 'components/*'
+        ], 
+        tasks: ['bundle']
       }
     }
   });
@@ -109,6 +151,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-banner');
+  grunt.loadNpmTasks('grunt-line-remover');
   grunt.loadNpmTasks('grunt-umd');
   grunt.loadNpmTasks('grunt-shell');
 
@@ -120,5 +163,11 @@ module.exports = function(grunt) {
     'uglify:build', 
     'usebanner:post'
   ]);
-  // grunt.registerTask('push', ['build', 'shell:push']);
+  grunt.registerTask('bundle', [
+    'concat:build', 
+    'concat:controls', 
+    'concat:bundle',
+    'umd:bundle',
+    'lineremover:strict'
+  ]);
 };

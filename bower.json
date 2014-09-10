@@ -24,7 +24,6 @@
   "dependencies": {
     "raphael": "~2.1.2",
     "jquery": "~2.1.1",
-    "fraphael": "https://github.com/chrismichaelscott/fraphael.git",
     "mediaelement": "~2.15.0"
   }
 }

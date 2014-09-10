@@ -1,0 +1,1296 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"_voume",
+				"_volumeButton"
+			],
+			[
+				"mouse",
+				"mouseenter	mouseenter"
+			],
+			[
+				"rdem",
+				"rdemo_depends"
+			],
+			[
+				"name",
+				"namespace	@namespace"
+			],
+			[
+				"au",
+				"author	@author"
+			],
+			[
+				"track",
+				"trackTitles"
+			],
+			[
+				"rapa",
+				"raphaelDemo"
+			],
+			[
+				"rapha",
+				"raphaelDemo"
+			],
+			[
+				"volum",
+				"volumeSlider"
+			],
+			[
+				"strok",
+				"strokeWidth"
+			],
+			[
+				"border",
+				"borderColor"
+			],
+			[
+				"volume",
+				"volumeUp"
+			],
+			[
+				"_volume",
+				"_volumeSlider"
+			],
+			[
+				"seek",
+				"seekFromSeekbar"
+			],
+			[
+				"player",
+				"playerId"
+			],
+			[
+				"stoke",
+				"strokeWidth"
+			],
+			[
+				"seekbar",
+				"seekbarPlayer"
+			],
+			[
+				"fill",
+				"fillStyle"
+			],
+			[
+				"single-player",
+				"single-player-read-out"
+			],
+			[
+				"single",
+				"singlePlayerCanvas"
+			],
+			[
+				"drawS",
+				"drawSeekBackward"
+			],
+			[
+				"mose",
+				"mousedown	mousedown"
+			],
+			[
+				"regist",
+				"registerClick"
+			],
+			[
+				"updateCurre",
+				"updateCurrentPlaylistItem"
+			],
+			[
+				"replace",
+				"replacementText"
+			],
+			[
+				"update",
+				"updateTrackTitle"
+			],
+			[
+				"trackTi",
+				"trackTitles"
+			],
+			[
+				"trackTit",
+				"trackTitle"
+			],
+			[
+				"execu",
+				"executeHandlerutes"
+			],
+			[
+				"current",
+				"currentTime"
+			],
+			[
+				"AUdio",
+				"AudioPlayer"
+			],
+			[
+				"vol",
+				"volumeRead"
+			],
+			[
+				"json",
+				"jQuery.parseJSON	jQuery.parseJSON"
+			],
+			[
+				"inline",
+				"inline-block"
+			],
+			[
+				"font",
+				"font-family: "
+			],
+			[
+				"me",
+				"memberOf	@memberOf"
+			],
+			[
+				"par",
+				"param	@param"
+			],
+			[
+				"starting",
+				"startingTrackIndex"
+			],
+			[
+				"inst",
+				"instanceof"
+			],
+			[
+				"exe",
+				"exceptionHandler	\\$exceptionHandler"
+			],
+			[
+				"lap-volume",
+				"lap-volume-read"
+			],
+			[
+				"Mono",
+				"Consolas, Lucida Console, Monaco, monospace"
+			],
+			[
+				"light",
+				"light-purple"
+			],
+			[
+				"paddin",
+				"padding-top"
+			],
+			[
+				"album",
+				"albumIndex"
+			],
+			[
+				"playP",
+				"playPauseButton"
+			],
+			[
+				"register",
+				"registerClickEvent"
+			],
+			[
+				"getF",
+				"getDurationFormatted"
+			],
+			[
+				"li",
+				"link}	{@link}"
+			],
+			[
+				"O",
+				"memberOf	@memberOf"
+			],
+			[
+				"contr",
+				"constructor	@constructor"
+			],
+			[
+				"onVolume",
+				"onVolumeUp"
+			],
+			[
+				"onSeek",
+				"onSeek"
+			],
+			[
+				"onV",
+				"onVolumeDown"
+			],
+			[
+				"onVolu",
+				"onVolumeUp"
+			],
+			[
+				"next",
+				"nextButton"
+			],
+			[
+				"durat",
+				"durationEl"
+			],
+			[
+				"canPla",
+				"canPlayType"
+			],
+			[
+				"string",
+				"stringFormat"
+			],
+			[
+				"hilite",
+				"hiliteNavBullet"
+			],
+			[
+				"lap",
+				"lap-bullet-outter"
+			],
+			[
+				"init",
+				"initThumbNavCaption"
+			],
+			[
+				"form",
+				"form"
+			],
+			[
+				"_",
+				"_full"
+			],
+			[
+				"thumb",
+				"thumbNext"
+			],
+			[
+				"thum",
+				"thumbPageStuff"
+			],
+			[
+				"add",
+				"addSeekListener"
+			],
+			[
+				"progress",
+				"progressLocation"
+			],
+			[
+				"pro",
+				"progressLocation"
+			],
+			[
+				"progr",
+				"progressForeColor"
+			],
+			[
+				"bar",
+				"barColor"
+			],
+			[
+				"lap-controls",
+				"lap-controls-w"
+			],
+			[
+				"con",
+				"controls"
+			],
+			[
+				"prog",
+				"progressLocation"
+			],
+			[
+				"progre",
+				"progressBackColor"
+			],
+			[
+				"client",
+				"clientHeight"
+			],
+			[
+				"ins",
+				"instance"
+			],
+			[
+				"hili",
+				"hiliteCurrentPlaylistItem"
+			],
+			[
+				"pop",
+				"populateThumbs"
+			],
+			[
+				"___",
+				"_________bar"
+			],
+			[
+				"pli",
+				"pli"
+			],
+			[
+				"te",
+				"textColor"
+			],
+			[
+				"playlist",
+				"playlistItemHover"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"toggle",
+				"togglePlaylist"
+			],
+			[
+				"play",
+				"playlist"
+			],
+			[
+				"text",
+				"textHiliteColor"
+			],
+			[
+				"ena",
+				"enableVolumeMouseoverEffects"
+			],
+			[
+				"stop",
+				"stopAnimation"
+			],
+			[
+				"upate",
+				"updateVolume"
+			],
+			[
+				"hil",
+				"hiliteCurrentPlaylistItem"
+			],
+			[
+				"hile",
+				"hiliteColor"
+			],
+			[
+				"tec",
+				"textHiliteColor"
+			],
+			[
+				"call",
+				"callback"
+			],
+			[
+				"data",
+				"data-active"
+			],
+			[
+				"each",
+				"each	.each()"
+			],
+			[
+				"active",
+				"activeAble"
+			],
+			[
+				"svg",
+				"svgFillColor"
+			],
+			[
+				"sv",
+				"svgFillColor"
+			],
+			[
+				"mous",
+				"mouseover	mouseover"
+			],
+			[
+				"lap-i-",
+				"lap-i-discog"
+			],
+			[
+				"mo",
+				"mouseleave	mouseleave"
+			],
+			[
+				"get",
+				"getAlbumCount"
+			],
+			[
+				"ps",
+				"position"
+			],
+			[
+				"has",
+				"hasClass	.hasClass"
+			],
+			[
+				"th",
+				"thCaption"
+			],
+			[
+				"enable",
+				"enableThumbPageChange"
+			],
+			[
+				"togglePla",
+				"togglePlaylist"
+			],
+			[
+				"populate",
+				"populateThumbs"
+			],
+			[
+				"setting",
+				"settingIsSupplied"
+			],
+			[
+				"icon",
+				"iconColor"
+			],
+			[
+				"filter",
+				"filterSetting"
+			],
+			[
+				"filer",
+				"filterSettings"
+			],
+			[
+				"ex",
+				"expanded"
+			],
+			[
+				"view",
+				"viewSettings"
+			],
+			[
+				"pla",
+				"playpause"
+			],
+			[
+				"up",
+				"updatePlaypause"
+			],
+			[
+				"for",
+				"formatTime"
+			],
+			[
+				"default",
+				"defaultAlbum"
+			],
+			[
+				"librar",
+				"libraryObject"
+			],
+			[
+				"set",
+				"setSource"
+			],
+			[
+				"lib",
+				"library"
+			],
+			[
+				"de",
+				"defaultAlbum"
+			],
+			[
+				"conta",
+				"containerInstance"
+			],
+			[
+				"control",
+				"controlsCache"
+			],
+			[
+				"append",
+				"appendDomElements"
+			],
+			[
+				"to",
+				"toString"
+			],
+			[
+				"remov",
+				"removeClass	.removeClass"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/_jk/_lnet/utils/index.js",
+			"settings":
+			{
+				"buffer_size": 5440,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/_jk/_lnet/utils/test/test.html",
+			"settings":
+			{
+				"buffer_size": 1323,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/_jk/_lnet/utils/Gruntfile.js",
+			"settings":
+			{
+				"buffer_size": 965,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/SASS Build/SASS.sublime-build",
+	"command_palette":
+	{
+		"height": 263.0,
+		"selected_items":
+		[
+			[
+				"syn html",
+				"Set Syntax: HTML"
+			],
+			[
+				"picker",
+				"Color Picker"
+			],
+			[
+				"html",
+				"Snippet: html"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"user",
+				"Preferences: Settings - User"
+			],
+			[
+				"packa",
+				"Package Control: Remove Package"
+			],
+			[
+				"snippet jk",
+				"Snippet: Underscore.js invoke"
+			],
+			[
+				"enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"color",
+				"ColorSchemeSelector: Select Color Scheme"
+			],
+			[
+				"colo",
+				"ColorSchemeSelector: Select Color Scheme"
+			],
+			[
+				"syn js",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"syn sass",
+				"Set Syntax: Sass"
+			],
+			[
+				"syn scss",
+				"Set Syntax: SCSS"
+			],
+			[
+				"syn coff",
+				"Set Syntax: CoffeeScript"
+			],
+			[
+				"color picker",
+				"Color Picker"
+			],
+			[
+				"fold",
+				"Fold Comments"
+			],
+			[
+				"jshin",
+				"JSHint: Set Plugin Options"
+			],
+			[
+				"synt",
+				"Set Syntax: HTML"
+			],
+			[
+				"synta scss",
+				"Set Syntax: SCSS"
+			],
+			[
+				"copy ",
+				"Snippet: apache-copywrite"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"jshint",
+				"JSHint: Set Plugin Options"
+			],
+			[
+				"js",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"scheme",
+				"Set Syntax: Scheme"
+			],
+			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
+				"theme",
+				"QuickThemes: previous"
+			],
+			[
+				"theme ",
+				"QuickThemes: next"
+			],
+			[
+				"user ",
+				"Preferences: Settings - User"
+			],
+			[
+				"docblo",
+				"DocBlockr: Decorate line comment"
+			],
+			[
+				"doc",
+				"DocBlockr: Reparse comment block"
+			],
+			[
+				"borderbox",
+				"Snippet: box-sizing-border-box"
+			],
+			[
+				"comment",
+				"Snippet: jk_-comment-debug-start-end"
+			],
+			[
+				"syntax ht",
+				"Set Syntax: HTML"
+			],
+			[
+				"aaron",
+				"Snippet: Aaron McCullough style Comment Heading"
+			],
+			[
+				"synta",
+				"Set Syntax: SCSS"
+			],
+			[
+				"snip aa",
+				"Snippet: Aaron McCullough style Comment Heading"
+			],
+			[
+				"jk",
+				"Snippet: jk_-comment-debug-start-end"
+			],
+			[
+				"sftp",
+				"SFTP: Show Panel"
+			],
+			[
+				"snip comment",
+				"Snippet: Comment - Block style comment"
+			],
+			[
+				"snip come",
+				"Snippet: Comment - Section header comment"
+			],
+			[
+				"snip com",
+				"Snippet: Comment - Subsection comment"
+			],
+			[
+				"snippet commect",
+				"Snippet: Comment - Block style comment"
+			],
+			[
+				"scope",
+				"Scope Hunter: Toggle Instant Scoper"
+			],
+			[
+				"package",
+				"Package Control: List Packages"
+			],
+			[
+				"Snippet: prop",
+				"Snippet: for (…) {…} (Improved Native For-Loop)"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"syntax javascript",
+				"Set Syntax: JavaScript (Rails)"
+			],
+			[
+				"syntax java",
+				"Set Syntax: JavaScript (Rails)"
+			],
+			[
+				"prefere",
+				"Preferences: Browse Packages"
+			],
+			[
+				"isntall",
+				"Package Control: Install Package"
+			],
+			[
+				"Snippet: aa",
+				"Snippet: Aaron McCullough style Comment Heading"
+			],
+			[
+				"Snippet: comment",
+				"Snippet: Aaron McCullough style Comment Heading"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Add Repository"
+			],
+			[
+				"",
+				"Preferences: Browse Packages"
+			],
+			[
+				"Snippet: ",
+				"Snippet: Get Elements"
+			]
+		],
+		"width": 536.0
+	},
+	"console":
+	{
+		"height": 120.0,
+		"history":
+		[
+			"import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": false,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/_jk/_lnet/utils/component.json",
+		"/C/_jk/_lnet/utils/.gitignore",
+		"/C/_jk/_lnet/lap/Gruntfile.js",
+		"/C/_jk/_lnet/lap/.gitignore",
+		"/C/_jk/_lnet/lap/temp.txt",
+		"/C/_jk/_lnet/lap/upd.sh",
+		"/C/Users/Sony/.bashrc",
+		"/c/_jk/_lnet/lap/test.sh",
+		"/C/Users/Sony/.gitconfig",
+		"/C/_jk/_lnet/lap/build/build.js",
+		"/C/_jk/_lnet/lap/package.json",
+		"/C/_jk/_lnet/lap/component.json",
+		"/C/_jk/_lnet/lap/src/lap.js",
+		"/C/_jk/_lnet/lap/README.md",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/index.html",
+		"/C/_jk/_lnet/lap/bower_components/mediaelement/build/mediaelement.js",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/js/raphael-controls.js",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/lib.json",
+		"/C/_jk/_lnet/lap/dist/lap-0.0.5.min.js",
+		"/C/_jk/_lnet/lap/bower.json",
+		"/C/_jk/_lnet/lap/dist/lap-0.0.5.js",
+		"/C/_jk/_lnet/lap/components/lokua-handler/src/handler.js",
+		"/C/_jk/_lnet/lap/components/lokua-handler/component.json",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/js/volume-button.js",
+		"/C/_jk/_lnet/lap/bower_components/jquery/dist/jquery.js",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/js/deps.js",
+		"/C/_jk/_lnet/lap/node_modules/grunt-contrib-compass/tasks/compass.js",
+		"/C/_jk/_lnet/lap/src/lap.ctor.js",
+		"/C/_jk/_lnet/lap/src/lap.proto.js",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/css/sass/ztyle.scss",
+		"/C/_jk/_lnet/lap/bower_components/jquery/dist/jquery.min.js",
+		"/C/_jk/_lnet/z_jslibs/jquery-custom/jquery/dist/jquery.js",
+		"/C/_jk/_lnet/lap/bower_components/fraphael/.bower.json",
+		"/C/_jk/_lnet/lap/src/handler.js",
+		"/C/_jk/_lnet/handler/component.json",
+		"/C/_jk/_lnet/lap/demos/single-track-controls/css/sass/_base.scss",
+		"/C/_jk/_lnet/lap/demos/single-track-controls/css/sass/ztyle.scss",
+		"/C/_jk/_lnet/lap/demos/single-track-controls/js/single-track-controls.js",
+		"/C/_jk/_lnet/lap/demos/single-track-controls/css/ztyle.css",
+		"/C/_jk/_lnet/lap/demos/single-track-controls/index.html",
+		"/C/_jk/_lnet/lap/demos/single-track-player/js/single-track-controls.js",
+		"/C/_jk/_lnet/lap/demos/single-track-player/index.html",
+		"/C/_jk/_lnet/lap/lap.css",
+		"/C/Users/Sony/AppData/Roaming/Sublime Text 3/Local/Session.sublime_session",
+		"/C/_jk/_lnet/lap/lap.sublime-project",
+		"/C/_jk/_lnet/lap/lap.sublime-workspace",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/js/control-factory.js",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/js/volume-slider.js",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/css/ztyle.css",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/css/sass/_util.scss",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/css/sass/_typography.scss",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/css/sass/_mixins.scss",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/css/sass/_base.scss",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/css/sass/_palette",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/css/style.scss",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/raphael-controls.js",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/style.scss",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/style.css",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/deps.js",
+		"/C/_jk/_lnet/lap/src/utils.js",
+		"/C/_jk/_lnet/lap/doc/sftp-config.json",
+		"/C/_jk/_lnet/lap/conf.json",
+		"/C/_jk/_lnet/lap/doc/lokua-jsdoc-template/static/styles/jsdoc-default.css",
+		"/C/_jk/_lnet/lap/doc/lokua-jsdoc-template/publish.js",
+		"/C/_jk/_lnet/lap/src/lap.utils.js",
+		"/C/_jk/_lnet/lap/src/lap.handler.js",
+		"/C/_jk/_lnet/lap/node_modules/extend/index.js",
+		"/C/_jk/_lnet/lap/.jshintrc",
+		"/C/_jk/_lnet/lap/.jshintignore",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/script.min.js",
+		"/C/_jk/_lnet/lap/demos/raphael-controls-demo/script.js",
+		"/C/_jk/_lnet/lap/test2/lap.ctor.js",
+		"/C/_jk/_lnet/lap/test2/out/bundle.js",
+		"/C/_jk/_lnet/lap/test2/lap.utils.js",
+		"/C/_jk/_lnet/lap/test2/lap.proto.js",
+		"/C/_jk/_lnet/lap/test2/out/lap-and-jquery-bundle.min.js",
+		"/C/_jk/_lnet/lap/test2/index.html",
+		"/C/_jk/_lnet/lap/test2/lap-ctor.js",
+		"/C/_jk/_lnet/lap/test2/lap-proto.js",
+		"/C/_jk/_lnet/lap/test2/lap-utils.js",
+		"/C/_jk/_lnet/lap/src/ctor.js",
+		"/C/_jk/_lnet/lap/node_modules/grunt-browserify/lib/runner.js",
+		"/C/_jk/_lnet/lap/test2/_lap.js",
+		"/C/_jk/_lnet/lap/test2/L.js",
+		"/C/_jk/_lnet/lap/test2/L.audio-player.ctor.js",
+		"/C/_jk/_lnet/lap/test2/L.utils.js",
+		"/C/_jk/_lnet/lap/test2/out/lap-and-jquery-bundle.js",
+		"/C/_jk/_lnet/lap/test2/L.audio-player.proto.js",
+		"/C/_jk/_lnet/lap/src/proto.js",
+		"/C/_jk/_lnet/lap/bower_components/underscore/underscore.js",
+		"/C/_jk/_lnet/lap/test/index.html",
+		"/C/_jk/_lnet/lap/out/bundle.js",
+		"/C/_jk/_lnet/lap/test/utils.js",
+		"/C/_jk/_lnet/lap/test/audio-player-proto.js",
+		"/C/_jk/_lnet/lap/test2/L.proto.js",
+		"/C/_jk/_lnet/lap/test/audio-player.js",
+		"/C/_jk/_lnet/lap/test/L.js",
+		"/C/_jk/_lnet/lap/test/audioplayerprototype.js",
+		"/C/_jk/_lnet/lap/test/test.js",
+		"/C/_jk/_lnet/lap/bower_components/jquery/bower.json",
+		"/C/_jk/_lnet/lap/src/_intro.js",
+		"/C/_jk/_lnet/lap/bower_components/underscore/bower.json",
+		"/C/_jk/_lnet/lap/bower_components/underscore/component.json",
+		"/C/_jk/_lnet/lap/bower_components/jquery/src/ajax/jsonp.js",
+		"/C/_jk/_lnet/lap/bower_components/jquery/src/intro.js",
+		"/C/_jk/_lnet/lap/bower_components/jquery/src/jquery.js",
+		"/C/_jk/_lnet/lap/bower_components/jquery/src/outro.js",
+		"/C/_jk/_lnet/lap/src/z_outro.js",
+		"/C/_jk/_lnet/lap/bower_components/jquery/src/wrap.js",
+		"/C/Users/Sony/AppData/Roaming/Sublime Text 3/Packages/JSHint Gutter/.jshintrc",
+		"/C/Users/Sony/AppData/Roaming/Sublime Text 3/Packages/JSHint Gutter/JSHint.sublime-settings",
+		"/C/_jk/_lnet/_lap/demos/raphael-controls-demo/raphael-controls.js",
+		"/C/Users/Sony/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/_jk/_lnet/_lap/demos/raphael-controls-demo/index.html",
+		"/C/_jk/_lnet/_lap/demos/raphael-controls-demo/style.scss",
+		"/C/_jk/_lnet/_lap/src/ctor.js",
+		"/C/_jk/_lnet/_lap/.gitignore",
+		"/C/_jk/_lnet/_lap/legacy/0.0.2/js/lap.js",
+		"/C/_jk/_lnet/_lap/Gruntfile.js",
+		"/C/_jk/_lnet/_lap/legacy/0.0.2/js/lap.impl.js",
+		"/C/_jk/_lnet/_lap/demos/raphael-controls-demo/script.min.js",
+		"/C/_jk/_lnet/_lap/demos/raphael-controls-demo/script.js",
+		"/C/_jk/_lnet/_lap/src/_intro.js",
+		"/C/_jk/_lnet/_lap/bower.json",
+		"/C/_jk/_lnet/_lap/demos/raphael-controls-demo/style.css",
+		"/C/_jk/_lnet/_lap/bower_components/fraphael/raphael-with-fraphael.min.js",
+		"/C/_jk/_lnet/_lap/bower_components/fraphael/.bower.json",
+		"/C/_jk/_lnet/_lap/bower_components/fraphael/index"
+	],
+	"find":
+	{
+		"height": 22.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"populatePlaylist",
+			"volumeCurve2",
+			"volumeCurve1",
+			"volumeHorn",
+			"volumeButton",
+			"vattr",
+			"RaphaelControls",
+			"'fast'",
+			"slow",
+			"'#777'",
+			"666",
+			"333",
+			"paper",
+			"{}",
+			"v.height || d/2",
+			"vwitdh",
+			"Curve",
+			"curve",
+			"Curve",
+			"curve",
+			"cpath",
+			"settings",
+			"t.",
+			"_volumeSlider",
+			"t.settings",
+			"volumeCurve3",
+			"volumeCurve2",
+			"d12",
+			"cphd",
+			"4",
+			"t.player",
+			"16",
+			"        \n",
+			"\"",
+			"320px",
+			": function",
+			":",
+			"     * @memberOf  Lap",
+			"this",
+			"@see",
+			"Utils",
+			"utils",
+			"utils.",
+			"u.",
+			"Lap.utils",
+			"dLap",
+			"lap.utils",
+			"Lap.utils",
+			"   * @memberOf  Utils\n   * @instance\n   * @method",
+			"   * @memberOf  Handler",
+			"   * @memberOf  module:Lap/utils",
+			"     * @memberOf  Handler\n     * @instance\n     * @method",
+			"lap.utils",
+			"   * @memberOf Lokua.utils",
+			"     * @memberOf  Lap\n     * @instance\n     * @method",
+			"Lokua.AudioPlayer",
+			"AudioPlayer",
+			"js/",
+			"Lokua.Lap",
+			"AudioPlayer",
+			"[description]",
+			"{\n",
+			"Lokua.AudioPlayer",
+			"executeHandler",
+			"Lap.utils.",
+			"test2",
+			"u.",
+			"Lokua.utils",
+			"lap",
+			"Lap",
+			"lap",
+			"Lap",
+			"lap",
+			"Lap",
+			"lap",
+			"Lap",
+			"lap",
+			"'test2",
+			"root",
+			"undefined",
+			"'undefined'",
+			"\n}).",
+			"lap",
+			"}",
+			"'undefined'",
+			"u.",
+			"rdemo + ",
+			"'demos/raphael-controls-demo/",
+			"src",
+			"$el",
+			"vpaper",
+			"dunit",
+			"volumeDown",
+			"volumeUp",
+			"this.addFilters",
+			"(glow)",
+			" glows",
+			"glows",
+			"play",
+			"_idf",
+			"_id",
+			"#555",
+			"var",
+			"/*cy-*/",
+			"next",
+			"volume",
+			"volume ",
+			"volume",
+			"volumePath",
+			"volumeerId",
+			"play",
+			".attr(attrzz)",
+			"dd",
+			"h/4",
+			"w/4",
+			"discog",
+			"{ \n                fill: t.settings.background, stroke: 'none' \n              }",
+			"background ",
+			"h/3.5",
+			"prev",
+			".emboss()",
+			".shadow()",
+			"/*- p*/",
+			"/*t.settings.width/2*/",
+			".transform('s'+t.settings.scale)",
+			"p,",
+			"p",
+			",\n"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/_jk/_lnet/utils/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5440,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								263,
+								263
+							]
+						],
+						"settings":
+						{
+							"bs_sintax": "javascript",
+							"buffer_scroll_name": "5e80b000",
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/_jk/_lnet/utils/test/test.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1313,
+								1313
+							]
+						],
+						"settings":
+						{
+							"bs_sintax": "html",
+							"buffer_scroll_name": "bb896dbf",
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/_jk/_lnet/utils/Gruntfile.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 965,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								662,
+								662
+							]
+						],
+						"settings":
+						{
+							"bs_sintax": "javascript",
+							"buffer_scroll_name": "bc1fc3c5",
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 22.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 203.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.scope_viewer":
+	{
+		"height": 94.0
+	},
+	"output.sftp":
+	{
+		"height": 250.0
+	},
+	"project": "sublime.sublime-project",
+	"replace":
+	{
+		"height": 40.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\_jk\\_lnet\\lap-controls\\sublime.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 400.0,
+		"selected_items":
+		[
+		],
+		"width": 400.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 165.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+		"max_columns": 1
+	}
+}

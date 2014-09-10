@@ -1,0 +1,121 @@
+$background : #fff;
+$foreground : #888;
+$hover      : #777;
+$current    : #0080FF; // cornflowerblue(ish)
+
+* { box-sizing: border-box; }
+
+.lap-box-shadow {
+  box-shadow: 0 0 4px $foreground;
+}
+
+.lap {
+  display: inline-block;
+  margin: 0 auto;
+  position: relative;
+  font-family: Consolas, 'Lucida Console', Monaco, monospace;
+  color: $foreground;
+  // background: $background;
+  // padding: 4px 0 0 0;
+  // height: 24px;
+}
+
+.lap-controls {
+  // display: table;
+}
+
+$d: 0.25s;
+*[id^='lap-rcs-'], *[id^='lap-rcf-'] {
+  transition: stroke $d, fill $d;
+}
+
+.lap-control {
+  margin: 2px;
+  position: relative;
+  cursor: pointer;
+  &:hover {
+    *[id^='lap-rcs-'] {
+      stroke: $hover;
+    }
+    *[id^='lap-rcf-'] {
+      fill: $hover;
+    }
+  }
+  &[data-lap-tooltip]:hover:after {
+    @extend .lap-box-shadow;    
+    content: attr(data-lap-tooltip);
+    padding: 4px;
+    color: $foreground;
+    background: #fff;
+    position: absolute;
+    left: 0;
+    top: -200%;
+    white-space: nowrap;
+    z-index: 20;
+  }
+}
+
+.lap-cover {
+  width: 360px;
+  img {
+    width: 360px;
+  }
+}
+
+/* wraps the volume button and slider together, like youtube */
+.lap-volume-wrapper {
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* jQuery hide/show on volume-button hover */
+.lap-volume-slider {
+  // display: none;
+}
+
+.lap-info-panel {
+  @extend .lap-box-shadow;
+  display: none;
+  color: $foreground;
+  background: #fff;
+  position: relative;
+  left: 0;
+  top: -200%;
+  padding: 4px;
+  white-space: nowrap;
+  z-index: 20;
+}
+
+.lap-info-label, .lap-track-number {
+  color: lighten($foreground, 100%/3);
+}
+
+.lap-artist, .lap-album-title, .lap-track-title, .lap-playlist-item {
+  color: $foreground;
+}
+
+.lap-current {
+  color: $current;
+}
+
+.lap-playlist-panel {
+  @extend .lap-box-shadow;
+  display: none;
+  color: $foreground;
+  background: #fff;
+  padding: 4px;
+}
+
+.lap-hidden {
+  display: none;
+}
+
+.lap-expand {
+}
+
+.lap-current-time, .lap-duration, .lap-sep {
+  position: relative;
+  top: -4px;
+  font-size: 10px;
+}
+

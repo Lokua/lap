@@ -109,9 +109,6 @@ function Lap(container, lib, options) {
      */
     lap.settings = tooly.extend({}, true, _defaults, options);
 
-    lap.trace('trace mode is on');
-    lap.debug('debug mode is on');
-
     /**
      * The upper-most parent element of the player as passed to the constructor.
      * @name $container
@@ -260,7 +257,8 @@ tooly.inherit(Handler, Lap, (function() {
      */
     initElements: function(defaultEls) {
       var t = this, 
-          elems, el; // temps
+          elems, 
+          el;
       if (tooly.toType(t.$els) === 'string' && t.$els.toLowerCase() === 'auto')  {
         t.$els = [];
         elems = defaultEls;
@@ -467,6 +465,7 @@ tooly.inherit(Handler, Lap, (function() {
       addSeekHandlers($els.seekForward);
       addSeekHandlers($els.seekBackward);
 
+
       this
         .on('load', function() {
           t.updateTrackTitleEl();
@@ -512,16 +511,19 @@ tooly.inherit(Handler, Lap, (function() {
       if (!this.settings.plugins) return;
       this.plugins = this.plugins || {};
       var lap = this,
-          plugins = lap.settings.plugins, plugin, plug, name,
+          plugins = lap.settings.plugins, plugin, name,
           args = [],  
           len = plugins.length, i = 0;
       for (; i < len; i++) {
         plugin = plugins[i];
-        if (plugin.ctor && plugin.args) {
-          args = args.concat(lap, plugin.args);
-          name = plugin.name ? plugin.name : plugin.ctor + '_' + Math.random();
-          lap.plugins[name] = tooly.construct(plugin.ctor, args);
+        if (plugin.ctor) {
+          name = plugin.name ? plugin.name : plugin.ctor + '_' + Date.now();
+          lap.plugins[name] = (plugin.args) ? 
+            tooly.construct(plugin.ctor, args.concat(lap, plugin.args)) :
+            tooly.construct(plugin.ctor);
           lap.plugins[name].init();
+          
+          tooly.debug(lap.plugins[name]);
         }
       }
       return this;
@@ -841,9 +843,9 @@ tooly.inherit(Handler, Lap, (function() {
     /**
      * TODO: find usages, delete me
      */
-    albumChange: function() {
-      this.executeHandler('albumChange');
-    },
+    // albumChange: function() {
+    //   this.executeHandler('albumChange');
+    // },
 
     /**
      * Increment audio volume by the {@link Lap#settings}[{@linkcode volumeInterval}] amount
@@ -886,7 +888,8 @@ tooly.inherit(Handler, Lap, (function() {
       } else {
         this.audio.volume = (vol - interval <= 0) ? 0 : vol - interval;
       }
-      this.volumeChange();
+      this.executeHandler('volumeChange');
+      // this.volumeChange();
       return this;
     },
 
@@ -897,10 +900,10 @@ tooly.inherit(Handler, Lap, (function() {
      * @return {Object} `this` for chaining
      * @memberOf  Lap
      */
-    volumeChange: function() {
-      this.executeHandler('volumeChange');
-      return this;
-    },
+    // volumeChange: function() {
+    //   this.executeHandler('volumeChange');
+    //   return this;
+    // },
 
     /**
      * Seek backwards in the current track.
@@ -998,15 +1001,17 @@ tooly.inherit(Handler, Lap, (function() {
     },
 
     bufferFormatted: function() {
+      if (!this.audio) return 0;
+
       var buffered,
           audio = this.audio;
+
       try {
-        // buffered = audio.buffered.end(audio.buffered.length-1);
         buffered = audio.buffered.end(audio.buffered.length-1);
       } catch(e) {
-        tooly.trace('bufferFormatted', e.name);
+        return 0;
+        // tooly.trace('bufferFormatted', e.name);
       }
-      tooly.trace('buffered: ' + buffered + ' / ' + audio.duration);
       var formatted = Math.round(tooly.scale(buffered, 0, audio.duration, 0, 100));
       return isNaN(formatted) ? 0 : formatted;
     },
@@ -1058,54 +1063,6 @@ tooly.inherit(Handler, Lap, (function() {
      */
     getTooly: function() {
       return tooly;
-    },
-
-    /**
-     * Proxy to {@link console.log}. Requires {@link Lap#settings}[{@linkcode trace}] to be 
-     * true.
-     * @param  {(String|Object)} message - the subject we are logging
-     * @memberOf  Lap
-     * 
-     */
-    trace: function(message, object) {
-      if (this.settings.trace) {
-        try {
-          var mess = 'Lap[id:' + this.id + '] TRACE\t\t' + message;
-          console.log(mess + (arguments.length === 2 ? ': ' + object : ''));
-          // chrome provides different reads when element is not concatenated
-          // lets see that too
-          if (object !== undefined && object.nodeType === 1) {
-            console.log(object);
-          }
-        } catch(e) {
-          console.log(e.name);
-        }
-      }
-      return this;
-    },
-
-    /**
-     * Proxy to {@link console.log}. Requires {@link Lap#settings}[{@linkcode debug}] to be 
-     * true.
-     * @param  {(String|Object)} message - the subject we are logging
-     * @memberOf  Lap
-     * 
-     */
-    debug: function(message, object) {
-      if (this.settings.debug) {
-        try {
-          var mess = 'Lap[id:' + this.id + '] DEBUG\t\t' + message;
-          console.log(mess + (arguments.length === 2 ? ': ' + object : ''));
-          // chrome provides different reads when element is not concatenated
-          // lets see that too
-          if (object !== undefined && object.nodeType === 1) {
-            console.log(object);
-          }
-        } catch(e) {
-          console.log(e.name);
-        }
-      }
-      return this;
     },
 
     /**

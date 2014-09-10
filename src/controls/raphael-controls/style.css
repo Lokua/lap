@@ -1,0 +1,79 @@
+* {
+  box-sizing: border-box; }
+
+.lap-box-shadow, .lap-control[data-lap-tooltip]:hover:after, .lap-info-panel, .lap-playlist-panel {
+  box-shadow: 0 0 4px #888888; }
+
+.lap {
+  display: inline-block;
+  margin: 0 auto;
+  position: relative;
+  font-family: Consolas, 'Lucida Console', Monaco, monospace;
+  color: #888888; }
+
+*[id^='lap-rcs-'], *[id^='lap-rcf-'] {
+  transition: stroke 0.25s, fill 0.25s; }
+
+.lap-control {
+  margin: 2px;
+  position: relative;
+  cursor: pointer; }
+  .lap-control:hover *[id^='lap-rcs-'] {
+    stroke: #777777; }
+  .lap-control:hover *[id^='lap-rcf-'] {
+    fill: #777777; }
+  .lap-control[data-lap-tooltip]:hover:after {
+    content: attr(data-lap-tooltip);
+    padding: 4px;
+    color: #888888;
+    background: #fff;
+    position: absolute;
+    left: 0;
+    top: -200%;
+    white-space: nowrap;
+    z-index: 20; }
+
+.lap-cover {
+  width: 360px; }
+  .lap-cover img {
+    width: 360px; }
+
+/* wraps the volume button and slider together, like youtube */
+.lap-volume-wrapper {
+  display: inline-block;
+  cursor: pointer; }
+
+/* jQuery hide/show on volume-button hover */
+.lap-info-panel {
+  display: none;
+  color: #888888;
+  background: #fff;
+  position: relative;
+  left: 0;
+  top: -200%;
+  padding: 4px;
+  white-space: nowrap;
+  z-index: 20; }
+
+.lap-info-label, .lap-track-number {
+  color: #dddddd; }
+
+.lap-artist, .lap-album-title, .lap-track-title, .lap-playlist-item {
+  color: #888888; }
+
+.lap-current {
+  color: #0080ff; }
+
+.lap-playlist-panel {
+  display: none;
+  color: #888888;
+  background: #fff;
+  padding: 4px; }
+
+.lap-hidden {
+  display: none; }
+
+.lap-current-time, .lap-duration, .lap-sep {
+  position: relative;
+  top: -4px;
+  font-size: 10px; }

@@ -1,8 +1,8 @@
-*.sublime-*
 node_modules
 bower_components
 legacy
 doc/sftp-config.json
 *.sass-cache
+.sass-cache
 doc
 bin
