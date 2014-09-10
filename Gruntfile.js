@@ -16,8 +16,7 @@ module.exports = function(grunt) {
       },
       build: {
         src: [
-          'node_modules/tooly/dist/tooly-raw.js', 
-          'node_modules/handler/src/handler.js',
+          'node_modules/tooly/dist/tooly-raw.js',
           lap_src
         ],
         dest: 'dist/lap.js'

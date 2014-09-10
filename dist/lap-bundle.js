@@ -623,33 +623,35 @@ var tooly = (function() {
      */
     toType: function(obj) {
       return _type(obj);
-    }
+    },
 
 
+//    +----------------+
+//    | HANDLER MODULE |
+//    +----------------+
+    
+    /**
+     * Constructor.
+     * 
+     * @class  Handler
+     * @constructor
+     * @param {Object}  context   (optional) designates the owner of the `handlers` array that holds 
+     *                            all callbacks. When blank the Handler instance uses its own internal
+     *                            array. If you'd like to keep track of the handlers outside of Handler,
+     *                            pass the parent owner of @param `handler` as context.
+     */
+    Handler: function(context) {
+      this.context = context || this;
+      this.context.handlers = [];
+      this.handlers = this.context.handlers;
+      return this;
+    },
+    
 
-  };  // end return statement
-})(); // end IIFE
+  };
+})();
 
-
-
-/**
- * Constructor.
- * 
- * @class  Handler
- * @constructor
- * @param {Object}  context   (optional) designates the owner of the `handlers` array that holds 
- *                            all callbacks. When blank the Handler instance uses its own internal
- *                            array. If you'd like to keep track of the handlers outside of Handler,
- *                            pass the parent owner of @param `handler` as context.
- */
-function Handler(context) {
-  this.context = context || this;
-  this.context.handlers = [];
-  this.handlers = this.context.handlers;
-  return this;
-}
-
-Handler.prototype = {
+tooly.Handler.prototype = {
 
   /**
    * Register an event handler for a named function.
@@ -727,6 +729,8 @@ Handler.prototype = {
 };
 
 
+
+
 /** @namespace  Lap */
 
 /**
@@ -752,7 +756,7 @@ Lap.idGen = (Lap.idGen || 0) + 1;
  */
 function Lap(container, lib, options) {
   // init parent's instance
-  Handler.call(this);
+  tooly.Handler.call(this);
 
   var lap = this;
 
@@ -951,7 +955,7 @@ function Lap(container, lib, options) {
   return lap;
 }
 
-tooly.inherit(Handler, Lap, (function() {
+tooly.inherit(tooly.Handler, Lap, (function() {
 
   var seeking = false,
       mouseDownTimer;

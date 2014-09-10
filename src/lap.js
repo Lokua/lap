@@ -23,7 +23,7 @@ Lap.idGen = (Lap.idGen || 0) + 1;
  */
 function Lap(container, lib, options) {
   // init parent's instance
-  Handler.call(this);
+  tooly.Handler.call(this);
 
   var lap = this;
 
@@ -222,7 +222,7 @@ function Lap(container, lib, options) {
   return lap;
 }
 
-tooly.inherit(Handler, Lap, (function() {
+tooly.inherit(tooly.Handler, Lap, (function() {
 
   var seeking = false,
       mouseDownTimer;
