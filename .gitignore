@@ -2,7 +2,6 @@ node_modules
 bower_components
 legacy
 doc/sftp-config.json
-*.sass-cache
-.sass-cache
+src/controls/raphael-controls/.sass-cache
 doc
 bin

@@ -65,6 +65,10 @@ module.exports = function(grunt) {
         }
       },
       controls: {
+        options: {
+          style: 'expanded',
+          cacheLocation: raphael_source + '.sass-cache'
+        },
         files: {
           'src/controls/raphael-controls/style.css':'src/controls/raphael-controls/sass/style.scss'
         }
