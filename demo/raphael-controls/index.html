@@ -3,8 +3,8 @@
 <head>
   <title>Lokua Audio Player | Controls Demo</title>
 
-  <script src="../dist/lap-raphael-bundle.js"></script>
-  <link rel="stylesheet" href="../dist/controls/raphael-controls/style.css">
+  <script src="../../dist/lap-raphael-bundle.js"></script>
+  <link rel="stylesheet" href="../../dist/controls/raphael-controls/style.css">
 
 </head>
 <style>
@@ -40,7 +40,7 @@ window.onload = function() {
   tooly.logger.level = 1;
 
   // create the players
-  var player_1 = new Lap('#player_1', 'lib.json', {
+  var player_1 = new Lap('#player_1', '../lib.json', {
     elements: 'auto', 
     prependTrackNumbers: false,
     startingTrackIndex: 1
