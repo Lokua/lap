@@ -44,7 +44,21 @@ module.exports = function(grunt) {
       }
     },
 
-    connect: { main: { options: { port: 9140, keepalive: true } } },
+    connect: { 
+      main: { 
+        options: { 
+          port: 9140, 
+          keepalive: true 
+        } 
+      } 
+    },
+
+    copy: {
+      controls: {
+        src: raphael_source + 'style.css',
+        dest: 'dist/controls/raphael-controls/style.css'
+      } 
+    },
 
     lineremover: {
       strict: {
@@ -166,6 +180,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -185,7 +200,8 @@ module.exports = function(grunt) {
   grunt.registerTask('raphlap', [
     'concat:raphlap',
     'uglify:raphlap',
-    'usebanner:raphlap'
+    'usebanner:raphlap',
+    'copy:controls'
   ]);
   grunt.registerTask('bundle', [
     'concat:build', 
