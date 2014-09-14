@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Lokua Audio Player | Controls Demo</title>
+
+  <script src="../dist/lap-raphael-bundle.js"></script>
+  <link rel="stylesheet" href="../dist/controls/raphael-controls/style.css">
+
+</head>
+<style>
+  body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 10px;
+    color: #444;
+    background: #ddd;
+    padding: 16px;
+  }
+</style>
+<body>
+
+  <h2>single track player</h2>
+  
+  <div class="lap" id="player_1">
+    <span class="lap-control lap-play-pause"></span>
+    <span class="lap-expand lap-hidden">
+      <span class="lap-control lap-seekbar"></span>
+      <span class="lap-current-time"></span>
+      <span class="lap-sep">/</span> 
+      <span class="lap-duration"></span>
+    </span>
+  </div>
+
+</body>
+<script>
+
+window.onload = function() {
+
+  var tooly = Lap.prototype.getTooly();
+  tooly.logger.traceAnonymous = false;
+  tooly.logger.level = 1;
+
+  // create the players
+  var player_1 = new Lap('#player_1', 'lib.json', {
+    elements: 'auto', 
+    prependTrackNumbers: false,
+    startingTrackIndex: 1
+  });
+  
+  player_1_controls = new Lap.RaphaelControls(player_1, {
+    width: 16, height: 16, fill: '#888', stroke: '#777', seekbar: { width: 64 }
+  });
+  player_1_controls.init();
+
+
+  var expand = tooly.select('.lap-expand', player_1.$container);
+  player_1.on('play', function() {
+    tooly.removeClass(expand, 'lap-hidden');
+  });
+  player_1.on('pause', function() {
+    tooly.addClass(expand, 'lap-hidden');
+  });
+};
+
+</script>
+</html>

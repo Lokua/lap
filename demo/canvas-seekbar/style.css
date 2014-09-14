@@ -1,0 +1,112 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Consolas, "Lucida Console", Monaco, monospace;
+  color: #444;
+  background: #eee;
+  padding: 16px;
+  font-size: 12px;
+}
+
+#player {
+  background: #fff;
+  border: 1px dotted #888;
+  padding: 24px;
+  width: 75%;
+  float: left;
+  overflow: auto;
+}
+#player span, #player div {
+  cursor: pointer;
+}
+
+.wrap {
+  margin: 8px 4px 8px 0;
+  padding: 4px 4px 4px 0;
+}
+
+.lap-control {
+  padding: 4px;
+  margin: 4px;
+  background: #f0f7ff;
+  border: 1px dotted #888;
+}
+
+.lap-playing {
+  color: #eb1bd2;
+}
+
+.lap-paused {
+  color: black;
+}
+
+.lap-read {
+  border: none;
+  color: #0080ff;
+}
+
+.read {
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+}
+
+.left {
+  padding: 0 16px;
+  display: inline-block;
+  float: left;
+}
+
+.info {
+  border-top: 1px dotted #888;
+  padding: 8px;
+}
+
+.cover {
+  display: inline-block;
+  float: left;
+}
+.cover img {
+  width: 240px;
+  height: 240px;
+}
+
+.lap-playlist-panel {
+  display: inline-block;
+  float: right;
+  width: 240px;
+  height: 240px;
+  border: 1px dotted #888;
+  background: #f0f7ff;
+  overflow-y: auto;
+}
+
+.lap-playlist-item {
+  padding-left: 4px;
+  font-weight: bold;
+}
+
+.lap-playlist-track-number {
+  color: #bbb;
+}
+
+.lap-track-title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 80px;
+}
+
+#info {
+  display: inline-block;
+  float: right;
+  font-size: 10px;
+  color: #D5006A;
+}
+
+.hr {
+  display: block;
+  border-bottom: 1px dotted #888;
+}
