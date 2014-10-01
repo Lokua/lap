@@ -86,6 +86,15 @@ module.exports = function(grunt) {
         files: {
           'src/controls/raphael-controls/style.css':'src/controls/raphael-controls/sass/style.scss'
         }
+      },
+      cssDemo: {
+        options: {
+          style: 'expanded',
+          cacheLocation: 'demo/css-controls/.sass-cache'
+        },
+        files: {
+          'demo/css-controls/style.css':'demo/css-controls/style.scss'
+        }
       }
     },
 
@@ -174,6 +183,10 @@ module.exports = function(grunt) {
           raphael_source + 'components/*'
         ], 
         tasks: ['bundle']
+      },
+      cssDemo: {
+        files: 'demo/css-controls/*.scss',
+        tasks: ['sass:cssDemo']
       }
     }
   });

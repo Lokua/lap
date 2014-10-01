@@ -954,9 +954,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       // replacement may contain string-wrapped regexp (from json), convert if so
       if (tooly.toType(replacement[0]) !== 'regexp') {
         var flags = replacement[2];
-        replacement[0] = (flags !== undefined) ? 
-          new RegExp(replacement[0], flags) : 
-          new RegExp(replacement[0], 'g');
+        replacement[0] = (flags !== undefined) 
+          ? new RegExp(replacement[0], flags) 
+          : new RegExp(replacement[0], 'g');
       }
     }      
   }      
@@ -1086,11 +1086,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     matchTrackTitles: function() {
-      var t = this, i;
+      var t = this, i = 0;
       // if mismatch, ignore trackTitles completely
       if (t.trackTitles === undefined || t.trackCount > t.trackTitles.length) {
         t.trackTitles = [];
-        for (i = 0; i < t.trackCount; i++) {
+        for (; i < t.trackCount; i++) {
           t.trackTitles[i] = tooly.sliceRel(t.files[i].replace('.' + t.getFileType(), ''));
           if (t.replacement !== undefined) {
             t.trackTitles[i] = t.trackTitles[i].replace(t.replacement[0], t.replacement[1]);
@@ -1235,9 +1235,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         plugin = plugins[i];
         if (plugin.ctor) {
           name = plugin.name ? plugin.name : plugin.ctor + '_' + Date.now();
-          lap.plugins[name] = (plugin.args) ? 
-            tooly.construct(plugin.ctor, args.concat(lap, plugin.args)) :
-            tooly.construct(plugin.ctor);
+          lap.plugins[name] = (plugin.args) 
+            ? tooly.construct(plugin.ctor, args.concat(lap, plugin.args)) 
+            : tooly.construct(plugin.ctor);
           lap.plugins[name].init();
           
           tooly.debug(lap.plugins[name]);

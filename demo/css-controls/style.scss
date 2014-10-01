@@ -1,0 +1,24 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif;
+}
+
+*:focus {
+  outline: 0;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  background-color: #ccc;
+  width: 200px;
+  height: 4px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+}

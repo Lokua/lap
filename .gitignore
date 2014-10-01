@@ -3,5 +3,6 @@ bower_components
 legacy
 doc/sftp-config.json
 src/controls/raphael-controls/.sass-cache
+demo/css-controls/.sass-cache
 doc
 bin

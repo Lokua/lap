@@ -3,4 +3,4 @@
 # rebuild and push the tooly repo
 cd ../tooly && bin/update && \
 # reinstall handler + tooly, rebuild lap
-cd ../lap && bin/update_deps && grunt build
+cd ../lap && bin/install_tooly && grunt build

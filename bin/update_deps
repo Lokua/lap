@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-npm uninstall tooly handler
-npm install tooly handler
