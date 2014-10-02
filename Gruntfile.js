@@ -2,9 +2,10 @@
 
 module.exports = function(grunt) {
 
-  var dev = false;
-  var lap_src = (dev) ? 'src/lap_dev.js' : 'src/lap.js';
   var raphael_source = 'src/controls/raphael-controls/';
+  var dist_lap_debug = 'dist/lap-debug.js';
+  var dist_lap = 'dist/lap.js';
+  var src_lap = 'src/lap.js';
 
   grunt.initConfig({
 
@@ -14,12 +15,19 @@ module.exports = function(grunt) {
       options: {
         separator: '\n\n'
       },
+      debug: {
+        src: [
+          'node_modules/tooly/dist/tooly-raw.js',
+          dist_lap_debug
+        ],
+        dest: dist_lap_debug
+      },
       build: {
         src: [
           'node_modules/tooly/dist/tooly-raw.js',
-          'src/lap_temp.js'
+          dist_lap
         ],
-        dest: 'dist/lap.js'
+        dest: dist_lap
       },
       controls: {
         src: [
@@ -54,9 +62,13 @@ module.exports = function(grunt) {
     },
 
     copy: {
+      debug: {
+        src: src_lap,
+        dest: dist_lap_debug
+      },
       build: {
-        src: 'src/lap.js',
-        dest: 'src/lap_temp.js'
+        src: src_lap,
+        dest: dist_lap
       },
       controls: {
         src: raphael_source + 'style.css',
@@ -65,13 +77,6 @@ module.exports = function(grunt) {
     },
 
     lineremover: {
-      // remove all logger statements from lap_temp.js, proceed from loggless temp for dest build
-      // build: {
-      //   files: {'<%= copy.build.dest %>':'<%= copy.build.dest %>'},
-      //   options: {
-      //     exclusionPattern: /(^(.|\s)+)?logger.+/g
-      //   }
-      // },
       strict: {
         files: {'<%= concat.bundle.dest %>': '<%= concat.bundle.dest %>'},
         options: {
@@ -127,7 +132,7 @@ module.exports = function(grunt) {
 
     uglify: {
       build: {
-        src: 'dist/lap.js',
+        src: dist_lap,
         dest: 'dist/lap.min.js'
       },
       raphlap: {
@@ -142,7 +147,7 @@ module.exports = function(grunt) {
         end_comment: '<<'
       },
       build: {
-        src: 'src/lap_temp.js'
+        src: dist_lap
       }
     },
 
@@ -152,6 +157,11 @@ module.exports = function(grunt) {
         objectToExport: 'Lap',
         amdModuleId: 'Lap',
       },
+      debug: {
+        src: dist_lap_debug,
+        objectToExport: 'Lap',
+        amdModuleId: 'Lap',
+      },      
       controls: {
         src: 'dist/controls/raphael-controls/raphael-controls.js',
         objectToExport: 'Lap',
@@ -172,7 +182,12 @@ module.exports = function(grunt) {
       },
       build: {
         files: {
-          src: ['dist/lap.js']
+          src: [dist_lap]
+        }
+      },
+      debug: {
+        files: { 
+          src: [dist_lap_debug] 
         }
       },
       post: {
@@ -188,10 +203,14 @@ module.exports = function(grunt) {
     },
 
     watch: {
-      // build: {
-      //   files: 'src/*',
-      //   tasks: ['build']
-      // },
+      build: {
+        files: src_lap,
+        tasks: ['build']
+      },
+      debug: {
+        files: src_lap,
+        tasks: ['debug', 'build']
+      },
       // doc: {
       //   files: 'src/*.js',
       //   tasks: ['shell:jsdoc']
@@ -233,6 +252,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-umd');
 
   grunt.registerTask('default', ['build']);
+  grunt.registerTask('debug', [
+    'copy:debug',
+    'concat:debug',
+    'umd:debug', 
+    'usebanner:debug'
+  ]);
   grunt.registerTask('build', [
     'copy:build',
     'strip_code:build',
@@ -240,8 +265,7 @@ module.exports = function(grunt) {
     'umd:build', 
     'usebanner:build', 
     'uglify:build', 
-    'usebanner:post',
-    'remove'
+    'usebanner:post'
   ]);
   grunt.registerTask('raphlap', [
     'concat:raphlap',

@@ -918,15 +918,15 @@ var tooly = (function() {
      * @module core
      * @static
      */
-    toType: function() {
-      return _type(arguments);
+    toType: function(obj, klass) {
+      return _type(obj, klass);
     },
 
     /*! @alias for #toType */
-    type:   function () { return _type(arguments); },
+    type:   function(o, k) { return _type(o, k); },
 
     /*! @alias for #toType */
-    typeof: function () { return _type(arguments); },
+    typeof: function(o, k) { return _type(o, k); },
 
 
 //    +----------------+
@@ -1615,6 +1615,8 @@ function Lap(container, lib, options) {
     lap.registerCallbacks(lap.settings.callbacks);
     lap.initPlugins();
     lap.load();
+
+    logger.debug('post initialize -> <instance>.id: %i, <instance>.*: %o', lap.id, lap);
   })();
 
   return lap;
@@ -1698,6 +1700,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     updateCurrent: function() {
       var t = this;
+
       // either something stupid is happening or we are testing
       if (t.libType === 'null' || t.libType === 'undefined') return;
 
@@ -1921,7 +1924,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
             tooly.construct(plugin.ctor);
           lap.plugins[name].init();
           
-          tooly.debug(lap.plugins[name]);
+          logger.debug('plugin registered -> lap.plugins[%i]: %s', i, name);
         }
       }
       return this;
@@ -2282,18 +2285,6 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       // this.volumeChange();
       return this;
     },
-
-    /**
-     * called by {@link Lap.setVolume}, thie method handles the DOM reaction.
-     * Rather pointless, as we can just listen to the native audio `volumechange` event
-     * 
-     * @return {Object} `this` for chaining
-     * @memberOf  Lap
-     */
-    // volumeChange: function() {
-    //   this.executeHandler('volumeChange');
-    //   return this;
-    // },
 
     /**
      * Seek backwards in the current track.
