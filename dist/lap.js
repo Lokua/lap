@@ -1,5 +1,30 @@
 /**
- * tooly - version 0.0.1 (built: 2014-09-10)
+ * lap - version 0.0.5 (built: 2014-10-01)
+ * html5 audio player
+ * https://github.com/Lokua/lap.git
+ * Copyright (c) 2014 Joshua Kleckner <dev@lokua.net>
+ * Licensed under the MIT license.
+ * http://www.opensource.org/licenses/MIT
+ */
+
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define('Lap', [], function () {
+      return (root.returnExportsGlobal = factory());
+    });
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like enviroments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    root['Lap'] = factory();
+  }
+}(this, function () {
+
+/**
+ * tooly - version 0.0.3 (built: 2014-10-01)
  * js utility functions
  * https://github.com/Lokua/tooly.git
  * Copyright (c) 2014 Joshua Kleckner
@@ -13,21 +38,24 @@
  */
 var tooly = (function() {
 
-  function _type(o) {
-    return ({}).toString.call(o).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+  function _type(o, klass) {
+    o = ({}).toString.call(o).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+    if (klass) {
+      return o === klass.toLowerCase();
+    }
+    return o;
   }
   
   var _ws = /\s+/;
 
   function _re(str) {
-    return new RegExp('\\s*' + str + '\\s*(?![\\w\\W])', 'g');
+    // return new RegExp('\\s*' + str + '\\s*(?![\\w\\W])', 'g');
+    return new RegExp('\\s*' + str + '\\s*(![\\w\\W])?', 'g');
   }
 
-  function _proc_1(el, args, callback) {
+  function _procArgs(el, args, callback) {
     if (_type(args) === 'array') {
-      var ret, 
-          i = 0, 
-          len = el.length
+      var ret, i = 0, len = el.length;
       for (; i < len; i++) {
         ret = callback(el[i], args);
       }
@@ -35,55 +63,40 @@ var tooly = (function() {
     }
   }
 
-  function _proc_2(el, content, callback) {
+  function _procEls(el, content, callback) {
     if (_type(el) === 'array') {
-      var ret, 
-          i = 0, 
-          len = el.length
+      var ret, i = 0, len = el.length;
       for (; i < len; i++) {
         callback(el[i], content);
       }
     }
   }
 
+  function _hasClass(el, klass, re) {
+    var classes = el.className.split(_ws),
+        i = 0, len = classes.length;
+    for (; i < len; i++) {
+      if (classes[i].match(re) == klass) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function _prepend(el, content) {
+    if (!_node(el)) el = tooly.select(el);
+    el.innerHTML = content + el.innerHTML;
+  }
+
+  function _append(el, content) {
+    if (!_node(el)) el = tooly.select(el);
+    el.innerHTML += content;
+  }
+
   function _node(el) {
     return  el && (el.nodeType === 1 || el.nodeType === 9);
   }
   
-  var _slice = Array.prototype.slice;
-
-  function _checkCaller(args) {
-    var name = args.callee.caller.name;
-    if (!name) {
-      var ret = '<anonymous>';
-      if (tooly.logger.traceAnonymous) {
-        return  ret + ' ' + args.callee.caller + '\n';
-      }
-      return ret;
-    }
-    return name;
-  }
-
-  function _log(level, caller, args) {
-    if (tooly.logger.level === 0 || level < tooly.logger.level) return;
-
-    var logger = tooly.logger,
-        args = _slice.call(args, 0),
-        caller = caller + ' \t',
-        s = '%c%s%c%s%o',
-        callerCSS = 'color: #0080FF; font-style: italic';
-
-    switch(level) {
-      case 0: return;
-      case 1: console.trace(s, 'color: #800080;', '[TRACE] ', callerCSS, caller, args); break;
-      case 2: console.log  (s, 'color: #008000;', '[DEBUG] ', callerCSS, caller, args); break;
-      case 3: console.info (s, 'color: #0000FF;', '[INFO] ',  callerCSS, caller, args); break;      
-      case 4: console.warn (s, 'color: #FFA500;', '[WARN] ',  callerCSS, caller, args); break;
-      case 5: console.error(s, 'color: #FF0000;', '[ERROR] ', callerCSS, caller, args); break;
-      default: return; // level = 0 = off
-    }
-  }
-
   return {
 
 //    +------------+
@@ -92,51 +105,68 @@ var tooly = (function() {
     /**
      * check if an element has a css class
      * 
-     * @param  {(Object|Array)} el  such that el or each index of el has nodeType === 1
-     * @param  {String}   klass   the css class to add
+     * @param  {Object|Array<Element>|String} el  the node, array of nodes, or valid css selector
+     * @param  {String}   klass   the css class to compare
      * @return {Boolean} true if `el` has `klass`
-     * @throws {TypeError} If el is not of nodeType: 1
+     *
+     * @memberOf  tooly
+     * @module  dom
+     * @static
      */
     hasClass: function(el, klass) {
-      if (!_node(el)) return false;
-      if (_proc_1(el, klass, tooly.hasClass)) return true;
-      // if (el.nodeType === 1) {
-        var re = _re(klass),
-            classes = el.className.split(_ws),
-            len = classes.length,
-            i = 0;
+      if (_type(el, 'array')) {
+        var re = _re(klass), i = 0, len = el.length;
         for (; i < len; i++) {
-          if (classes[i].match(re) == klass) return true;
+          var _el = _node(el[i]) ? el[i] : tooly.select(el[i]);
+          if (_hasClass(_el, klass, re)) return true;
         }
-        return false;
-      // }
+      } 
+      return false;
     },
 
     /**
      * add a css class to element
      * 
-     * @param  {(Object|Array)} el  such that el or each index of el has nodeType === 1
+     * @param  {Object|Array<Element>|String} el  the node, array of nodes, or valid css selector
      * @param {String} klass the css class to add
      * @return {Object} `tooly` for chaining
+     *
+     * @memberOf  tooly
+     * @module  dom
+     * @static
      */
     addClass: function(el, klass) {
-      if (!_node(el)) return tooly;
-      _proc_1(el, klass, tooly.addClass);
-      el.className += ' ' + klass;
+      if (_type(el, 'array')) {
+        _procEls(el, klass, tooly.addClass);
+      } else if (!_node(el)) {
+        el = tooly.select(el);
+      } else {
+        el.className += ' ' + klass;
+      }
+      _procArgs(el, klass, tooly.addClass);
       return tooly;
     },
 
     /**
      * remove a css class from an element
      * 
-     * @param  {(Object|Array)} el  such that el or each index of el has nodeType === 1
+     * @param  {Object|Array<Element>|String} el  the node, array of nodes, or valid css selector
      * @param  {String} klass   the css class to remove
      * @return {Object} `tooly` for chaining
+     *
+     * @memberOf  tooly
+     * @module  dom
+     * @static
      */
     removeClass: function(el, klass) {
-      if (!_node(el)) return tooly;
-      _proc_1(el, klass, tooly.removeClass);
-      el.className = el.className.replace(_re(klass), ' ');
+      if (_type(el, 'array')) {
+        _procEls(el, klass, tooly.removeClass);
+      } else if (!_node(el)) {
+        el = tooly.select(el);
+      } else {
+        el.className = el.className.replace(_re(klass), ' ');
+      }
+      _procArgs(el, klass, tooly.removeClass);
       return tooly;
     },
 
@@ -146,12 +176,18 @@ var tooly = (function() {
      * @param  {Object}  el         the element(s) to prepend content to
      * @param  {String}  content    the content to prepend
      * @return {Object} `tooly` for chaining
+     *
+     * @memberOf  tooly
+     * @module  dom
+     * @static
      */
     prepend: function(el, content) {
-      if (!_node(el)) return tooly;
-      _proc_2(el, content, tooly.prepend);
-      el.innerHTML = content + el.innerHTML;
-      return tooly
+      if (_type(el, 'array')) {
+        _procEls(el, content, _prepend);
+        return tooly
+      } 
+      _prepend(el, content);
+      return tooly;
     },
 
     /**
@@ -160,92 +196,300 @@ var tooly = (function() {
      * @param  {Object}  el         the element(s) to append content to
      * @param  {String}  content    the content to append
      * @return {Object} `tooly` for chaining
+     *
+     * @memberOf  tooly
+     * @module  dom
+     * @static
      */
     append: function(el, content) {
-      if (!_node(el)) return tooly;
-      _proc_2(el, content, tooly.append);
-      el.innerHTML += content;
+      if (_type(el, 'array')) {
+        _procEls(el, content, _append);
+        return tooly
+      } 
+      _append(el, content);
       return tooly;
     },
 
     /**
      * fill DOM element `el` with `content`. Replaces existing content.
-     * If called with 1 arg, th elements innerHTML is returned
+     * If called with 1 arg, the first matched element's innerHTML is returned
      * 
-     * @param  {(String|Object)} content
+     * @param  {String|Object} content
      * @param  {Element} el      
-     * @return {Object|String} tooly for chaining, or el.innerHTML, or undefined if el is null
+     * @return {String|Object} the first matched el's innerHTML of null when in get mode,
+     *                             otherwise `tooly` for chaining
+     * @memberOf  tooly
+     * @module  dom
+     * @static
      */
     html: function(el, content) {
-      if (!_node(el)) return tooly;
+      // get
       if (arguments.length === 1)  {
-        return (_type(el) === 'array') ? el[i].innerHTML : el.innerHTML;
+        if (_type(el) === 'array' && _node(el[0])) {
+          return  el[0].innerHTML;
+        } else if (_node(el)) {
+          return el.innerHTML;
+        } else {
+          return tooly.select(el).innerHTML;
+        }
       }
-      _proc_1(el, content, tooly.html);
+
+      if (!_node(el)) {
+        if (_type(el) === 'array') {
+          var i = 0, len = el.length;
+          for (; i < len; i++) {
+            if (_node(el[i])) {
+              el[i].innerHTML = content;
+            } else {
+              el[i] = tooly.select(el[i]);
+              el[i].innerHTML = content;
+            }
+          }
+          return tooly;
+        } else {
+          tooly.select(el).innerHTML = content;
+          return tooly;
+        }
+      }
+
       el.innerHTML = content;
-      return tooly
+      return tooly;
     },
 
     /**
      * wrapper for HTML5 `querySelector`
      * 
-     * @param  {String} selector
-     * @param  {Object} context,  the parent element to start searching from 
+     * @param  {String}  selector valid css selector string
+     * @param  {Element} context  the parent element to start searching from 
      *                            defaults to document if blank 
-     * @return {Element|null}     the first matched element or null if no match
+     * @return {Element|null} the first matched element or null if no match
+     * 
+     * @alias sel
+     * @memberOf  tooly
+     * @module  dom
+     * @static
      */
     select: function(selector, context) {
-      context = context || document;
-      return context.querySelector(selector);
+      return (context || document).querySelector(selector);
+    },
+
+    /*!
+     * alias for #select
+     */
+    sel: function(s, c) {
+      return tooly.select(s, c);
     },
 
     /**
      * wrapper for HTML5 `querySelectorAll`
      * 
      * @param  {String} selector
-     * @param  {Object} context,      the parent element to start searching from 
+     * @param  {Object} context       the parent element to start searching from 
      *                                defaults to document if blank 
-     * @return {Array.<Element>|null} an array of matched elements or an empty array if no match
+     * @return {Array<Node>} an array of matched elements or an empty array if no match
+     * 
+     * @memberOf  tooly
+     * @module  dom
+     * @static
      */
     selectAll: function(selector, context) {
       var list = (context || document).querySelectorAll(selector),
-          els = [],
-          i = 0, len = list.length;
+          els = [], i = 0, len = list.length;
       for (; i < len; i++) {
         els[i] = list[i];
       }
       return els;
     },
 
+    /*!
+     * alias for #selectAll
+     */
+    selAll: function(s, c) {
+      return tooly.selectAll(s, c);
+    },    
+
+    /**
+     * select the parent element of `el`.
+     * 
+     * @param  {Element|String} el the node element or valid css selector string
+     *                             representing the element whose parent will be selected
+     * @return {Element|null} the parent element of `selector` or null if no parent is found
+     *
+     * @memberOf  tooly
+     * @module  dom
+     * @static
+     */
+    parent: function(el) {
+      if (!_node(el)) el = tooly.select(el);
+      return el != null ? el.parentNode : null;
+    },
+
+    /**
+     * select all first-generation child elements of `el`.
+     *     
+     * @param  {Element|String} el the element or valid css selector string representing
+     *                             the element whose children will be returned 
+     * @return {Array<Element>|null} an array of children (converted from HTMLCollection) 
+     *                                  or null if `el` has no children
+     * @memberOf  tooly
+     * @module  dom
+     * @static
+     */
+    children: function(el) {
+      if (!_node(el)) el = tooly.select(el);
+      return el != null 
+        ? (function() {
+            var childs = el.children, converted = [], i = 0, len = childs.length;
+            for (; i < len; i++) {
+              converted.push(childs.item(i));
+            }
+            return converted;
+          })()
+        : null;
+    },
+
+    /**
+     * @example
+     * // as key val pair (key must also be a string)
+     * var el = tooly.select('#main');
+     * tooly.css(el, 'background', 'red');
+     * // or as hash (notice that hyphenated keys must be quoted)<br>
+     * tooly.css(el, {width: '100px', background: 'red', 'font-size': '24px'});
+     *
+     * // also can take valid css selector string in place of element
+     * // below will match the document's first div
+     * tooly.css('div', 'border', '2px solid red');
+     * 
+     * @param  {Element|String}  el     the dom element or valid selector string
+     * @param  {String|Object}  styles  either a single comma separated key value pair of strings,
+     *                                  or object hash
+     * @return {Object} tooly for chaining
+     * 
+     * @memberOf  tooly
+     * @module  dom
+     * @static
+     */
+    css: function(el, styles) {
+      var _keyInStyles = function(el, styles) {
+        for (var key in styles) {
+          if (styles.hasOwnProperty(key)) {
+            el.style[key] = styles[key];
+          } 
+        }
+      };
+
+      if (_type(el, 'array')) {
+        if (arguments.length === 3) {
+          for (var i = 0, len = el.length; i < len; i++) {
+            el[i].style[arguments[1]] = arguments[2];
+          }
+          return tooly;
+        } else {
+          for (var i = 0, len = el.length; i < len; i++) {
+            _keyInStyles(el[i], styles);
+          }
+          return tooly;
+        }
+      } else if (!_node(el)) {
+        el = tooly.select(el);
+      }
+
+      if (arguments.length === 3) {
+        el.style[arguments[1]] = arguments[2];
+      } else {
+        _keyInStyles(el, styles);
+      }
+      return tooly;
+    },
+
+    /**
+     * The Selector class provides a jQuery style wrapper around all 
+     * tooly#dom methods except for #select and #selectAll. 
+     * Selection instead is done on the Selector constructor, which will keep
+     * an internal reference to a selectAll query on the passed `el`. All dom
+     * methods that can be called directly from tooly can instead be called
+     * from the Selector instance without their first argument, for example:
+     * `tooly.css('.myDiv', {color:'red'})` and 
+     * `tooly.Selector('.myDiv').css({color:'red'})` are equivalent. It is also
+     * important to note that all methods return the instance for easy chainability,
+     * expect when either `css()` or `html()` are called without any arguments, which makes
+     * them getters. Methods `parent` and `children` will return the instance as well, 
+     * instead setting the internal selection reference to the parents or children of the 
+     * previous selection, for example, with markup `<div><p></p></div>`, 
+     * `tooly.Selector('p').parent().css('background', 'orange');` would change the div's 
+     * background orange.
+     * 
+     * 
+     * Another usage example:
+     * @example
+     * // alias the selector namespace
+     * var $ = tooly.Selector;
+     * var $divs = $(divs);
+     * $divs.css({color:'green'});
+     * // multiple yet separate selectors must be comma separated
+     * $('div, p')
+     *   .addClass('purple')
+     *   .addClass('yellow')
+     *   .removeClass('g')
+     *   .css({'border-radius':'4px'})
+     *   .prepend('<h1>---</h1>')
+     *   .append('<h1>+++</h1>')
+     *   .html('H T M L');
+     *   
+     * @param {Element} el valid css selector string, can contain multiple 
+     *                     selectors separated my commas (see the example)
+     * @constructor
+     * @class Selector
+     * @module  dom
+     * @memberOf  tooly
+     * @static                    
+     */
+    Selector: function(el) {
+      if (!(this instanceof tooly.Selector)) {
+        return new tooly.Selector(el);
+      }
+      this.el = tooly.selectAll(el);
+      return this;
+    },
+
 
 //    +---------------+
 //    | OBJECT MODULE |
 //    +---------------+
+    
     /**
      * @param  {Function} ctor 
      * @param  {Object|Array} args 
-     * @return {Object}      
+     * @return {Object}
+     * 
+     * @memberOf  tooly
+     * @module  object
+     * @static      
      */
     construct: function(ctor, args) {
       // the stupid name leads to more revealing output in logs
       function ToolySurrogateConstructor() {
-        return (_type(args) === 'array') ? 
-          ctor.apply(this, args) : ctor.call(this, args);
+        return (_type(args) === 'array') 
+          ? ctor.apply(this, args) 
+          : ctor.call(this, args);
       }
       ToolySurrogateConstructor.prototype = ctor.prototype;
       return new ToolySurrogateConstructor();
-    },    
+    },
+
     /**
-     * quick and dirty port of node.extend by dreamerslab <ben@dreamerslab.com>
+     * quick and dirty port of node.extend
      * https://github.com/dreamerslab/node.extend
-     * 
-     * which is in turn a port of jQuery.extend
+     * which is in turn a port of jQuery.extend, slightly modified for tooly compatibility.
      * Copyright 2011, John Resig
      * Dual licensed under the MIT or GPL Version 2 licenses.
      * http://jquery.org/license
-     *
-     * slightly modified for tooly compatibility.
+     * 
      * @see  http://api.jquery.com/jquery.extend/ for usage info
+     * 
+     * @memberOf  tooly
+     * @module  object
+     * @static
      */     
     extend: function() {
       var target = arguments[0] || {},
@@ -317,23 +561,25 @@ var tooly = (function() {
      * @param  {Object} prototype
      * @param  {Object} object    
      * @return {Object}
+     * 
      * @author Yehuda Katz (slightly modified)
-     * @see http://yehudakatz.com/2011/08/12/understanding-prototypes-in-javascript/ 
+     * @see http://yehudakatz.com/2011/08/12/understanding-prototypes-in-javascript/
+     * 
+     * @memberOf  tooly
+     * @module  object
+     * @static 
      */
     fromPrototype: function(prototype, object) {
-      var newObject = tooly.objectCreate(prototype),
-          prop;
-     
+      var newObject = tooly.objectCreate(prototype), prop;
       for (prop in object) {
         if (object.hasOwnProperty(prop)) {
           newObject[prop] = object[prop];      
         }
       }
-     
       return newObject;
     },
 
-    /**
+    /*!
      * alias for #fromPrototype
      */
     fromProto: function(prototype, object) {
@@ -341,18 +587,30 @@ var tooly = (function() {
     },
 
     /**
-     * note - overwrites original child.prototype
-     * note - the child's constructor needs to call `parent.call(this)`
+     * Helper to perform prototypal inheritance.
+     * Note that this method overwrites the child's original prototype.
+     * Also note that the child's constructor needs to call `parent.call(this)`
+     *
+     * @example
+     * function Parent() {}
+     * Parent.prototype.b = 2;
+     * function Child() { Parent.call(this); } // this is a must
+     * tooly.inherit(Parent, Child, { a: 1 });
+     * var child = new Child();
+     * console.log(child.a + child.b); //=> 3
+     * // for a more practical example see the tooly.Handler documentation.
      * 
      * @param  {Function} parent
      * @param  {Function} child  
-     * @param  {Object} extend additional methods to add to prototype
+     * @param  {Mixed} extend additional members to the Child's prototype 
+     * 
+     * @memberOf  tooly
+     * @module  object
+     * @static
      */
     inherit: function(parent, child, extend) {
-
       child.prototype = new parent();
       child.prototype.constructor = child;
-
       for (var prop in extend) {
         if (extend.hasOwnProperty(prop)) {
           child.prototype[prop] = extend[prop];
@@ -367,8 +625,13 @@ var tooly = (function() {
      *
      * @param {Mixed} value value to test
      * @return {Boolean} true if `value` is a hash, false otherwise
+     * 
      * @see https://github.com/enricomarino/is/blob/master/index.js
-     * @author Enrico Marino
+     * @author Enrico Marino (with minor edits)
+     * 
+     * @memberOf  tooly
+     * @module  object
+     * @static
      */
     isHash: function(val) {
       return _type(val) === 'object' && val.constructor === Object && 
@@ -381,6 +644,10 @@ var tooly = (function() {
      * 
      * @param  {Object} o  the object/base prototype
      * @return {Object}    new object based on o prototype
+     * 
+     * @memberOf  tooly
+     * @module  object
+     * @static
      */
     objectCreate: function(o) {
       var F = function() {};
@@ -393,11 +660,14 @@ var tooly = (function() {
      * 
      * @param  {Object} obj the object whose ownProperties we are counting
      * @return {number}     the number of "ownProperties" in the object
-     * @memberOf tooly
+     * 
+     * @memberOf  tooly
+     * @module  object
+     * @static
      */
     propCount: function(obj) {
-      var count = 0;
-      for (var o in obj) {
+      var count = 0, o;
+      for (o in obj) {
         if (obj.hasOwnProperty(o)) {
           count++;
         }
@@ -409,12 +679,15 @@ var tooly = (function() {
      * get an array of an object's "ownProperties"
      * 
      * @param  {Object} obj     the object of interest
-     * @return {Array.<Object>} the "hasOwnProperties" of obj
-     * @memberOf tooly
+     * @return {Array[Object]} the "hasOwnProperties" of obj
+     * 
+     * @memberOf  tooly
+     * @module  object
+     * @static
      */
     propsOf: function(obj) {
-      var props = [];
-      for (var o in obj) {
+      var props = [], o;
+      for (o in obj) {
         if (obj.hasOwnProperty(o)) {
           props.push(o);
         }
@@ -462,26 +735,6 @@ var tooly = (function() {
     },
 
 
-//    +---------------+
-//    | LOGGER MODULE |
-//    +---------------+
-    /**
-     * configuration options for logging methods.
-     * levels: 0:off, 1:trace, 2:debug, 3:info, 4:warn, 5:error
-     * @type {Object}
-     */
-    logger: {
-      level: 1,
-      traceAnonymous: true
-    },
-
-    trace: function() { _log(1, _checkCaller(arguments), arguments); },
-    debug: function() { _log(2, _checkCaller(arguments), arguments); },
-    info : function() { _log(3, _checkCaller(arguments), arguments); },
-    warn : function() { _log(4, _checkCaller(arguments), arguments); },
-    error: function() { _log(5, _checkCaller(arguments), arguments); },
-
-
 //    +-------------+
 //    | CORE MODULE |
 //    +-------------+
@@ -505,7 +758,7 @@ var tooly = (function() {
      * @memberOf tooly
      */
     format: function(format) {
-      var args = _slice.call(arguments, 1);
+      var args = Array.prototype.slice.call(arguments, 1);
       return format.replace(/{(\d+)}/g, function(match, number) { 
         return typeof args[number] != 'undefined' ? args[number] : match;
       });
@@ -538,8 +791,8 @@ var tooly = (function() {
      * @memberOf tooly
      */
     repeat: function(str, n) {
-      var s = '';
-      for (var i = 0; i < n; i++) {
+      var s = '', i = 0;
+      for (; i < n; i++) {
         s += str;
       }
       return s;
@@ -594,20 +847,86 @@ var tooly = (function() {
     },
 
     /**
-     * a more useful alternative to the typeof operator
-     * 
-     * @param  {Object} obj the object
-     * @return {String}     the type of object
-     * @author Angus Croll
-     * @see  <a href=
-     * "http://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/">
-     * related article
-     * </a>
-     * @memberOf tooly
+     * get the extension of a file, url, or anything after the last `.` in a string.
+     *
+     * @param {String} str the string
+     * @return {String}
+     *
+     * @alias ext
      */
-    toType: function(obj) {
-      return _type(obj);
+    extension: function(str) {
+      return str.substring(str.lastIndexOf('.')+1);
     },
+
+    /*!
+     * alias for extension
+     */
+    ext: function(str) {
+      return tooly.extension(str);
+    },
+
+    /**
+     * Get a copy of `str` without file extension, or anything after the last `.`
+     * (does not change the original string)
+     * 
+     * @param  {String} str the string to copy and strip
+     * @return {String}     the copied string with file extension removed
+     *
+     * @alias stripExt
+     */
+    stripExtension: function(str) {
+      return str.substring(0, str.lastIndexOf('.'));
+    },
+
+    /*!
+     * alias for stripExtension
+     */
+    stripExt: function(str) {
+      return tooly.stripExtension(str);
+    },
+
+    /**
+     * Inorant error message to ease my frustrations
+     * 
+     * @param  {String} mess additional error message details to add
+     *
+     * @memberOf tooly
+     * @module core
+     * @static
+     */
+    shit: function(mess) {
+      console.error('shitError - something is fucking shit up: ' + mess);
+    },
+
+    /**
+     * A more useful alternative to the typeof operator.
+     * If only the `obj` argument is passed, the class of that object is returned.
+     * If the second argument `klass` is passed, a boolean indicating whether `obj`
+     * is of class `klass` or not is returned.
+     * 
+     * @param  {Object} obj     the object
+     * @param  {String} klass   object class to compare to
+     * @return {String|Boolean} the type of object if only `obj` is passed or 
+     *                              true if `obj` is of class `klass`, false otherwise
+     *
+     * @alias type, typeof
+     * 
+     * @author Angus Croll
+     * @see  http://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator
+     * 
+     * @memberOf tooly
+     * @module core
+     * @static
+     */
+    toType: function() {
+      return _type(arguments);
+    },
+
+    /*! @alias for #toType */
+    type:   function () { return _type(arguments); },
+
+    /*! @alias for #toType */
+    typeof: function () { return _type(arguments); },
 
 
 //    +----------------+
@@ -621,19 +940,144 @@ var tooly = (function() {
      * @constructor
      * @param {Object}  context   (optional) designates the owner of the `handlers` array that holds 
      *                            all callbacks. When blank the Handler instance uses its own internal
-     *                            array. If you'd like to keep track of the handlers outside of Handler,
-     *                            pass the parent owner of @param `handler` as context.
+     *                            array. If you'd like to keep track of the handlers outside of the
+     *                            instance, pass a context such that context.handlers is an array.
      */
     Handler: function(context) {
+      if (!(this instanceof tooly.Handler)) {
+        return new tooly.Handler(context);
+      }
       this.context = context || this;
-      this.context.handlers = [];
-      this.handlers = this.context.handlers;
+      this.handlers = this.context.handlers = {};
       return this;
     },
     
 
+//    +-------+
+//    | TIMER |
+//    +-------+
+
+    Timer: function(name) {
+      // enable instantiation without new
+      if (!(this instanceof tooly.Timer)) {
+        return new tooly.Timer(name);
+      }
+      this.name = name || 'Timer_instance_' + Date.now();
+      return this; 
+    },
+
+
+//    +--------+
+//    | LOGGER |
+//    +--------+
+
+    /**
+     * Class constructor. Typical logging functionality that wraps around console.log
+     * with css coloring and level control. The Logger level hierarchy is as follows:
+     *
+     * - -1: off
+     * - 0: log (no difference from console.log)
+     * - 1: trace
+     * - 2: debug
+     * - 3: info
+     * - 4: warn
+     * - 5: error
+     *
+     * Only calls that are greater or equal to the current Logger.level will be run.
+     *
+     * ## Format
+     * Format strings follow the same usage as node.js or the web interface, depending
+     * on what environment you are in.
+     * - node
+     *   + %s, %j, and %d can be used for 'string', 'json', or 'number'
+     * - browser
+     *   + %s or %o can be used in place of 'string' or 'object'
+     * 
+     * @example
+     * ```js
+     * var logger = new tooly.Logger(2, 'kompakt');
+     * logger.trace(logger); // will not run
+     * ```
+     * 
+     * @param {Number} level set the level of this logger. Defaults to 2 (debug) if no
+     *                       arguments are passed.
+     * @param {String} name  optional name to identify this instance. The name will preceed any
+     *                       output message
+     *
+     * @module Logger
+     * @class  Logger
+     * @constructor
+     * @memberOf  tooly
+     * @static
+     */
+    Logger: function(level, name) {
+      // enable instantiation without new
+      if (!(this instanceof tooly.Logger)) {
+        return new tooly.Logger(level, name);
+      }
+      this.level = (level !== undefined) ? level : 2;
+      if (name) this.name = name;
+
+      // automatically set this false as its only 
+      // for emergency "must track anonymous function location" purposes
+      this.traceAnonymous = false;
+      
+      return this;
+    },
+
+
   };
 })();
+
+tooly.Selector.prototype = {
+
+  hasClass: function(klass) {
+    tooly.hasClass(this.el, klass);
+    return this;
+  },
+
+  addClass: function(klass) {
+    tooly.addClass(this.el, klass);
+    return this;
+  },
+
+  removeClass: function(klass) {
+    tooly.removeClass(this.el, klass);
+    return this;
+  },
+
+  prepend: function(content) {
+    tooly.prepend(this.el);
+    return this;
+  },
+
+  append: function(content) {
+    tooly.append(this.el);
+    return this;
+  },
+
+  html: function(content) {
+    tooly.html(this.el, content);
+    return this;
+  },
+
+  parent: function() {
+    tooly.parent(this.el);
+    return this;
+  },
+
+  children: function() {
+    tooly.children(this.el);
+    return this;
+  },
+  
+  css: function() {
+    var args = [this.el];
+    Array.prototype.push.apply(args, arguments);
+    tooly.css.apply(null, args);
+    return this;
+  }
+};
 
 tooly.Handler.prototype = {
 
@@ -643,6 +1087,7 @@ tooly.Handler.prototype = {
    * @param  {(String|Function)} fn   the function that will call the handler when executed
    * @param  {callback}   handler the handler that we be called by the named function
    * @return {Object} `this` for chaining
+   * 
    * @memberOf  Handler
    * @instance
    * @method
@@ -656,49 +1101,108 @@ tooly.Handler.prototype = {
   },
 
   /**
-   * executes all handlers attached to the name function.
+   * Remove all handlers. Any subsequent call to #executeHandler will have no effect.
+   *
+   * @memberOf Handler
+   * @module  Handler
+   * @instance
+   */
+  removeAll: function() {
+    this.handlers = {};
+  },
+
+  /**
+   * Remove all handler's attached to `fn`. All subsequent calls to 
+   * `executeHandler(fn)` will no longer have an effect.
+   * 
+   * @param  {Function} fn the named function that executes handler(s)
+   * 
+   * @memberOf Handler
+   * @module  Handler
+   * @instance
+   * @alias #off
+   */
+  remove: function(fn) {
+    if (this.handlers[fn] !== undefined) {
+      this.handlers[fn].length = 0;
+    }
+  },
+
+  /*!
+   * alias for #remove
+   */
+  off: function(fn) {
+    this.remove(fn);
+  },
+
+  /**
+   * executes all handlers attached to the named function.
+   * @example
+   * var value = 0;
+   * var handler = new tooly.Handler();
+   * 
+   * function inc() { 
+   *   value += 10; 
+   *   handler.executeHandler('inc');
+   * }
+   * 
+   * function jump() {
+   *   this.value *= 2;
+   * }
+   *
+   * handler.on('inc', announce);
+   * inc();
+   * value; //=> 20;
    * 
    * @param  {(String|Object)} fn the name of the method to execute
    * @return {Object} `this` for chaining
+   * 
    * @memberOf  Handler
    * @instance
    * @method
+   * @alias #exec #trigger
    */
   executeHandler: function(fn) {
     var handler = this.handlers[fn] || [],
-        len = handler.length,
-        i;
-    for (i = 0; i < len; i++) {
+        i = 0, len = handler.length;
+    for (; i < len; i++) {
       handler[i].apply(this.context, []);
     }
     return this;
   },
 
-  /**
+  /*!
    * alias for #executeHandler
-   * @see  #executeHandler
    */
   exec: function(fn) {
     return this.executeHandler(fn);
   },
 
+  /*!
+   * alias for #executeHandler
+   */
+  trigger: function(fn) {
+    return this.executeHandler(fn);
+  },
+
   /**
    * Add callbacks to the list of handlers. The callbacks must be an object collection of 
-   * key-value pairs where the identifier key is the name of a function that calls the executeHandler
-   * method with the same name as the key, while the value is the callback 
+   * key-value pairs where the identifier key is the name of a function that calls the 
+   * `executeHandler` method with the same name as the key, while the value is the callback 
    * function itself. This method should not be used if only registering a single callback, 
    * for that use {@link #on}.
    * 
    * @param  {Object} handlers  collection of callback functions
    * @return {Object} `this` for chaining
+   * 
    * @memberOf  Handler
    * @instance
    * @method
    */
   registerCallbacks: function(callbacks) {
-    var t = this;
+    var t = this, h = {};
     if (callbacks !== undefined) {
-      for (var h in callbacks) {
+      for (h in callbacks) {
         if (callbacks.hasOwnProperty(h)) {
           t.on(h, callbacks[h]);
         }
@@ -707,24 +1211,201 @@ tooly.Handler.prototype = {
     return t;
   },
 
+  /**
+   * @return {String}
+   * @memberOf Handler
+   * @module  Handler
+   * @instance
+   */
   toString: function() { 
     return "[Handler ' " + this + " ']"; 
   }
 };
 
 
+tooly.Timer.prototype = (function() {
+
+  var _start, _end, _elapsed;
+
+  return {
+
+    /**
+     * Start the timer
+     *
+     * @memberOf  Timer
+     * @instance
+     * @module Timer
+     */
+    start: function() { 
+      _start = Date.now(); 
+    },
+
+    /**
+     * Stop the timer
+     * 
+     * @return {Number} the time elapsed in milliseconds
+     *
+     * @memberOf  Timer
+     * @instance
+     * @module Timer
+     */
+    stop: function() { 
+      _end = Date.now();
+      _elapsed = _end - _start;
+      return _elapsed; 
+    },
+
+    /**
+     * Stop the timer and log the results to the console.
+     * Equivalent of calling #stop then #log
+     * 
+     * @return {Number} the time elapsed in milliseconds
+     *
+     * @memberOf  Timer
+     * @instance
+     * @module Timer
+     */
+    end: function() {
+      this.stop();
+      this.log();
+      return _elapsed;
+    },
+
+    /**
+     * log results to the console
+     *
+     * @memberOf  Timer
+     * @instance
+     * @module Timer
+     */
+    log: function() {
+      console.log(this.name + ' ' + _elapsed);
+    }
+  }
+})();
+
+tooly.Logger.prototype = (function() {
+
+  var _cjs = typeof exports === 'object',
+      _slice = Array.prototype.slice,
+      _push = Array.prototype.push,
+      _chalk = _cjs ? require('chalk') : null
+      _levels = ['dummy','trace','debug','info','warn','error'],
+      _colors = ['gray', // dummy
+        'gray',
+        'green',
+        _cjs ? 'cyan' : 'blue',
+        _cjs ? 'yellow' : 'darkorange',
+        'red',
+        'gray' // last gray for time
+      ]; 
+      // _colors = {'800080','008000','0000FF','FFA500','FF0000'};
+      
+  function _log(instance, level, caller, args) {
+    if (instance.level === -1 || level < instance.level || instance.level > 5) return;
+
+    args = _slice.call(args);
+    var format = '%s%s', // name, [LEVEL] [HH:mm:ss]
+        pargs = []; // final args for console call
+
+    if (_cjs) {
+      if (tooly.type(args[0], 'string') && args[0].match(/\%(s|j|d)/g)) {
+        format += args.shift();
+      }
+      pargs.unshift(format, _name(instance), _level(level));
+
+    } else { // window
+      // TODO: string output in Chrome is more readable within array,  
+      // format %s the same way
+      
+      format = '%c%s%c%s%c%s';
+      if (tooly.type(args[0], 'string') && args[0].match(/\%(c|s|o|O|d|i|f)/g)) {
+        format += args.shift();
+      }
+      caller = (caller.replace(/\s+/, '') === '') ? '' : caller + ' \t';
+      var color = 'color:' + _colors[level] + ';',
+          purple = 'color:purple', black = 'color:black';
+      pargs = [format, purple, _name(instance), color, _level(level), black, caller];
+    }
+
+    _push.apply(pargs, args);
+
+    switch (level) {
+      case -1: 
+        return;
+
+      case 0: 
+        console.log(arguments[3]); 
+        break;
+
+      case 2: 
+        // there is no console.debug, 
+        // so the _levels map (default case) doesn't work there
+        console.log.apply(console, pargs); 
+        break;
+
+      default: 
+        // http://stackoverflow.com/
+        // questions/8159233/typeerror-illegal-invocation-on-console-log-apply
+        try {
+          console[ _levels[level] ].apply(console, pargs);
+        } catch(e) {
+          console.log('[Logger (recovery mode)] ', pargs);
+        }
+        break;
+    }
+  }
+
+  function _checkCaller(args) {
+    var name = args.callee.caller.name;
+    if (!name && this.traceAnonymous) {
+      return  '<anonymous> ' + args.callee.caller + '\n';
+    }
+    return name;
+  }
+
+  // helper
+  function _name(instance) {
+    var name = instance.name || '';
+    return (_chalk) ? _chalk.magenta(name) : name;
+  }
+
+  // helper
+  function _level(level) {
+    return _chalkify(level, ' ' + _levels[level].toUpperCase() + ' ') +
+      _chalkify(6, '[' + new Date().toLocaleTimeString() + '] ');
+  }
+
+  // use chalk if node.js
+  function _chalkify(level, str) {
+    return (!_chalk) ? str : _chalk[ _colors[level] ](str);
+  }
+
+  // public API
+  return {
+    log:   function() { _log(this, 0, _checkCaller(arguments), arguments); },
+    trace: function() { _log(this, 1, _checkCaller(arguments), arguments); },
+    debug: function() { _log(this, 2, _checkCaller(arguments), arguments); },
+    info : function() { _log(this, 3, _checkCaller(arguments), arguments); },
+    warn : function() { _log(this, 4, _checkCaller(arguments), arguments); },
+    error: function() { _log(this, 5, _checkCaller(arguments), arguments); }
+  };
+})();
 
 
-/** @namespace  Lap */
 
-/**
+* @namespace  Lap
+
+||
+
+*
  * @type {Number}
  * @memberOf  Lap
  * @static
- */
+
 Lap.idGen = (Lap.idGen || 0) + 1;
 
-/**
+*
  * Instantiate a new Lokua Audio Player. See the {@tutorial settings} and {@tutorial lib}
  * tutorials for configuration instructions.
  *
@@ -737,7 +1418,7 @@ Lap.idGen = (Lap.idGen || 0) + 1;
  * @param {Object} options      custom options that override this player's defaults
  * @class Lap
  * @constructor
- */
+
 function Lap(container, lib, options) {
   // init parent's instance
   tooly.Handler.call(this);
@@ -794,13 +1475,13 @@ function Lap(container, lib, options) {
     plugins: {}
   };
 
-  /**
+*
    * Psuedo constructor
    * @inner
-   */
+  
   var init = (function() {
 
-    /**
+*
      * the id of this player. note that player id counting starts at 1, and that
      * this id refers to the last time this <code>new Lap(...)</code> was called, regardless
      * of the reference it was assigned to.
@@ -812,10 +1493,10 @@ function Lap(container, lib, options) {
      * @memberOf  Lap
      * @instance
      * @type {number}
-     */
+    
     lap.id = Lap.idGen++;
 
-    /**
+*
      * Settings are the combination of defaults extended with the options
      * passed into the class constructor. See the {@tutorial settings} example for a complete list.
      * 
@@ -823,19 +1504,19 @@ function Lap(container, lib, options) {
      * @memberOf  Lap
      * @instance
      * @type {Object.<Object, ?>}
-     */
+    
     lap.settings = tooly.extend({}, true, _defaults, options);
 
-    /**
+*
      * The upper-most parent element of the player as passed to the constructor.
      * @name $container
      * @memberOf  Lap
      * @instance
      * @type {Object}
-     */
+    
     lap.$container = (container.nodeType === 1) ? container : tooly.select(container);
 
-    /**
+*
      * Provides the audio file source(s) and data in a number of different ways.
      * See the {@tutorial lib} example tutorial.
      * @name lib
@@ -843,9 +1524,9 @@ function Lap(container, lib, options) {
      * @instance
      * @type {Object}
      * @see  Lap.libType
-     */
+    
     lap.lib = lib;
-    /**
+*
      * the type of player library we dealing with:<br>
      * <code><b>string</b></code> signifies a single track player<br>
      * <code><b>object</b></code> signifies a single album<br>
@@ -855,70 +1536,70 @@ function Lap(container, lib, options) {
      * @instance
      * @type {string}
      * @see  Lap.lib
-     */
+    
     lap.libType = tooly.toType(lap.lib);
-    /**
+*
      * holds a reference to the currently selected album's files.
      * @name  files
      * @memberOf  Lap
      * @instance
      * @type {Array}
-     */
+    
     lap.files = [];
-    /**
+*
      * holds a reference to the currently selected album's trackTitles
      * @name  trackTitles
      * @memberOf  Lap
      * @instance
      * @type {Array}
-     */
+    
     lap.trackTitles = [];
-    /**
+*
      * The physical control and properties visible to the user
      * @name AudioPlayer
      * @memberOf  Lap#$els
      * @instance
      * @type {Object.<Object, jQuery>}
-     */
+    
     lap.$els = lap.settings.elements;
-    /**
+*
      * @name handlers
      * @memberOf  Lap
      * @instance
      * @type {Object.<string, Array.<callback>>}
-     */
+    
     lap.handlers = {};
-    /**
+*
      * @name audio
      * @memberOf  Lap
      * @instance
      * @type {Audio}
-     */
+    
     lap.audio = {};
-    /**
+*
      * "track" and "file" refer to the same thing - 
      * the currently qued song-file
      * @name index
      * @memberOf  Lap
      * @instance
      * @type {number}
-     */
+    
     lap.trackIndex = lap.settings.startingTrackIndex;
-    /**
+*
      * Only relevant if libType === 'array'
      * @name albumIndex
      * @memberOf  Lap
      * @instance
      * @type {number}
-     */
+    
     lap.albumIndex = lap.settings.startingAlbumIndex;
-    /**
+*
      * the number of tracks/files {@link AudioPlayer#lib} contains
      * @name trackCount
      * @memberOf  Lap
      * @instance
      * @type {number}
-     */
+    
     lap.trackCount = {};
 
     lap.albumTitle  = '';
@@ -954,16 +1635,16 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       // replacement may contain string-wrapped regexp (from json), convert if so
       if (tooly.toType(replacement[0]) !== 'regexp') {
         var flags = replacement[2];
-        replacement[0] = (flags !== undefined) 
-          ? new RegExp(replacement[0], flags) 
-          : new RegExp(replacement[0], 'g');
+        replacement[0] = (flags !== undefined) ? 
+          new RegExp(replacement[0], flags) : 
+          new RegExp(replacement[0], 'g');
       }
     }      
   }      
 
   return {
 
-    /**
+*
      * Turn the registered DOM player control elements into selections
      * if they arent' already. In the case that $els === 'auto', the default class
      * names for controls will be used (this is preferred).
@@ -971,7 +1652,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @param  {Array.<String>} defaultEls  the list of default class names
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     initElements: function(defaultEls) {
       var t = this, 
           elems, 
@@ -989,13 +1670,13 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       }
     },
 
-    /**
+*
      * Creates this player's Audio element ({@link Lap#audio}) 
      * and sets its src attribute to the file located at 
      * {@Link Lap#settings}[{@linkcode startingTrackIndex}]
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     initAudio: function() {
       this.audio = new Audio();
       this.audio.preload = 'auto';
@@ -1009,12 +1690,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       }
     },
 
-    /**
+*
      * Sets the reference of the current album's files to an array, regardless of whether
      * this player is single, album, or discography based. Used to avoid excessive run-time type
      * identification checks throughout the application.
      * @memberOf  Lap
-     */
+    
     updateCurrent: function() {
       var t = this;
       // either something stupid is happening or we are testing
@@ -1080,17 +1761,17 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       t.matchTrackTitles();
     },
 
-    /**
+*
      * Places relative file names in place of an empty or mismatched trackTitles array.
      * Also applies any regex specified in settings.replacement
      * @memberOf  Lap
-     */
+    
     matchTrackTitles: function() {
-      var t = this, i = 0;
+      var t = this, i;
       // if mismatch, ignore trackTitles completely
       if (t.trackTitles === undefined || t.trackCount > t.trackTitles.length) {
         t.trackTitles = [];
-        for (; i < t.trackCount; i++) {
+        for (i = 0; i < t.trackCount; i++) {
           t.trackTitles[i] = tooly.sliceRel(t.files[i].replace('.' + t.getFileType(), ''));
           if (t.replacement !== undefined) {
             t.trackTitles[i] = t.trackTitles[i].replace(t.replacement[0], t.replacement[1]);
@@ -1099,11 +1780,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       }
     },
 
-    /**
+*
      * Set the {@link Lap#audio} src attribute to the currently cued file trackIndex
      * ({@link Lap#trackIndex})
      * @memberOf  Lap
-     */
+    
     setSource: function() {
       var audio = this.audio;
       audio.src = this.files[this.trackIndex];
@@ -1115,10 +1796,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       // setTimeout(audio.pause(), 10);
     },
 
-    /**
+*
      * Initialize the native audio events as well as the various click events on player controls.
      * @memberOf  Lap
-     */
+    
     addListeners: function() {
       var t = this, 
           $els = t.$els,
@@ -1216,14 +1897,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         });
     },
 
-    /**
+*
      * Initialize plugins passed to the constructor.
      * Pass plugin constructor that conforms to the following interface:
      * Plugin(lapInstance, args...)
      * 
      * @return {Object} this
      * @memberOf Lap
-     */
+    
     initPlugins: function() {
       if (!this.settings.plugins) return;
       this.plugins = this.plugins || {};
@@ -1235,9 +1916,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         plugin = plugins[i];
         if (plugin.ctor) {
           name = plugin.name ? plugin.name : plugin.ctor + '_' + Date.now();
-          lap.plugins[name] = (plugin.args) 
-            ? tooly.construct(plugin.ctor, args.concat(lap, plugin.args)) 
-            : tooly.construct(plugin.ctor);
+          lap.plugins[name] = (plugin.args) ? 
+            tooly.construct(plugin.ctor, args.concat(lap, plugin.args)) :
+            tooly.construct(plugin.ctor);
           lap.plugins[name].init();
           
           tooly.debug(lap.plugins[name]);
@@ -1246,12 +1927,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * convenience method
      * 
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     registerClick: function($el, cb) {
       var t = this;
       if (!$el) return t;
@@ -1261,55 +1942,55 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return t;
     },    
 
-    /**
+*
      * @memberOf  Lap
-     */
+    
     load: function() {
       this.executeHandler('load');
       return this;
     },
 
-    /**
+*
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     updateTrackTitleEl: function() {
       tooly.html(this.$els.trackTitle, this.trackTitles[this.trackIndex]);
       return this;
     },
 
-    /**
+*
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     updateTrackNumberEl: function() {
       tooly.html(this.$els.trackNumber, this.trackIndex+1);
       return this;
     },
 
     // TODO: adapt updateCurrent for multiple artist arrays
-    /**
+*
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     updateArtistEl: function() {
       tooly.html(this.$els.artist, this.artist);
       return this;
     },
 
-    /**
+*
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     updateAlbumEl: function() {
       tooly.html(this.$els.albumTitle, this.album);
       return this;
     },
 
-    /**
+*
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     updateCover: function() {
       if (this.$els.cover !== null) {
         this.$els.cover.src = this.cover;
@@ -1317,11 +1998,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * Toggle the audio element's play state
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     togglePlay: function() {
       var t = this;
       if (t.audio.paused) {
@@ -1333,10 +2014,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return t;
     },
 
-    /**
+*
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     play: function() {
       this.audio.play();
       this.executeHandler('play');
@@ -1344,24 +2025,24 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     },
 
 
-    /**
+*
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     pause: function() {
       this.audio.pause();
       this.executeHandler('pause');
       return this;
     },
 
-    /**
+*
      * set the currently qued track/file
      *
      * @deprecated ?? do we ever use this ??
      * @param {number} index the new index; under/overflow will be clamped
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     setTrack: function(index) {
       if (index <= 0) {
         this.trackIndex = 0;
@@ -1374,14 +2055,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * Populates the tracklist with the current album's trackNames
      * 
      * @return {Object} `this` for chaining
      * @deprecated this method is too implementation specific (beyond the core purpose of Lap)
      *             use #playlistFormatted instead
      * @memberOf  Lap
-     */
+    
     populatePlaylist: function() {
       // temporary fix - TODO remove from addListeners callbacks
       // if (true) return;
@@ -1409,10 +2090,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       tooly.append(t.$els.playlistPanel, html);
     },
 
-    /**
+*
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     playlistFormatted: function() {
       var t = this,
           items = [],
@@ -1424,13 +2105,13 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return items;
     },
 
-    /**
+*
      * for use with mutli-album library. get an array of the passed key for all
      * objects in the lib, like 'album' or 'artist'.
      * 
      * @param  {String} prop    the property key
      * @return {Array<String>|Array.<Array>}  an array of all values specified by key
-     */
+    
     property: function(key) {
       if (this.libType === 'object') {
         if (this.lib.hasOwnProperty(key)) {
@@ -1450,24 +2131,24 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       }
     },
 
-    /**
+*
      * helper used in populatePlaylist. zero-pads and punctutates the passed track number.
      * 
      * @param  {Number} n the trackNumber to format
      * @return {String}   the formatted trackNumber
      * @memberOf Lap
-     */
+    
     trackNumberFormatted: function(n) {
       var padCount = (this.trackCount+'').length - (n+'').length;
       return tooly.repeat('0', padCount) + n + this.settings.trackNumberPostfix;
     },
 
-    /**
+*
      * add 'lap-current' class to playlist item that matches currentIndex.
      * Used as callback by prev, and next methods.
      * 
      * @memberOf Lap
-     */
+    
     updateCurrentPlaylistItem: function() {
       var t = this, 
           items = tooly.selectAll('.lap-playlist-item', t.$container),
@@ -1483,11 +2164,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return t;
     },
 
-    /**
+*
      * Move the previous index in the file que.
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     prev: function() {
       var t = this;
       var wasPlaying = !t.audio.paused;
@@ -1498,11 +2179,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this; 
     },
 
-    /**
+*
      * Move to the next index in the file que.
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     next: function() {
       var t = this;
       var wasPlaying = !t.audio.paused;
@@ -1518,11 +2199,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       this.executeHandler('trackChange');
     },
 
-    /**
+*
      * Skip to the previous album in the array of albums.
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     prevAlbum: function() {
       var t = this;
       var wasPlaying = !t.audio.paused;
@@ -1537,11 +2218,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * Skip to the next album in the array of albums.
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     nextAlbum: function() {
       var t = this;
       var wasPlaying= !t.audio.paused;
@@ -1556,39 +2237,31 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-
-    /**
-     * TODO: find usages, delete me
-     */
-    // albumChange: function() {
-    //   this.executeHandler('albumChange');
-    // },
-
-    /**
+*
      * Increment audio volume by the {@link Lap#settings}[{@linkcode volumeInterval}] amount
      * 
      * @return {Object} `this` for chaining
      * @see #setVolume
      * @memberOf  Lap
-     */
+    
     incVolume: function() {
       this.setVolume(true);
       return this;
     },
 
-    /**
+*
      * Decrement audio volume by the {@link Lap#settings}[{@linkcode volumeInterval}] amount
      * 
      * @return {Object} `this` for chaining
      * @see #setVolume
      * @memberOf  Lap
-     */
+    
     decVolume: function() {
       this.setVolume(false);
       return this;
     },
 
-    /**
+*
      * increment or decrement audio volume by the 
      * {@link Lap#settings}[{@linkcode volumeInterval}]
      * amount. To register a callback see {@link Lap#volumeChange}.
@@ -1596,7 +2269,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @param {Boolean}   up - increments volume if true; decrements otherwise
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     setVolume: function(up) {
       var vol = this.audio.volume,
           interval = this.settings.volumeInterval;
@@ -1610,25 +2283,25 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * called by {@link Lap.setVolume}, thie method handles the DOM reaction.
      * Rather pointless, as we can just listen to the native audio `volumechange` event
      * 
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     // volumeChange: function() {
     //   this.executeHandler('volumeChange');
     //   return this;
     // },
 
-    /**
+*
      * Seek backwards in the current track.
      *
      * @return {Object} `this` for chaining
      * @see #seek
      * @memberOf  Lap
-     */
+    
     seekBackward: function() {
       if (!seeking) return;
       var t = this;
@@ -1638,13 +2311,13 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * Seek forewards in the current track.
      *
      * @return {Object} `this` for chaining
      * @see #seek
      * @memberOf  Lap
-     */
+    
     seekForward: function() {
       if (!seeking) return;
       var t = this;
@@ -1654,14 +2327,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * Seek forward or backward in the current track. A single call seeks in the 
      * specified direction by amount set in {@link Lap#settings}[{@linkcode seekInterval}]
      * 
      * @param  {Boolean}   forward if true, seek direction is foreward; backward otherwise
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     seek: function(forward) {
       var lap = this, applied;
       if (forward) {
@@ -1675,13 +2348,13 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * UNDER CONSTRUCTION
      * 
      * @param  {Object} e   event containing mouse parameters
      * @return {Object} `this` for chaining
      * @memberOf  Lap
-     */
+    
     seekFromSeekbar: function(e) {
       var t = this,
           seekbar = t.$els.seekbar,
@@ -1693,10 +2366,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return this;
     },
 
-    /**
+*
      * @return {String} the currently qued file's extension sans `.`
      * @memberOf  Lap
-     */
+    
     getFileType: function() {
       var file;
       if (this.libType === 'string') { // lib itself is the file
@@ -1733,7 +2406,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return isNaN(formatted) ? 0 : formatted;
     },
 
-    /**
+*
      * Get the current track's currentTime property in human readable format
      * 
      * @return {String} human readable time in hh:mm:ss format
@@ -1742,7 +2415,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @example
      * var volume    = lapInstance.audio.volume; //=> 62.310011
      * var formatted = lapInstance.currentTimeFormatted(); //=> 0:01:02
-     */
+    
     currentTimeFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
       if (this.audio.duration < 3600) {
@@ -1751,7 +2424,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return formatted;
     },
 
-    /**
+*
      * Get the current track's duration property in human readable format
      * 
      * @return {String} human readable time in hh:mm:ss format
@@ -1760,7 +2433,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @example 
      * var duration  = lapInstance.audio.duration; //=> 151.222857
      * var formatted = lapInstance.durationFormatted(); //=> 0:02:31
-     */
+    
     durationFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.duration.toFixed(1)));
       if (this.audio.duration < 3600) {
@@ -1773,22 +2446,28 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       return Math.round(this.audio.volume * 100);
     },
 
-    /**
+*
      * tooly.js in the Lap build is not global, so here we provide access.
      * 
      * @return {Object} tooly
-     */
+    
     getTooly: function() {
       return tooly;
     },
 
-    /**
+*
      * Dump various {@link Lap} and {@link Lap#audio} properties to a string
      * @memberOf  Lap
      * @return {Object} `this` for chaining
-     */
+    
     toString: function() {
       return Object.getOwnPropertyNames(this);
     }
   }; // end return
 })()); // end anon }, end wrapper ), call wrapper (), end tooly.inherit );
+
+
+return Lap;
+
+
+}));

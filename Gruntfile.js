@@ -17,7 +17,7 @@ module.exports = function(grunt) {
       build: {
         src: [
           'node_modules/tooly/dist/tooly-raw.js',
-          lap_src
+          'src/lap_temp.js'
         ],
         dest: 'dist/lap.js'
       },
@@ -54,6 +54,10 @@ module.exports = function(grunt) {
     },
 
     copy: {
+      build: {
+        src: 'src/lap.js',
+        dest: 'src/lap_temp.js'
+      },
       controls: {
         src: raphael_source + 'style.css',
         dest: 'dist/controls/raphael-controls/style.css'
@@ -61,6 +65,13 @@ module.exports = function(grunt) {
     },
 
     lineremover: {
+      // remove all logger statements from lap_temp.js, proceed from loggless temp for dest build
+      // build: {
+      //   files: {'<%= copy.build.dest %>':'<%= copy.build.dest %>'},
+      //   options: {
+      //     exclusionPattern: /(^(.|\s)+)?logger.+/g
+      //   }
+      // },
       strict: {
         files: {'<%= concat.bundle.dest %>': '<%= concat.bundle.dest %>'},
         options: {
@@ -115,6 +126,16 @@ module.exports = function(grunt) {
       raphlap: {
         src: '<%= concat.raphlap.dest %>',
         dest: 'dist/lap-raphael-bundle.min.js'
+      }
+    },
+
+    strip_code: {
+      options: {
+        start_comment: '>>',
+        end_comment: '<<'
+      },
+      build: {
+        src: 'src/lap_temp.js'
       }
     },
 
@@ -201,9 +222,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-line-remover');
   grunt.loadNpmTasks('grunt-umd');
   grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-strip-code');
 
   grunt.registerTask('default', ['build']);
   grunt.registerTask('build', [
+    'copy:build',
+    'strip_code:build',
+    // 'lineremover:build',
     'concat:build',
     'umd:build', 
     'usebanner:build', 
