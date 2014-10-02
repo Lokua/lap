@@ -1616,7 +1616,7 @@ function Lap(container, lib, options) {
     lap.initPlugins();
     lap.load();
 
-    logger.debug('post initialize -> <instance>.id: %i, <instance>.*: %o', lap.id, lap);
+
   })();
 
   return lap;
@@ -1924,7 +1924,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
             tooly.construct(plugin.ctor);
           lap.plugins[name].init();
           
-          logger.debug('plugin registered -> lap.plugins[%i]: %s', i, name);
+
         }
       }
       return this;
