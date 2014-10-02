@@ -80,6 +80,13 @@ module.exports = function(grunt) {
       }
     },
 
+    remove: {
+      default_options: { 
+        trace: true, 
+        fileList: ['./src/lap_temp.js']
+      }
+    },
+
     sass: {
       test: {
         options: {
@@ -220,20 +227,21 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-line-remover');
-  grunt.loadNpmTasks('grunt-umd');
+  grunt.loadNpmTasks('grunt-remove');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-strip-code');
+  grunt.loadNpmTasks('grunt-umd');
 
   grunt.registerTask('default', ['build']);
   grunt.registerTask('build', [
     'copy:build',
     'strip_code:build',
-    // 'lineremover:build',
     'concat:build',
     'umd:build', 
     'usebanner:build', 
     'uglify:build', 
-    'usebanner:post'
+    'usebanner:post',
+    'remove'
   ]);
   grunt.registerTask('raphlap', [
     'concat:raphlap',
