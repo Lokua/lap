@@ -1,6 +1,6 @@
 {
   "name": "lap",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "html5 audio player",
   "main": "dist/lap-0.0.5.js",
   "bugs": "dev@lokua.net",
