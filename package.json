@@ -36,6 +36,7 @@
     "grunt-umd": "~2.0.0"
   },
   "dependencies": {
+    "raphael": "^2.1.0",
     "tooly": "git+https://git@github.com/Lokua/tooly.git"
   }
 }

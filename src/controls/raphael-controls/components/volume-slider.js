@@ -7,9 +7,13 @@ function VolumeSlider(rc) {
       knobWidth = 6,
       strokeWidth = settings.strokeWidth,
       tooly = rc.tooly,
+      /*>>*/
+      logger = tooly.Logger(2, 'RCTRLS_VOLUME-SLIDER');
+      /*<<*/
+      $ = rc.lap.getSelector,
       $container = rc.lap.$container,
       $el = rc.$el,
-      $wrapper = tooly.select('.lap-volume-wrapper', $container),
+      $wrapper = $('.lap-volume-wrapper', $container).get(0),
       paper = rc.paper,
       p = (h < settings.height) ? (settings.height - h)/2 : 0; // padding;
 
@@ -64,7 +68,10 @@ function VolumeSlider(rc) {
         try {
           knob.animate(v.knobShape === 'rect' ? { x: kx } : { cx: kx }, 20);
         } catch(e) {
-          tooly.debug('knob catch: ', kx, val);
+          /*>>*/
+          logger.error('caught %s: %s -> kx: %d, val: %d ', 
+            e.name, e.message, kx, val);
+          /*<<*/
         }
 
         // hide/show horn waves depending on volume level
@@ -76,7 +83,10 @@ function VolumeSlider(rc) {
         try {
           rc.lap.audio.volume = val;
         } catch(e) {
-          tooly.debug('volume catch: ', kx, val);
+          /*>>*/
+          logger.error('caught %s: %s -> kx: %d, val: %d ', 
+            e.name, e.message, kx, val);
+          /*<<*/
         }
       }
     })

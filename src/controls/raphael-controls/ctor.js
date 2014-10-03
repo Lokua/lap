@@ -1,6 +1,9 @@
 Lap.RaphaelControls = function(lap, options, init) {
 
   this.tooly = window.tooly || Lap.prototype.getTooly();
+  /*>>*/
+  this.logger = this.tooly.Logger(2, 'RC_CTOR');
+  /*<<*/
   this.lap = lap;
 
   var _defSize = 24, 
@@ -102,30 +105,44 @@ Lap.RaphaelControls.prototype = (function() {
     },
 
     draw: function(elem) {
+      /*>>*/
+      var logger = this.logger;
+      /*<<*/
 
       try {
         this.$el = this.lap.$els[elem];
-        if (!this.$el) return this;
+        if (this.$el && this.$el instanceof this.tooly.Selector && !this.$el.zilch()) {
+          this.$el = this.$el.get(0);
+        } else {
+          return this;
+        }
       } catch(e) {
-        console.info('%o%s%o', e.name, '\n\telem:', elem);
+        /*>>*/
+        logger.error('%s caught: %s, elem: %o, $el: %o',
+          e.name, e.message, elem, this.$el);
+        /*<<*/
       }
+
+      /*>>*/
+      logger.debug('draw -> elem: %o, $el: %o', elem, this.$el);
+      /*<<*/
 
       this.paper = Raphael(this.$el, this.settings.width, this.settings.height);
 
       switch(elem) {
-        case 'playPause': this.play = new Play(this); this.pause = new Pause(this); break;
-        case 'seekbar': this.seekbar = new Seekbar(this); break;
-        case 'seekBackward': this.seekBackward = new Seek(this, false); break;
-        case 'seekForward': this.seekForward = new Seek(this, true); break;
-        case 'prev': this.prev = new Skip(this, false); break;
-        case 'next': this.next = new Skip(this, true); break;
-        case 'volumeUp': this.volumeUp = new Volume(this, true); break;
-        case 'volumeDown': this.volumeDown = new Volume(this, false); break;
-        case 'volumeButton': this.volumeButton = new VolumeButton(this); break;
-        case 'volumeSlider': this.volumeSlider = new VolumeSlider(this); break;
-        case 'info': this.info = new Info(this); break;
-        case 'playlist': this.playlist = new Playlist(this); break;
-        case 'discog': this.discog = new Discog(this); break;
+        case 'playPause'   : this.play         = new Play(this); this.pause = new Pause(this); break;
+        case 'seekbar'     : this.seekbar      = new Seekbar(this);       break;
+        case 'seekBackward': this.seekBackward = new Seek(this, false);   break;
+        case 'seekForward' : this.seekForward  = new Seek(this, true);    break;
+        case 'prev'        : this.prev         = new Skip(this, false);   break;
+        case 'next'        : this.next         = new Skip(this, true);    break;
+        case 'volumeUp'    : this.volumeUp     = new Volume(this, true);  break;
+        case 'volumeDown'  : this.volumeDown   = new Volume(this, false); break;
+        case 'volumeButton': this.volumeButton = new VolumeButton(this);  break;
+        case 'volumeSlider': this.volumeSlider = new VolumeSlider(this);  break;
+        case 'info'        : this.info         = new Info(this);          break;
+        case 'playlist'    : this.playlist     = new Playlist(this);      break;
+        case 'discog'      : this.discog       = new Discog(this);        break;
       }
 
       return this;

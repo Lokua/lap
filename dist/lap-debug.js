@@ -1,5 +1,5 @@
 /**
- * lap - version 0.0.5 (built: 2014-10-02)
+ * lap - version 0.0.6 (built: 2014-10-02)
  * html5 audio player
  * https://github.com/Lokua/lap.git
  * Copyright (c) 2014 Joshua Kleckner <dev@lokua.net>
@@ -1046,6 +1046,15 @@ tooly.Selector.prototype = {
     return new tooly.Selector(this.el[i], this.parent());
   },
 
+  /**
+   * Check if this Selector's `el` member is populated
+   * 
+   * @return {Boolean} true if the el member is null, undefined, or empty
+   */
+  zilch: function() {
+    return this.el.length === 0;
+  },
+
   hasClass: function(klass) {
     tooly.hasClass(this.el, klass);
     return this;
@@ -1412,7 +1421,7 @@ tooly.Logger.prototype = (function() {
 /** @namespace  Lap */
 
 /*>>*/
-var logger = new tooly.Logger(2, 'Lap');
+var logger = new tooly.Logger(-1, 'Lap');
 /*<<*/
 
 /**
@@ -1878,7 +1887,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       });
 
       function addSeekHandlers(el) {
-        if (el === void 0) return;
+        if (!el || el.zilch()) return;
         if (el instanceof $) el = el.get(0);
         el.addEventListener('mousedown', function(e) {
           seeking = true;
@@ -1967,12 +1976,22 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     registerClick: function($el, cb) {
+      /*>>*/
+      logger.info('$el: %o, !$el: %o, $el instanceof tooly.Selector: %o, !$el.el[0]: %o', 
+        $el, !$el, $el instanceof tooly.Selector, !$el.el[0]);
+      /*<<*/
       var t = this;
-      if (!$el) return t;
+      if (!$el || $el.zilch()) return t;
       if ($el instanceof tooly.Selector) $el = $el.get(0);
-      $el.addEventListener('click', function() {
-        cb.call(t);
-      });
+      try {
+        $el.addEventListener('click', function() {
+          cb.call(t);
+        });
+      } catch(e) {
+        /*>>*/
+        logger.error('%o caught -> $el: %o, cb: %o', e.name, $el, cb);
+        /*<<*/
+      }
       return t;
     },    
 
@@ -2026,7 +2045,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {Object} `this` for chaining
      */
     updateCover: function() {
-      if (this.$els.cover !== null) {
+      if (this.$els.cover !== null && !this.$els.cover.zilch()) {
         this.$els.cover.get(0).src = this.cover;
       }
       return this;
@@ -2473,6 +2492,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     getTooly: function() {
       return tooly;
+    },
+
+    getSelector: function() {
+      return $;
     },
 
     /**

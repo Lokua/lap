@@ -1,7 +1,9 @@
 Lap.RaphaelControls = function(lap, options, init) {
 
   this.tooly = window.tooly || Lap.prototype.getTooly();
-
+  /*>>*/
+  this.logger = this.tooly.Logger(2, 'RC_CTOR');
+  /*<<*/
   this.lap = lap;
 
   var _defSize = 24, 
@@ -103,7 +105,9 @@ Lap.RaphaelControls.prototype = (function() {
     },
 
     draw: function(elem) {
-
+      /*>>*/
+      var logger = this.logger;
+      /*<<*/
 
       try {
         this.$el = this.lap.$els[elem];
@@ -113,10 +117,15 @@ Lap.RaphaelControls.prototype = (function() {
           return this;
         }
       } catch(e) {
-
+        /*>>*/
+        logger.error('%s caught: %s, elem: %o, $el: %o',
+          e.name, e.message, elem, this.$el);
+        /*<<*/
       }
 
-
+      /*>>*/
+      logger.debug('draw -> elem: %o, $el: %o', elem, this.$el);
+      /*<<*/
 
       this.paper = Raphael(this.$el, this.settings.width, this.settings.height);
 
@@ -446,7 +455,9 @@ function VolumeSlider(rc) {
       knobWidth = 6,
       strokeWidth = settings.strokeWidth,
       tooly = rc.tooly,
-
+      /*>>*/
+      logger = tooly.Logger(2, 'RCTRLS_VOLUME-SLIDER');
+      /*<<*/
       $ = rc.lap.getSelector,
       $container = rc.lap.$container,
       $el = rc.$el,
@@ -505,7 +516,10 @@ function VolumeSlider(rc) {
         try {
           knob.animate(v.knobShape === 'rect' ? { x: kx } : { cx: kx }, 20);
         } catch(e) {
-
+          /*>>*/
+          logger.error('caught %s: %s -> kx: %d, val: %d ', 
+            e.name, e.message, kx, val);
+          /*<<*/
         }
 
         // hide/show horn waves depending on volume level
@@ -517,7 +531,10 @@ function VolumeSlider(rc) {
         try {
           rc.lap.audio.volume = val;
         } catch(e) {
-
+          /*>>*/
+          logger.error('caught %s: %s -> kx: %d, val: %d ', 
+            e.name, e.message, kx, val);
+          /*<<*/
         }
       }
     })

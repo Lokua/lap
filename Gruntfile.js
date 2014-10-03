@@ -2,10 +2,12 @@
 
 module.exports = function(grunt) {
 
-  var raphael_source = 'src/controls/raphael-controls/';
   var dist_lap_debug = 'dist/lap-debug.js';
   var dist_lap = 'dist/lap.js';
   var src_lap = 'src/lap.js';
+  var src_rc = 'src/controls/raphael-controls/';
+  var dist_rc_debug = 'dist/controls/raphael-controls/raphael-controls-debug.js';
+  var dist_rc = 'dist/controls/raphael-controls/raphael-controls.js';
 
   grunt.initConfig({
 
@@ -29,26 +31,19 @@ module.exports = function(grunt) {
         ],
         dest: dist_lap
       },
-      controls: {
+      rc_debug: {
         src: [
-          raphael_source + 'raphael-controls.js',
-          raphael_source + 'components/*.js'
+          src_rc + 'ctor.js',
+          src_rc + 'components/*.js'
         ],
-        dest: 'dist/controls/raphael-controls/raphael-controls.js'
+        dest: dist_rc_debug
       },
-      bundle: {
+      rc_bundle: {
         src: [
-          '<%= concat.build.dest %>',
-          '<%= concat.controls.dest %>'
+          'dist/controls/raphael-controls/raphael-min.js',
+          'dist/controls/raphael-controls/raphael-controls.min.js'
         ],
-        dest: 'dist/lap-bundle.js'
-      },
-      raphlap: {
-        src: [
-          'bower_components/raphael/raphael.js',
-          '<%= concat.bundle.dest %>'
-        ],
-        dest: 'dist/lap-raphael-bundle.js'
+        dest: 'dist/controls/raphael-controls/bundle.min.js'
       }
     },
 
@@ -67,30 +62,38 @@ module.exports = function(grunt) {
         dest: dist_lap_debug
       },
       build: {
-        src: src_lap,
+        src: dist_lap_debug,
         dest: dist_lap
       },
+      rc_deps: {
+        src: 'node_modules/raphael/raphael-min.js',
+        dest: 'dist/controls/raphael-controls/raphael-min.js'
+      },
+      rc: {
+        src: dist_rc_debug,
+        dest: dist_rc
+      },
       controls: {
-        src: raphael_source + 'style.css',
+        src: src_rc + 'style.css',
         dest: 'dist/controls/raphael-controls/style.css'
       } 
     },
 
-    lineremover: {
-      strict: {
-        files: {'<%= concat.bundle.dest %>': '<%= concat.bundle.dest %>'},
-        options: {
-          exclusionPattern: /'use strict';/g
-        }
-      }
-    },
+    // lineremover: {
+    //   strict: {
+    //     files: {'<%= concat.bundle.dest %>': '<%= concat.bundle.dest %>'},
+    //     options: {
+    //       exclusionPattern: /'use strict';/g
+    //     }
+    //   }
+    // },
 
-    remove: {
-      default_options: { 
-        trace: true, 
-        fileList: ['./src/lap_temp.js']
-      }
-    },
+    // remove: {
+    //   default_options: { 
+    //     trace: true, 
+    //     fileList: ['./src/lap_temp.js']
+    //   }
+    // },
 
     sass: {
       test: {
@@ -104,7 +107,7 @@ module.exports = function(grunt) {
       controls: {
         options: {
           style: 'expanded',
-          cacheLocation: raphael_source + '.sass-cache'
+          cacheLocation: src_rc + '.sass-cache'
         },
         files: {
           'src/controls/raphael-controls/style.css':'src/controls/raphael-controls/sass/style.scss'
@@ -130,17 +133,6 @@ module.exports = function(grunt) {
       }
     },
 
-    uglify: {
-      build: {
-        src: dist_lap,
-        dest: 'dist/lap.min.js'
-      },
-      raphlap: {
-        src: '<%= concat.raphlap.dest %>',
-        dest: 'dist/lap-raphael-bundle.min.js'
-      }
-    },
-
     strip_code: {
       options: {
         start_comment: '>>',
@@ -148,6 +140,20 @@ module.exports = function(grunt) {
       },
       build: {
         src: dist_lap
+      },
+      rc: {
+        src: dist_rc
+      }
+    },
+
+    uglify: {
+      build: {
+        src: dist_lap,
+        dest: 'dist/lap.min.js'
+      },
+      rc: {
+        src: dist_rc,
+        dest: 'dist/controls/raphael-controls/raphael-controls.min.js'
       }
     },
 
@@ -161,16 +167,6 @@ module.exports = function(grunt) {
         src: dist_lap_debug,
         objectToExport: 'Lap',
         amdModuleId: 'Lap',
-      },      
-      controls: {
-        src: 'dist/controls/raphael-controls/raphael-controls.js',
-        objectToExport: 'Lap',
-        amdModuleId: 'Lap',
-      },
-      bundle: {
-        src: '<%= concat.bundle.dest %>',
-        objectToExport: 'Lap',
-        amdModuleId: 'Lap'
       }
     },
 
@@ -190,26 +186,49 @@ module.exports = function(grunt) {
           src: [dist_lap_debug] 
         }
       },
+      // rc_debug: {
+      //   options: {
+      //     position: 'top',
+      //     banner: require(rc_src + 'banner'),
+      //     linebreak: true
+      //   },
+      //   files: {
+      //     src: [dist_rc_debug]
+      //   }
+      // },
       post: {
         files: {
           src: ['dist/lap.min.js']
         }
       },
-      raphlap: {
-        files: {
-          src: ['<%= uglify.raphlap.dest %>']
-        }
-      }
+      // rc: {
+      //   options: {
+      //     position: 'top',
+      //     banner: require(rc_src + 'banner'),
+      //     linebreak: true
+      //   },
+      //   files: {
+      //     src: ['dist/controls/raphael-controls/raphael-controls.min.js']
+      //   }
+      // }
     },
 
     watch: {
-      build: {
-        files: src_lap,
-        tasks: ['build']
-      },
+      // build: {
+      //   files: src_lap,
+      //   tasks: ['build']
+      // },
       debug: {
         files: src_lap,
         tasks: ['debug', 'build']
+      },
+      rc: {
+        files: [
+          'src/*.js', 
+          src_rc + '*.js', 
+          src_rc + 'components/*'
+        ], 
+        tasks: ['rc_all']
       },
       // doc: {
       //   files: 'src/*.js',
@@ -220,17 +239,17 @@ module.exports = function(grunt) {
       //   tasks: ['sass:test']
       // },
       controls: {
-        files: raphael_source + 'sass/*.scss',
+        files: src_rc + 'sass/*.scss',
         tasks: ['sass:controls']
       },
-      lap: { 
-        files: [
-          'src/*.js', 
-          raphael_source + '*.js', 
-          raphael_source + 'components/*'
-        ], 
-        tasks: ['bundle']
-      },
+      // lap: { 
+      //   files: [
+      //     'src/*.js', 
+      //     src_rc + '*.js', 
+      //     src_rc + 'components/*'
+      //   ], 
+      //   tasks: ['bundle']
+      // },
       cssDemo: {
         files: 'demo/css-controls/*.scss',
         tasks: ['sass:cssDemo']
@@ -267,18 +286,17 @@ module.exports = function(grunt) {
     'uglify:build', 
     'usebanner:post'
   ]);
-  grunt.registerTask('raphlap', [
-    'concat:raphlap',
-    'uglify:raphlap',
-    'usebanner:raphlap',
-    'copy:controls'
+  grunt.registerTask('rc_debug', [
+    'concat:rc_debug'
   ]);
-  grunt.registerTask('bundle', [
-    'concat:build', 
-    'concat:controls', 
-    'concat:bundle',
-    'umd:bundle',
-    'lineremover:strict',
-    'raphlap'
+  grunt.registerTask('rc', [
+    'copy:rc',
+    'strip_code:rc',
+    'uglify:rc',
+    // 'concat:rc_bundle'
+    // 'usebanner:rc'
   ]);
+  grunt.registerTask('lap_all', ['debug', 'build']);
+  grunt.registerTask('rc_all', ['rc_debug', 'rc']);
+  grunt.registerTask('all', ['lap_all', 'rc_all']);
 };
