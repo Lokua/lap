@@ -19,14 +19,14 @@ module.exports = function(grunt) {
       },
       debug: {
         src: [
-          'node_modules/tooly/dist/tooly-raw.js',
+          'node_modules/tooly/dist/tooly.js',
           dist_lap_debug
         ],
         dest: dist_lap_debug
       },
       build: {
         src: [
-          'node_modules/tooly/dist/tooly-raw.js',
+          'node_modules/tooly/dist/tooly.js',
           dist_lap
         ],
         dest: dist_lap
@@ -162,11 +162,13 @@ module.exports = function(grunt) {
         src: 'dist/lap.js',
         objectToExport: 'Lap',
         amdModuleId: 'Lap',
+        template: 'src/umd-template.hbs'
       },
       debug: {
         src: dist_lap_debug,
         objectToExport: 'Lap',
         amdModuleId: 'Lap',
+        template: 'src/umd-template.hbs'
       }
     },
 
@@ -220,7 +222,7 @@ module.exports = function(grunt) {
       // },
       debug: {
         files: src_lap,
-        tasks: ['debug', 'build']
+        tasks: ['debug'/*, 'build'*/]
       },
       rc: {
         files: [
@@ -273,9 +275,9 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['build']);
   grunt.registerTask('debug', [
     'copy:debug',
-    'concat:debug',
     'umd:debug', 
-    'usebanner:debug'
+    'usebanner:debug',
+    'concat:debug'
   ]);
   grunt.registerTask('build', [
     'copy:build',

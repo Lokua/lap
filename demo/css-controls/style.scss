@@ -1,24 +1,112 @@
-* {
+$icon-size: 16px;
+$icon-color: #666;
+$border-color: #ddd;
+
+*,
+*:before:not(i),
+*:after:not(i) {
   box-sizing: border-box;
-  font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 *:focus {
   outline: 0;
 }
 
-input[type=range] {
-  -webkit-appearance: none;
-  background-color: #ccc;
-  width: 200px;
-  height: 4px;
+.fa {
+  color: $icon-color;
 }
 
-input[type=range]::-webkit-slider-thumb {
+#lap {
+  display: inline-block;
+  // width: ($icon-size*7)*2; // icon size * num icons
+}
+
+.lap-control {
+  display: inline-block;
+  // width: $icon-size;
+  height: $icon-size;
+
+  margin: 0;
+
+  &:hover .fa {
+    color: lighten($icon-color, 15%);
+  }
+}
+
+.lap-volume-wrapper {
+  display: inline-block;
+}
+
+// keep speaker fixed size, waves change width
+// when the icons are switched
+.lap-speaker-wrapper {
+  width: 16px;
+}
+
+// used to center the slider track
+.lap-volume-slider-wrapper {
+  display: inline-block;
+  height: $icon-size;
+  padding-bottom: 7px; // icon-height/2 (8px) - track-height/2 (1px)
+}
+
+// container for children that need to be centered
+// set vertical-align: middle; on the child
+.lap-center-cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.lap input[type=range] {
+  vertical-align: middle;
   -webkit-appearance: none;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 50%;
-  width: 12px;
-  height: 12px;
+  background-color: $icon-color;
+  width: 88px; // num-icons - volume-icon
+  height: 2px;
+}
+
+.lap input[type=range]::-webkit-slider-thumb {
+  vertical-align: middle;
+  -webkit-appearance: none;
+  background-color: $icon-color;
+  border: none;
+  width: 8px;
+  height: 14px;
+}
+
+// .lap-album-steps-wrapper {
+//   height: $icon-size;
+// }
+
+// .lap-album-steps {
+//   border: 1px solid $border-color;
+//   height: $icon-size;
+// }
+
+.lap-album-step {
+  display: inline-block;
+  padding: 0 2px;
+  border: 1px solid $border-color;
+}
+
+.lap-label {
+  font-size: 12px;
+  color: $icon-color;
+}
+
+.lap-hidden {
+  display: none;
+}
+
+.lap-center-child {
+  vertical-align: middle;
+}
+
+.lap-inline-block {
+  display: inline-block;
+} 
+
+.lap-inline {
+  display: inline;
 }

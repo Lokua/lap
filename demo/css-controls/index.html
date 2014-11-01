@@ -2,11 +2,38 @@
 <html>
 <head>
   <title>Lap: css-controls Demo</title>
-  <link rel="stylesheet" href="style.css"></head>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../../node_modules/font-awesome/css/font-awesome.css">
+  <script type="text/javascript" src="../../dist/lap-debug.js"></script>
+  <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
-  <input type="range">
-  <input type="range">
-  <input type="range">
+
+  <div id="lap" class="lap">
+
+    <div class="lap-album-step">
+      <i class="lap-prev-album lap-center-child fa fa-chevron-left"></i>
+    </div>
+    <div class="lap-control"><i class="lap-prev          fa fa-step-backward"></i></div>
+    <div class="lap-control"><i class="lap-seek-backward fa fa-backward"     ></i></div>
+    <div class="lap-control"><i class="lap-play-pause    fa fa-play"         ></i></div>
+    <div class="lap-control"><i class="lap-seek-forward  fa fa-forward"      ></i></div>
+    <div class="lap-control"><i class="lap-next          fa fa-step-forward" ></i></div>
+    <div class="lap-album-step">
+      <i class="lap-next-album lap-center-child fa fa-chevron-right"></i>
+    </div>
+    <div class="lap-volume-wrapper">
+      <div class="lap-control lap-speaker-wrapper">
+        <i class="lap-speaker fa fa-volume-up"></i>
+      </div>
+      <div class="lap-volume-slider-wrapper">
+        <div class="lap-center-cell">
+          <input type="range" class="lap-volume-slider" min="0" max="100" value="80">
+        </div>
+      </div>
+    </div>
+
+  </div>  
+
 </body>
 </html>

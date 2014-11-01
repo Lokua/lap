@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-# used when simultaneously working on tooly
-# rebuild and push the tooly repo
-cd ../tooly && bin/update && \
-# reinstall handler + tooly, rebuild lap
-cd ../lap && bin/install_tooly && grunt build

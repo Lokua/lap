@@ -82,30 +82,26 @@ function run() {
   var lap = new Lap('#player', lib, {
     elements: 'auto',
     startingAlbumIndex: 1,
-    plugins: [
-      { 
-        ctor: Lap.ProgressBar, 
-
-        args: ['canvas', {
-          playhead: {
-            width: 6, 
-            height: 12,
-            stroke: '#0080ff',
-            fill: '#fff'
-          },
-          progress: { 
-            fill: '#0080ff', 
-            height: 10 
-          },
-          track: {
-            fill: '#eae3e6',
-            height: 10
-          }
-        }],
-
-        name: 'CanvasProgressBar'
-      }
-    ]
+    plugins: [{ 
+      ctor: Lap.ProgressBar, 
+      args: ['canvas', {
+        playhead: {
+          width: 6, 
+          height: 12,
+          stroke: '#0080ff',
+          fill: '#fff'
+        },
+        progress: { 
+          fill: '#0080ff', 
+          height: 10 
+        },
+        track: {
+          fill: '#eae3e6',
+          height: 10
+        }
+      }],
+      name: 'CanvasProgressBar'
+    }]
   });
 
   var progressBar = lap.plugins.progressBar;

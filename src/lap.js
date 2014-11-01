@@ -1,7 +1,7 @@
 /** @namespace  Lap */
 
 /*>>*/
-var logger = new tooly.Logger(-1, 'Lap');
+var logger = new tooly.Logger(0, 'Lap');
 /*<<*/
 
 /**
@@ -9,7 +9,7 @@ var logger = new tooly.Logger(-1, 'Lap');
  * @memberOf  Lap
  * @static
  */
-Lap.idGen = (Lap.idGen || 0) + 1;
+var _idGen = (_idGen || 0) + 1;
 
 /**
  * Instantiate a new Lokua Audio Player. See the {@tutorial settings} and {@tutorial lib}
@@ -36,12 +36,43 @@ function Lap(container, lib, options) {
    * TODO: make replacable with whatever selector lib that conforms to the API
    * @type {tooly.Selector}
    */
-  var $ = tooly.Selector.bind(this);
+  var $ = tooly.Frankie.bind(this);
 
   lap.name = 'Lokua Audio Player';
   lap.version = '0.0.5';
-  lap.doc = 'http://lokua.net/lap/0.0.5/doc/';
+  // lap.doc = 'http://lokua.net/lap/0.0.5/doc/';
 
+  var _selectors = {
+    albumTitle:          '.lap-album-title',
+    artist:              '.lap-artist',
+    buffered:            '.lap-buffered',
+    control:             '.lap-control',
+    controls:            '.lap-controls',
+    cover:               '.lap-cover',
+    currentTime:         '.lap-current-time',
+    discog:              '.lap-discog',
+    duration:            '.lap-duration',
+    info:                '.lap-info', // button
+    infoPanel:           '.lap-info-panel',
+    next:                '.lap-next',
+    nextAlbum:           '.lap-next-album',
+    playPause:           '.lap-play-pause',
+    playlist:            '.lap-playlist', // button
+    playlistPanel:       '.lap-playlist-panel',
+    playlistTrackNumber: '.lap-playlist-track-number',
+    prev:                '.lap-prev',
+    prevAlbum:           '.lap-prev-album',
+    seekBackward:        '.lap-seek-backward',
+    seekForward:         '.lap-seek-forward',
+    seekbar:             '.lap-seekbar',
+    trackNumber:         '.lap-track-number', // the currently cued track
+    trackTitle:          '.lap-track-title',
+    volumeButton:        '.lap-volume-button',
+    volumeDown:          '.lap-volume-down',
+    volumeRead:          '.lap-volume-read',
+    volumeSlider:        '.lap-volume-slider',
+    volumeUp:            '.lap-volume-up'
+  };
   var _defaults = {
     startingTrackIndex: 0,
     startingAlbumIndex: 0,
@@ -51,177 +82,33 @@ function Lap(container, lib, options) {
     prependTrackNumbers: true,
     trackNumberPostfix: ' - ',
     replacementText: void 0,
-    elements: {
-      albumTitle:           '.lap-album-title',
-      artist:               '.lap-artist',
-      buffered:             '.lap-buffered',
-      control:              '.lap-control',
-      controls:             '.lap-controls',
-      cover:                '.lap-cover',
-      currentTime:          '.lap-current-time',
-      discog:               '.lap-discog',
-      duration:             '.lap-duration',
-      info:                 '.lap-info', // button
-      infoPanel:            '.lap-info-panel',
-      next:                 '.lap-next',
-      nextAlbum:            '.lap-next-album',
-      playPause:            '.lap-play-pause',
-      playlist:             '.lap-playlist', // button
-      playlistPanel:        '.lap-playlist-panel',
-      playlistTrackNumber:  '.lap-playlist-track-number',
-      prev:                 '.lap-prev',
-      prevAlbum:            '.lap-prev-album',
-      seekBackward:         '.lap-seek-backward',
-      seekForward:          '.lap-seek-forward',
-      seekbar:              '.lap-seekbar',
-      trackNumber:          '.lap-track-number', // the currently cued track
-      trackTitle:           '.lap-track-title',
-      volumeButton:         '.lap-volume-button',
-      volumeDown:           '.lap-volume-down',
-      volumeRead:           '.lap-volume-read',
-      volumeSlider:         '.lap-volume-slider',
-      volumeUp:             '.lap-volume-up'
-    },
+    // elements: _selectors,
     callbacks: {},
     plugins: {}
   };
 
   /**
    * Psuedo constructor
+   *
+   * TODO: move to prototype
+   * 
    * @inner
    */
   var init = (function() {
 
-    /**
-     * the id of this player. note that player id counting starts at 1, and that
-     * this id refers to the last time this <code>new Lap(...)</code> was called, regardless
-     * of the reference it was assigned to.
-     * @example
-     * var lap_1 = new Lap() //=> id === 1
-     * var lap_2 = new Lap() //=> id === 2
-     * lap_1 = new Lap(...)  //=> id === 3! not 1!
-     * @name id
-     * @memberOf  Lap
-     * @instance
-     * @type {number}
-     */
-    lap.id = Lap.idGen++;
+    lap.id = _idGen++;
 
-    /**
-     * Settings are the combination of defaults extended with the options
-     * passed into the class constructor. See the {@tutorial settings} example for a complete list.
-     * 
-     * @name settings
-     * @memberOf  Lap
-     * @instance
-     * @type {Object.<Object, ?>}
-     */
-    lap.settings = tooly.extend(true, {}, _defaults, options);
-
-    /**
-     * The upper-most parent element of the player as passed to the constructor.
-     * @name $container
-     * @memberOf  Lap
-     * @instance
-     * @type {Element}
-     */
-    // lap.$container = (container.nodeType === 1) ? container : tooly.select(container);
+    lap.settings = tooly.extend(_defaults, options);
     lap.$container = (container.nodeType === 1) ? container : $(container, document).get(0);
-
-    /**
-     * Provides the audio file source(s) and data in a number of different ways.
-     * See the {@tutorial lib} example tutorial.
-     * @name lib
-     * @memberOf  Lap
-     * @instance
-     * @type {Object}
-     * @see  Lap.libType
-     */
     lap.lib = lib;
-
-    /**
-     * the type of player library we dealing with:<br>
-     * <code><b>string</b></code> signifies a single track player<br>
-     * <code><b>object</b></code> signifies a single album<br>
-     * <code><b>array</b></code> represents a mutliple albums<br>
-     * @name libType
-     * @memberOf  Lap
-     * @instance
-     * @type {string}
-     * @see  Lap.lib
-     */
     lap.libType = tooly.type(lap.lib);
-
-    /**
-     * holds a reference to the currently selected album's files.
-     * @name  files
-     * @memberOf  Lap
-     * @instance
-     * @type {Array}
-     */
     lap.files = [];
-
-    /**
-     * holds a reference to the currently selected album's trackTitles
-     * @name  trackTitles
-     * @memberOf  Lap
-     * @instance
-     * @type {Array}
-     */
     lap.trackTitles = [];
-
-    /**
-     * The physical control and properties visible to the user
-     * @memberOf  Lap#$els
-     * @instance
-     * @type {Array[tooly.Selector]}
-     */
     lap.$els = lap.settings.elements;
-
-    /**
-     * @name handlers
-     * @memberOf  Lap
-     * @instance
-     * @type {Object.<string, Array.<callback>>}
-     */
-    lap.handlers = {};
-
-    /**
-     * @name audio
-     * @memberOf  Lap
-     * @instance
-     * @type {Audio}
-     */
     lap.audio = {};
-
-    /**
-     * "track" and "file" refer to the same thing - 
-     * the currently qued song-file
-     * @name index
-     * @memberOf  Lap
-     * @instance
-     * @type {number}
-     */
     lap.trackIndex = lap.settings.startingTrackIndex;
-
-    /**
-     * Only relevant if libType === 'array'
-     * @name albumIndex
-     * @memberOf  Lap
-     * @instance
-     * @type {number}
-     */
     lap.albumIndex = lap.settings.startingAlbumIndex;
-
-    /**
-     * the number of tracks/files {@link AudioPlayer#lib} contains
-     * @name trackCount
-     * @memberOf  Lap
-     * @instance
-     * @type {number}
-     */
-    lap.trackCount = {};
-
+    lap.trackCount;
     lap.albumTitle  = '';
     lap.trackTitle  = '';
     lap.artist      = '';
@@ -230,14 +117,14 @@ function Lap(container, lib, options) {
 
     lap.updateCurrent();
     lap.initAudio();
-    lap.initElements(_defaults.elements, $);
+    lap.initElements(_selectors, $);
     lap.addListeners();
     lap.registerCallbacks(lap.settings.callbacks);
     lap.initPlugins();
     lap.load();
 
     /*>>*/
-    logger.debug('post initialize -> <instance>.id: %i, <instance>.*: %o', lap.id, lap);
+    logger.info('post init: %o', lap);
     /*<<*/
   })();
 
@@ -274,24 +161,22 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * if they arent' already. In the case that $els === 'auto', the default class
      * names for controls will be used (this is preferred).
      * 
-     * @param  {Array.<String>} defaultEls  the list of default class names
+     * @param  {Array.<String>} selectors  the list of default class names
      * @return {Object} `this` for chaining
      * @memberOf  Lap
      */
-    initElements: function(defaultEls, _Selector) {
+    initElements: function(selectors, _Selector) {
       $ = _Selector;
-      var t = this, elems, el;
-      if (tooly.type(t.$els, 'string') && t.$els.toLowerCase() === 'auto') {
-        t.$els = [];
-        elems = defaultEls;
+      var lap = this, elems, el;
+      if (tooly.type(lap.$els) === 'string' && lap.$els.toLowerCase() === 'auto') {    
+        lap.$els = {};
+        elems = selectors;
       } else {
-        elems = t.$els;
+        elems = lap.$els;
       }
-      for (el in elems) {
-        if (elems.hasOwnProperty(el)) {
-          t.$els[el] = $(elems[el], t.$container);
-        }
-      }
+      tooly.each(elems, function(el, key) {
+        lap.$els[key] = $(el, lap.$container);
+      });
     },
 
     /**
@@ -328,10 +213,13 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       if (t.libType === 'string') {
 
-        if (tooly.endsWith(t.lib.toLowerCase(), '.json')) {
+        if (tooly.extension(t.lib.toLowerCase(), '.json')) {
 
+          // TODO: break this function into two parts so
+          // we can async
           tooly.getJSON(t.lib, function(data) {
-            t.lib = JSON.parse(data);
+            // t.lib = JSON.parse(data);
+            t.lib = data;
           }, false); // sync
 
           // at this point t.lib is a regular js object, and is either a single unnamed object
@@ -426,43 +314,44 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     addListeners: function() {
-      var t = this, 
-          $els = t.$els,
-          audio = this.audio;
+      var lap = this, 
+          $els = lap.$els,
+          audio = lap.audio;
 
       audio.addEventListener('progress', function() {
-        $els.buffered.html(t.bufferFormatted());
+        $els.buffered.html(lap.bufferFormatted());
       });
       audio.addEventListener('timeupdate', function() {
-        $els.currentTime.html(t.currentTimeFormatted());
+        $els.currentTime.html(lap.currentTimeFormatted());
       });
       audio.addEventListener('durationchange', function() {
-        $els.duration.html(t.durationFormatted());        
+        $els.duration.html(lap.durationFormatted());        
       });
       audio.addEventListener('volumechange', function() {
-        $els.volumeRead.html(t.volumeFormatted());
+        $els.volumeRead.html(lap.volumeFormatted());
       });
       audio.addEventListener('ended', function() {
-        t.next();
-        if (t.audio.paused) t.audio.play();
+        lap.next();
+        if (lap.audio.paused) lap.audio.play();
       });
       
-      t.registerClick($els.playPause, t.togglePlay);
-      t.registerClick($els.prev, t.prev);
-      t.registerClick($els.next, t.next);
-      t.registerClick($els.volumeUp, t.incVolume);
-      t.registerClick($els.volumeDown, t.decVolume);
-      t.registerClick($els.prevAlbum, t.prevAlbum);
-      t.registerClick($els.nextAlbum, t.nextAlbum);
-      // t.registerClick($els.seekbar, t.seekFromSeekbar);
+      lap.registerClick($els.playPause, lap.togglePlay);
+      lap.registerClick($els.prev, lap.prev);
+      lap.registerClick($els.next, lap.next);
+      lap.registerClick($els.volumeUp, lap.incVolume);
+      lap.registerClick($els.volumeDown, lap.decVolume);
+      lap.registerClick($els.prevAlbum, lap.prevAlbum);
+      lap.registerClick($els.nextAlbum, lap.nextAlbum);
+      // lap.registerClick($els.seekbar, lap.seekFromSeekbar);
 
-      t.$container.addEventListener('click', function(e) {
-        if (tooly.hasClass('lap-playlist-item', e.target)) {
-          var wasPlaying = !t.audio.paused;
-          t.trackIndex = parseInt(e.target.getAttribute('data-lap-index'));
-          t.setSource();
-          t.trigger('trackChange');
-          if (wasPlaying) t.audio.play();
+      lap.$container.addEventListener('click', function(e) {
+        if ($(e.target).hasClass('lap-playlist-item')) {
+        // if (tooly.hasClass('lap-playlist-item', e.target)) {
+          var wasPlaying = !lap.audio.paused;
+          lap.trackIndex = parseInt(e.target.getAttribute('data-lap-index'));
+          lap.setSource();
+          lap.trigger('trackChange');
+          if (wasPlaying) lap.audio.play();
         }
       });
 
@@ -471,10 +360,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         if (el instanceof $) el = el.get(0);
         el.addEventListener('mousedown', function(e) {
           seeking = true;
-          if (tooly.hasClass(e.target, 'lap-seek-forward')) {
-            t.seekForward();
+          if ($(e.target).hasClass('lap-seek-forward')) {
+            lap.seekForward();
           } else {
-            t.seekBackward();
+            lap.seekBackward();
           }
         });
         el.addEventListener('mouseup', function(e) {
@@ -488,12 +377,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       this
         .on('load', function() {
-          t.updateTrackTitleEl();
-          t.updateTrackNumberEl();
-          t.updateArtistEl();
-          t.updateAlbumEl();
-          t.updateCover();
-          t.populatePlaylist();
+          lap.updateTrackTitleEl();
+          lap.updateTrackNumberEl();
+          lap.updateArtistEl();
+          lap.updateAlbumEl();
+          lap.updateCover();
+          lap.populatePlaylist();
           $els.playPause.addClass('lap-paused');
         })
         .on('play', function() {
@@ -503,17 +392,17 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           $els.playPause.removeClass('lap-playing').addClass('lap-paused');
         })
         .on('trackChange', function() {
-          t.updateTrackTitleEl();
-          t.updateTrackNumberEl();
-          t.updateCurrentPlaylistItem();
+          lap.updateTrackTitleEl();
+          lap.updateTrackNumberEl();
+          lap.updateCurrentPlaylistItem();
         })
         .on('albumChange', function() {
-          t.updateTrackTitleEl();
-          t.updateTrackNumberEl();
-          t.updateArtistEl();
-          t.updateAlbumEl();
-          t.updateCover();
-          t.populatePlaylist();
+          lap.updateTrackTitleEl();
+          lap.updateTrackNumberEl();
+          lap.updateArtistEl();
+          lap.updateAlbumEl();
+          lap.updateCover();
+          lap.populatePlaylist();
         });
     },
 
@@ -556,13 +445,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     registerClick: function($el, cb) {
-      /*>>*/
-      logger.info('$el: %o, !$el: %o, $el instanceof tooly.Selector: %o, !$el.el[0]: %o', 
-        $el, !$el, $el instanceof tooly.Selector, !$el.el[0]);
-      /*<<*/
       var t = this;
       if (!$el || $el.zilch()) return t;
-      if ($el instanceof tooly.Selector) $el = $el.get(0);
+      if ($el instanceof tooly.Frankie) $el = $el.get(0);
       try {
         $el.addEventListener('click', function() {
           cb.call(t);
@@ -706,7 +591,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       for (i = 0; i < t.trackCount; i++) {
 
-        html += tooly.format('<div>{0}{1}{2}</div>',
+        html += tooly.stringFormat('<div>{0}{1}{2}</div>',
           // 0
           (t.settings.prependTrackNumbers) ? 
             '<span class="lap-playlist-track-number">'+t.trackNumberFormatted(i+1)+'</span>' : '',
@@ -826,9 +711,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     },
 
     // TODO: find occurances then delete me
-    trackChange: function() {
-      this.trigger('trackChange');
-    },
+    // trackChange: function() {
+    //   this.trigger('trackChange');
+    // },
 
     /**
      * Skip to the previous album in the array of albums.
@@ -1079,12 +964,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     },
 
     /**
-     * Dump various {@link Lap} and {@link Lap#audio} properties to a string
+     * Equivalent of calling `JSON.stringify(this)`
+     * 
      * @memberOf  Lap
-     * @return {Object} `this` for chaining
      */
     toString: function() {
-      return Object.getOwnPropertyNames(this);
+      return JSON.stringify(this);
     }
   }; // end return
 })()); // end anon }, end wrapper ), call wrapper (), end tooly.inherit );

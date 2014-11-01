@@ -1,7 +1,7 @@
 {
   "name": "lap",
   "version": "0.0.6",
-  "description": "html5 audio player",
+  "description": "HTML5 audio player",
   "main": "dist/lap-0.0.5.js",
   "bugs": "dev@lokua.net",
   "scripts": {
@@ -22,6 +22,7 @@
     "url": "http://www.opensource.org/licenses/MIT"
   },
   "devDependencies": {
+    "font-awesome": "^4.2.0",
     "grunt": "~0.4.5",
     "grunt-banner": "~0.2.3",
     "grunt-contrib-compass": "^0.9.1",

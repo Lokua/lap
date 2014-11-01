@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lap Test Suite</title>
+
+  <script src="../dist/lap-debug.js"></script>
+  <link rel="stylesheet" href="style.css">
+
+  <script src="prettify.js"></script>
+  <link rel="stylesheet" href="prettify-lokua.css">
+</head>
+<body>
+
+  <div class="container">
+    <div id="player">
+
+      <div class="cover"><img class="lap-cover" src=""></div>
+
+      <div class="left">
+
+        <div class="lap-controls">
+          <div class="wrap">
+            <span class="lap-control lap-play-pause"></span>
+            <span class="lap-read">buffered: <span class="read lap-buffered"></span></span>
+          </div>
+
+          <div class="wrap">
+            <span class="lap-control lap-prev"></span>
+            <span class="lap-control lap-next"></span>
+            <span class="lap-read"><span class="read lap-track-number"></span></span>
+          </div>
+
+          <div class="wrap">
+            <span class="lap-control lap-seek-backward"></span>
+            <span class="lap-control lap-seek-forward"></span>
+            <span class="read lap-current-time"></span><b> | </b>
+            <span class="read lap-duration"></span>
+          </div>
+
+          <div class="wrap">
+            <span class="lap-control lap-volume-down"></span>
+            <span class="lap-control lap-volume-up"></span>          
+            <span class="lap-read">volume: <span class="read lap-volume-read"></span></span>
+          </div>
+        </div>
+
+        <div class="wrap info">
+          <div class="lap-read"><span class="read lap-artist"></span></div>
+          <div class="lap-read"><span class="read lap-album-title"></span></div>
+          <div class="lap-read"><span class="read lap-track-title"></span></div>
+        </div>
+
+        <div class="lap-controls">
+          <div class="wrap">
+            <span class="lap-control lap-prev-album"></span>
+            <span class="lap-control lap-next-album"></span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="lap-playlist-panel"></div>
+
+    </div>
+
+
+    <div id="info">
+      <h2>data</h2>
+    </div>
+  </div>
+
+  <div id="guts" class="container"></div>
+
+<script>
+
+window.onload = run;
+
+function run() {
+
+  var $ = tooly.Frankie.bind(this);
+  var logger = tooly.Logger(0, 'TEST');
+
+  var lap = new Lap('#player', 'lib.json', {
+    elements: 'auto',
+    startingAlbumIndex: 1
+  }, true); // initialized
+
+  // descriptive titles for elements that reflect the
+  // default variable/selector name
+  tooly.each(lap.$els, function(el, k) {
+    if (el.els.length === 1) {
+      el.html(tooly.tag('span .desc', '#.els.' + k + ': ') + el.html());
+    }
+  });
+
+  // data info from passed json lib
+  var $info = $('#info');
+  function append(key) {
+    var what = lap.property(key);
+    $info.append('<u>' + key +'</u><br>');
+    for (var i = 0; i < what.length; i++) {
+      $info.append(key + '['+i+']: ' + what[i] + '<br>');
+    }
+    $info.append('<div class="hr">');
+  }
+  append('album');
+  append('date');
+  append('label');
+
+  var $guts = $('#guts'), guts = [];
+  tooly.each(lap, function(v, k) {
+    try {
+      guts.push(tooly.tag('pre .gut .prettyprint .lang-javascript', tooly.format('%s: %s', 
+        tooly.tag('span .key', k), 
+        v && v.nodeType ? ' &lt;Node&gt; ' : JSON.stringify(v, null, ' '))));
+    } catch(e) {
+      guts.push(tooly.tag('pre .gut .prettyprint .lang-json', tooly.tag('span .key', k) +
+        ': (cannot convert circular structure to JSON)'));
+    }
+  });
+  var div = document.createElement('div');
+  div.innerHTML = guts.sort().join('');
+  $guts.append(div);
+
+  prettyPrint();
+
+  // logger.info(window);
+  
+}
+
+</script>
+</body>
+</html>
