@@ -1,5 +1,5 @@
 /*!
- * tooly - version 0.0.5 (built: 2014-11-01)
+ * tooly - version 0.0.5 (built: 2014-11-02)
  * js utility functions
  *
  * https://github.com/Lokua/tooly.git
@@ -377,6 +377,11 @@ tooly.Frankie.prototype.attr = function(/*mixed*/) {
 /**
  * Create a new Frankie instance from all first-generation child elements of 
  * the current set of matched elements;
+ *
+ * TODO: try with Element.childNodes instead of children so we don't have 
+ * to do the array conversion
+ * __OR__ probably better to simple instantiate new Frankie
+ * TODO: add filter
  *     
  * @return {tooly.Frankie} new Frankie instance
  * 
@@ -490,6 +495,15 @@ tooly.Frankie.prototype.eq = function(i) {
 
 
 /**
+ * @param  {Mixed} selector  same as #Frankie constructor
+ * @return {Frankie}          new Frankie instance
+ */
+tooly.Frankie.prototype.find = function(selector) {
+  return new tooly.Frankie(selector, this.els);
+};
+
+
+/**
  * Get the element at index `i` from Frankie's selected elements.
  * Unlike `#eq`, `get` returns the actual HTMLElement.
  * 
@@ -544,6 +558,26 @@ tooly.Frankie.prototype.html = function(content) {
   return this;
 };
 
+
+
+/**
+ * Ultra simplified wrapper for `addEventListener`.
+ * Does not currently support jQuery-style data passing
+ *
+ * @param {String}   event the event to listen to, like 'click'
+ * @param {Function} fn    the handler to execute when event is fired 
+ * @return {this}
+ * 
+ * @memberOf  tooly.Frankie
+ * @category  Frankie
+ * @instance
+ */
+tooly.Frankie.prototype.on = function(event, fn) {
+  this.els.forEach(function(el) {
+    el.addEventListener(event, fn, false);
+  });
+  return this;
+};
 
 
 /**
@@ -1877,7 +1911,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.6 (built: 2014-11-01)
+ * lap - version 0.0.6 (built: 2014-11-02)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -2616,9 +2650,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     },
 
     // TODO: find occurances then delete me
-    trackChange: function() {
-      this.trigger('trackChange');
-    },
+    // trackChange: function() {
+    //   this.trigger('trackChange');
+    // },
 
     /**
      * Skip to the previous album in the array of albums.

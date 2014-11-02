@@ -98,7 +98,9 @@ module.exports = function(grunt) {
     sass: {
       test: {
         options: {
-          style: 'expanded'
+          style: 'expanded',
+          noCache: true,
+          sourcemap: false
         },
         files: {
           'test/test.css' : 'test/test.scss'
@@ -107,7 +109,9 @@ module.exports = function(grunt) {
       controls: {
         options: {
           style: 'expanded',
-          cacheLocation: src_rc + '.sass-cache'
+          cacheLocation: src_rc + '.sass-cache',
+          noCache: true,
+          sourcemap: false
         },
         files: {
           'src/controls/raphael-controls/style.css':'src/controls/raphael-controls/sass/style.scss'
@@ -116,7 +120,9 @@ module.exports = function(grunt) {
       cssDemo: {
         options: {
           style: 'expanded',
-          cacheLocation: 'demo/css-controls/.sass-cache'
+          cacheLocation: 'demo/css-controls/.sass-cache',
+          noCache: true,
+          sourcemap: false
         },
         files: {
           'demo/css-controls/style.css':'demo/css-controls/style.scss'
