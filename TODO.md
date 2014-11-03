@@ -4,6 +4,8 @@
   (currently hides tooly from global namespace - pointless if 
   using tooly elsewhere)
 
++ RaphaelControls should no longer be in the dist folder. Move to demo - update Gruntfilez
+
 + mousings
 
   - enter wrapper -> show, unless mousedown(may have left and reentered) =entered

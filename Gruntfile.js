@@ -26,7 +26,7 @@ module.exports = function(grunt) {
       },
       build: {
         src: [
-          'node_modules/tooly/dist/tooly.js',
+          'node_modules/tooly/dist/tooly-slim.js',
           dist_lap
         ],
         dest: dist_lap
@@ -50,7 +50,7 @@ module.exports = function(grunt) {
     connect: { 
       main: { 
         options: { 
-          port: 9140, 
+          port: 3000, 
           keepalive: true 
         } 
       } 
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
         dest: dist_lap_debug
       },
       build: {
-        src: dist_lap_debug,
+        src: src_lap,
         dest: dist_lap
       },
       rc_deps: {
@@ -78,22 +78,6 @@ module.exports = function(grunt) {
         dest: 'dist/controls/raphael-controls/style.css'
       } 
     },
-
-    // lineremover: {
-    //   strict: {
-    //     files: {'<%= concat.bundle.dest %>': '<%= concat.bundle.dest %>'},
-    //     options: {
-    //       exclusionPattern: /'use strict';/g
-    //     }
-    //   }
-    // },
-
-    // remove: {
-    //   default_options: { 
-    //     trace: true, 
-    //     fileList: ['./src/lap_temp.js']
-    //   }
-    // },
 
     sass: {
       test: {
@@ -165,7 +149,7 @@ module.exports = function(grunt) {
 
     umd: {
       build: {
-        src: 'dist/lap.js',
+        src: dist_lap,
         objectToExport: 'Lap',
         amdModuleId: 'Lap',
         template: 'src/umd-template.hbs'
@@ -181,7 +165,7 @@ module.exports = function(grunt) {
     usebanner: {
       options: {
         position: 'top',
-        banner: require('./banner'),
+        banner: require('./src/banner'),
         linebreak: true
       },
       build: {
@@ -194,38 +178,17 @@ module.exports = function(grunt) {
           src: [dist_lap_debug] 
         }
       },
-      // rc_debug: {
-      //   options: {
-      //     position: 'top',
-      //     banner: require(rc_src + 'banner'),
-      //     linebreak: true
-      //   },
-      //   files: {
-      //     src: [dist_rc_debug]
-      //   }
-      // },
       post: {
+        options: {
+          banner: require('./src/banner-min')
+        },
         files: {
           src: ['dist/lap.min.js']
         }
-      },
-      // rc: {
-      //   options: {
-      //     position: 'top',
-      //     banner: require(rc_src + 'banner'),
-      //     linebreak: true
-      //   },
-      //   files: {
-      //     src: ['dist/controls/raphael-controls/raphael-controls.min.js']
-      //   }
-      // }
+      }
     },
 
     watch: {
-      // build: {
-      //   files: src_lap,
-      //   tasks: ['build']
-      // },
       debug: {
         files: src_lap,
         tasks: ['debug'/*, 'build'*/]
@@ -238,26 +201,10 @@ module.exports = function(grunt) {
         ], 
         tasks: ['rc_all']
       },
-      // doc: {
-      //   files: 'src/*.js',
-      //   tasks: ['shell:jsdoc']
-      // },
-      // styles: {
-      //   files: 'test/*.scss',
-      //   tasks: ['sass:test']
-      // },
       controls: {
         files: src_rc + 'sass/*.scss',
         tasks: ['sass:controls']
       },
-      // lap: { 
-      //   files: [
-      //     'src/*.js', 
-      //     src_rc + '*.js', 
-      //     src_rc + 'components/*'
-      //   ], 
-      //   tasks: ['bundle']
-      // },
       cssDemo: {
         files: 'demo/css-controls/*.scss',
         tasks: ['sass:cssDemo']
@@ -288,9 +235,9 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'copy:build',
     'strip_code:build',
-    'concat:build',
     'umd:build', 
     'usebanner:build', 
+    'concat:build',
     'uglify:build', 
     'usebanner:post'
   ]);
@@ -300,9 +247,7 @@ module.exports = function(grunt) {
   grunt.registerTask('rc', [
     'copy:rc',
     'strip_code:rc',
-    'uglify:rc',
-    // 'concat:rc_bundle'
-    // 'usebanner:rc'
+    'uglify:rc'
   ]);
   grunt.registerTask('lap_all', ['debug', 'build']);
   grunt.registerTask('rc_all', ['rc_debug', 'rc']);

@@ -1,9 +1,21 @@
-* {
+*,
+*:before,
+*:after {
   box-sizing: border-box;
 }
 
+*:focus {
+  outline: 0;
+}
+
+.clearfix:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   color: #444;
   background: #eee;
   padding: 16px;
@@ -12,6 +24,11 @@ body {
 
 .container {
   width: 100%;
+  clear: both;
+}
+.container:after {
+  content: '';
+  display: table;
   clear: both;
 }
 
@@ -89,7 +106,6 @@ body {
 }
 
 .lap-playlist-item {
-  font-family: Consolas, "Lucida Console", Monaco, monospace;
   padding-left: 4px;
   font-weight: bold;
 }
@@ -107,9 +123,20 @@ body {
 
 #info {
   display: inline-block;
+  width: 25%;
   float: right;
   font-size: 10px;
   color: #D5006A;
+}
+
+#info div:first-child {
+  margin: 0 auto;
+  width: 50%;
+}
+
+#info h3 {
+  margin: 0;
+  font-weight: normal;
 }
 
 .hr {
@@ -136,4 +163,39 @@ body {
 
 .key {
   color: #D5006A
+}
+
+input[type=range] {
+  vertical-align: middle;
+  -webkit-appearance: none;
+  background-color: #ccc;
+  width: 88px;
+  height: 2px;
+}
+input[type=range]::-webkit-slider-thumb {
+  vertical-align: middle;
+  -webkit-appearance: none;
+  background-color: #ccc;
+  border: none;
+  width: 8px;
+  height: 14px;
+}
+
+/* container(track) */
+progress[value]::-webkit-progress-bar/*, progress[value]::-moz-progress-bar*/ {
+  background: #eee;
+}
+/* value (the "bar") */
+progress[value]::-webkit-progress-value {
+  background: #ccc;
+}
+progress {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  border: none; /* firefox */
+  background: #ccc;
+  width: 88px;
+  height: 4px;
+  vertical-align: 2px;
 }

@@ -16,10 +16,10 @@
     "audio",
     "player"
   ],
-  "author": "Joshua Kleckner <dev@lokua.net>",
+  "author": "Joshua Kleckner",
   "license": {
     "type": "MIT",
-    "url": "http://www.opensource.org/licenses/MIT"
+    "url": "http://lokua.net/license-mit.html"
   },
   "devDependencies": {
     "font-awesome": "^4.2.0",

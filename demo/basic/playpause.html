@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>LAP | PLAYPAUSE DEMO</title>
+  <meta charset="utf-8">
+
+  <style>
+    .lap-playing:after { content: 'PAUSE';  }
+    .lap-paused:after  { content: 'PLAY';   }
+  </style>
+
+</head>
+<body>
+
+  <div id="container">
+    <div class="lap-play-pause"></div>
+  </div>
+
+  <script src="../../dist/lap-debug.js"></script>
+  <script>
+    window.onload = function() { 
+      new Lap('#container', '../sh.mp3'); 
+    };
+  </script> 
+
+</body>
+</html>
