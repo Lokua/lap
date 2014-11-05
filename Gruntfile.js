@@ -47,6 +47,15 @@ module.exports = function(grunt) {
       }
     },
 
+    concurrent: {
+      options: {
+        logConcurrentOutput: true
+      },
+      debug: {
+        tasks: ['connect', 'watch:debug', 'watch:cssDemo']
+      }
+    },
+
     connect: { 
       main: { 
         options: { 
@@ -84,7 +93,7 @@ module.exports = function(grunt) {
         options: {
           style: 'expanded',
           noCache: true,
-          sourcemap: false
+          sourcemap: 'none'
         },
         files: {
           'test/test.css' : 'test/test.scss'
@@ -95,7 +104,7 @@ module.exports = function(grunt) {
           style: 'expanded',
           cacheLocation: src_rc + '.sass-cache',
           noCache: true,
-          sourcemap: false
+          sourcemap: 'none'
         },
         files: {
           'src/controls/raphael-controls/style.css':'src/controls/raphael-controls/sass/style.scss'
@@ -106,7 +115,7 @@ module.exports = function(grunt) {
           style: 'expanded',
           cacheLocation: 'demo/css-controls/.sass-cache',
           noCache: true,
-          sourcemap: false
+          sourcemap: 'none'
         },
         files: {
           'demo/css-controls/style.css':'demo/css-controls/style.scss'
@@ -219,6 +228,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-banner');
+  grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-line-remover');
   grunt.loadNpmTasks('grunt-remove');
   grunt.loadNpmTasks('grunt-shell');

@@ -1,36 +1,97 @@
-$icon-size: 16px;
-$icon-color: #666;
-$border-color: #ddd;
+@import 'muf';
+@import 'vars';
 
+// not(i) -> don't fuck with .fa icon boxes
 *,
 *:before:not(i),
 *:after:not(i) {
   box-sizing: border-box;
-  font-family: Helvetica, Arial, sans-serif;
 }
 
-*:focus {
-  outline: 0;
-}
+// generic container, 
+// should be added to whatever element is passed as 
+// container arg to Lap constructor
+.lap {
 
-.fa {
-  color: $icon-color;
-}
+  border: 1px dotted $lap-border-color;
+  padding: 16px;
+  // margin: 0 40%;
 
-#lap {
   display: inline-block;
-  // width: ($icon-size*7)*2; // icon size * num icons
+  color: $lap-text-color;
+
+  * {
+    cursor: normal;
+    user-select: none;
+    &:focus {
+      outline: 0;
+    }
+  }
+  .fa {
+    color: $lap-icon-color;
+  }
+
+  input[type=range] {
+    vertical-align: middle;
+    -webkit-appearance: none;
+    background-color: $lap-icon-color;
+    width: 88px; // num-icons - volume-icon
+    height: 2px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    vertical-align: middle;
+    -webkit-appearance: none;
+    background-color: $lap-icon-color;
+    border: none;
+    width: 8px;
+    height: 14px;
+  }
+}
+
+.lap-cover-wrap {
+  width: $lap-cover-wrapper-size;
+  height: $lap-cover-wrapper-size;
+}
+.lap-cover {
+  margin: $lap-cover-margin;
+  width:$lap-cover-size;
+  height:$lap-cover-size;
+  border: 1px dotted $lap-border-color;
+}
+
+.lap-details {
+  font-family: $lap-font;
+  font-size: $lap-text-size;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.lap-artist {
+  &:after {
+    content: ' - ';
+  }
+}
+.lap-album {
+  font-style: italic;
+}
+.lap-track-number {
+  font-family: consolas, monaco, menlo, monospace;
+  // font-size: $lap-text-size - 2px;
+  color: lighten($lap-text-color, 15%);
+  &:after {
+    content: ' - ';
+  }
+}
+
+.lap-controls {
+  margin: 0 auto;
 }
 
 .lap-control {
   display: inline-block;
-  // width: $icon-size;
-  height: $icon-size;
-
+  height: $lap-icon-size;
   margin: 0;
-
   &:hover .fa {
-    color: lighten($icon-color, 15%);
+    color: lighten($lap-icon-color, 15%);
   }
 }
 
@@ -47,7 +108,7 @@ $border-color: #ddd;
 // used to center the slider track
 .lap-volume-slider-wrapper {
   display: inline-block;
-  height: $icon-size;
+  height: $lap-icon-size;
   padding-bottom: 7px; // icon-height/2 (8px) - track-height/2 (1px)
 }
 
@@ -58,45 +119,19 @@ $border-color: #ddd;
   vertical-align: middle;
 }
 
-.lap input[type=range] {
-  vertical-align: middle;
-  -webkit-appearance: none;
-  background-color: $icon-color;
-  width: 88px; // num-icons - volume-icon
-  height: 2px;
-}
-
-.lap input[type=range]::-webkit-slider-thumb {
-  vertical-align: middle;
-  -webkit-appearance: none;
-  background-color: $icon-color;
-  border: none;
-  width: 8px;
-  height: 14px;
-}
-
-// .lap-album-steps-wrapper {
-//   height: $icon-size;
-// }
-
-// .lap-album-steps {
-//   border: 1px solid $border-color;
-//   height: $icon-size;
-// }
-
 .lap-album-step {
   display: inline-block;
   padding: 0 2px;
-  border: 1px solid $border-color;
+  border: 1px solid $lap-border-color;
 }
 
 .lap-label {
   font-size: 12px;
-  color: $icon-color;
+  color: $lap-icon-color;
 }
 
 .lap-hidden {
-  display: none;
+  display: none !important;
 }
 
 .lap-center-child {
@@ -109,4 +144,10 @@ $border-color: #ddd;
 
 .lap-inline {
   display: inline;
+}
+
+.lap-non-volume {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
 }

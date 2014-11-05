@@ -2,19 +2,77 @@
 *:before:not(i),
 *:after:not(i) {
   box-sizing: border-box;
-  font-family: Helvetica, Arial, sans-serif;
 }
 
-*:focus {
-  outline: 0;
-}
-
-.fa {
+.lap {
+  border: 1px dotted #ddd;
+  padding: 16px;
+  display: inline-block;
   color: #666;
 }
+.lap * {
+  cursor: normal;
+  user-select: none;
+}
+.lap *:focus {
+  outline: 0;
+}
+.lap .fa {
+  color: #666;
+}
+.lap input[type=range] {
+  vertical-align: middle;
+  -webkit-appearance: none;
+  background-color: #666;
+  width: 88px;
+  height: 2px;
+}
+.lap input[type=range]::-webkit-slider-thumb {
+  vertical-align: middle;
+  -webkit-appearance: none;
+  background-color: #666;
+  border: none;
+  width: 8px;
+  height: 14px;
+}
 
-#lap {
-  display: inline-block;
+.lap-cover-wrap {
+  width: 272px;
+  height: 272px;
+}
+
+.lap-cover {
+  margin: 8px;
+  width: 256px;
+  height: 256px;
+  border: 1px dotted #ddd;
+}
+
+.lap-details {
+  font-family: verdana, sans-serif;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.lap-artist:after {
+  content: ' - ';
+}
+
+.lap-album {
+  font-style: italic;
+}
+
+.lap-track-number {
+  font-family: consolas, monaco, menlo, monospace;
+  color: #8c8c8c;
+}
+.lap-track-number:after {
+  content: ' - ';
+}
+
+.lap-controls {
+  margin: 0 auto;
 }
 
 .lap-control {
@@ -45,23 +103,6 @@
   vertical-align: middle;
 }
 
-.lap input[type=range] {
-  vertical-align: middle;
-  -webkit-appearance: none;
-  background-color: #666;
-  width: 88px;
-  height: 2px;
-}
-
-.lap input[type=range]::-webkit-slider-thumb {
-  vertical-align: middle;
-  -webkit-appearance: none;
-  background-color: #666;
-  border: none;
-  width: 8px;
-  height: 14px;
-}
-
 .lap-album-step {
   display: inline-block;
   padding: 0 2px;
@@ -74,7 +115,7 @@
 }
 
 .lap-hidden {
-  display: none;
+  display: none !important;
 }
 
 .lap-center-child {
@@ -89,4 +130,8 @@
   display: inline;
 }
 
-/*# sourceMappingURL=style.css.map */
+.lap-non-volume {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}

@@ -1,0 +1,12 @@
+// mixins, functions, and utility classes plucked from
+// https://gist.github.com/Lokua/95d6303ab6c464b905e5
+
+// 
+// --- FUNCTIONS
+// 
+ 
+// Create a gray rgba color. Both $value and $alpha arguments 
+// are optional. Defaults to rgba(127, 127, 127, 1);
+@function gray-scale($val: 127, $alpha: 1) {
+  @return rgba($val, $val, $val, $alpha);
+}

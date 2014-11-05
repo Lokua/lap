@@ -6,8 +6,8 @@
   <script src="../dist/lap-debug.js"></script>
   <link rel="stylesheet" href="style.css">
 
-  <script src="prettify.js"></script>
-  <link rel="stylesheet" href="prettify-lokua.css">
+  <script src="prettify/prettify.js"></script>
+  <link rel="stylesheet" href="prettify/prettify-lokua.css">
 </head>
 <body>
 
@@ -41,7 +41,7 @@
 
           <div class="wrap">
             <span class="lap-control lap-volume-down">VOLUME UP</span>
-            <span class="lap-control lap-volume-up">VOUMEDOWN</span>
+            <span class="lap-control lap-volume-up">VOLUME DOWN</span>
             <input type="range" class="lap-volume-slider" min="0" max="100" value="0">
             <span class="lap-read">volume: <span class="read lap-volume-read"></span></span>
           </div>
@@ -92,7 +92,9 @@ function run() {
     useNativeProgress: true,
     useNativeSeekbarRange: true,
     useNativeVolumeRange: true 
-  }, true).on('load', function() {
+  }, true);
+
+  lap.on('load', function() {
 
     // data info from passed json lib
     var $info = $('#info div');
@@ -101,7 +103,6 @@ function run() {
       $info.append(tooly.tag('h2', key));
       for (var i = 0; i < what.length; i++) {
         $info.append(tooly.tag('h3', '['+i+']: ' + what[i]));
-        // $info.append(key + '['+i+']: ' + what[i] + '<br>');
       }
     }
     append('album');
@@ -122,9 +123,7 @@ function run() {
     var div = document.createElement('div');
     div.innerHTML = guts.sort().join('');
     $guts.append(div);
-
-    logger.debug(lap.playlistFormatted());
-
+    
     prettyPrint();
   });
 }

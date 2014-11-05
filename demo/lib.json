@@ -5,7 +5,7 @@
       "album": "13",
       "date": "2012.01.31",
       "label": "unreleased",
-      "cover": "http://lokua.net/images/earth/disco3.png",
+      "cover": "http://lokua.net/images/earth/grass1.png",
       "replacement": ["Lokua_-_|_+|\\s{2,}", " "],
       "files": [
         "http://lokua.net/audio/13/Lokua_-_16.wav",
@@ -41,7 +41,7 @@
       "album": "osd",
       "date": "2012.01.31",
       "label": "unreleased",
-      "cover": "http://lokua.net/images/earth/disco3.png",
+      "cover": "http://lokua.net/images/earth/ibis.jpg",
       "replacement": ["Lokua_-_O.S.D._-_+[0-9]{2}_|_+|\\s{2,}", " "],
       "files": [
         "http://lokua.net/audio/OSD/Lokua_-_O.S.D._-_01_Mercury.mp3",
@@ -58,7 +58,7 @@
       "album": "Vacuus",
       "date": "2012.01.31",
       "label": "unreleased",
-      "cover": "http://lokua.net/images/earth/disco3.png",
+      "cover": "http://lokua.net/images/earth/snakeby.png",
       "replacement": ["Lokua_-_Vacuus_-_[0-9]{2}_-_|_+|\\s{2,}", " "],
       "files": [
         "http://lokua.net/audio/vacuus/Lokua_-_Vacuus_-_01_-_Dark_Energy.mp3",
