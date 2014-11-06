@@ -52,7 +52,7 @@ module.exports = function(grunt) {
         logConcurrentOutput: true
       },
       debug: {
-        tasks: ['connect', 'watch:debug', 'watch:cssDemo']
+        tasks: ['connect', 'watch:debug', 'watch:cssDemo', 'watch:cssDemoJade']
       }
     },
 
@@ -88,6 +88,18 @@ module.exports = function(grunt) {
       } 
     },
 
+    jade: {
+      cssDemo: {
+        options: {
+          pretty: true,
+          timestamp: '<%= grunt.template.today("yyyy-mm-dd") %> <%= new Date().getTime() %>'
+        },
+        files: {
+          'demo/css-controls/index.html': ['demo/css-controls/jade/index.jade']
+        }
+      }
+    },
+
     sass: {
       test: {
         options: {
@@ -118,7 +130,7 @@ module.exports = function(grunt) {
           sourcemap: 'none'
         },
         files: {
-          'demo/css-controls/style.css':'demo/css-controls/style.scss'
+          'demo/css-controls/style.css':'demo/css-controls/sass/style.scss'
         }
       }
     },
@@ -215,8 +227,12 @@ module.exports = function(grunt) {
         tasks: ['sass:controls']
       },
       cssDemo: {
-        files: 'demo/css-controls/*.scss',
+        files: 'demo/css-controls/sass/*.scss',
         tasks: ['sass:cssDemo']
+      },
+      cssDemoJade: {
+        files: 'demo/css-controls/jade/*.jade',
+        tasks: ['jade']
       }
     }
   });
@@ -225,6 +241,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-banner');

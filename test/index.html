@@ -21,7 +21,7 @@
         <div class="lap-controls">
           <div class="wrap">
             <span class="lap-control lap-play-pause">PLAY/PAUSE</span>
-            <progress class="lap-progressbar" value="0" max="100"></progress>
+            <progress class="lap-progress" value="0" max="100"></progress>
             <span class="lap-read">buffered: <span class="read lap-buffered"></span></span>
           </div>
 
@@ -90,7 +90,7 @@ function run() {
     startingTrackIndex: 1,
     selectorPrefix: 'lap',
     useNativeProgress: true,
-    useNativeSeekbarRange: true,
+    useNativeSeekRange: true,
     useNativeVolumeRange: true 
   }, true);
 

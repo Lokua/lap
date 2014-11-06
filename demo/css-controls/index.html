@@ -1,97 +1,73 @@
 <!DOCTYPE html>
-<html>
 <head>
-  <title>Lap: css-controls Demo</title>
+  <title>Lap | CSS-Controls Demo</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="../../node_modules/font-awesome/css/font-awesome.css">
-  <link rel="stylesheet" href="icomoon_entypto_audio/style.css">
-  <script type="text/javascript" src="../../dist/lap-debug.js"></script>
-  <script type="text/javascript" src="../../src/plugins/expanding-volume-range.js"></script>
-  <script type="text/javascript" src="script.js"></script>
+  <link rel="stylesheet" href="lap-icons/style.css">
+  <script src="../../dist/lap-debug.js"></script>
+  <script src="expanding-volume-range.js"></script>
+  <script src="script.js"></script>
 </head>
 <body>
-
   <div id="lap" class="lap">
-
     <div class="lap-cover-wrap"><img class="lap-cover"></div>
-
-    <div class="lap-details">
-      <span class="lap-artist"></span><span class="lap-album"></span><br>
-      <span class="lap-track-number"></span><span class="lap-track-title"></span>
-    </div>
-
+    <div class="lap-details"><span class="lap-artist"></span><span class="lap-album"></span><br><span class="lap-track-number"></span><span class="lap-track-title"></span></div>
     <div class="lap-controls">
       <div class="lap-volume-wrapper">
-        <div class="lap-control lap-speaker-wrapper">
-          <i class="lap-speaker fa fa-volume-up"></i>
-        </div>
-        <div class="lap-volume-slider-wrapper">
+        <div class="lap-control lap-speaker-wrapper"><i class="lap-speaker lap-i-volume-high"></i></div>
+        <div class="lap-volume-range-wrapper">
           <div class="lap-center-cell">
-            <input type="range" class="lap-volume-slider lap-hidden" min="0" max="100" value="80">
+            <input type="range" min="0" max="100" value="80" class="lap-volume-range lap-hidden">
           </div>
         </div>
       </div>
-
       <div class="lap-non-volume">
-        <div class="lap-album-step">
-          <i class="lap-prev-album lap-center-child fa fa-chevron-left"></i>
-        </div>
-        <div class="lap-control"><i class="lap-prev fa fa-step-backward"></i></div>
-        <div class="lap-control"><i class="lap-seek-backward fa fa-backward"></i></div>
-        <div class="lap-control"><i class="lap-play-pause fa fa-play"></i></div>
-        <div class="lap-control"><i class="lap-seek-forward fa fa-forward"></i></div>
-        <div class="lap-control"><i class="lap-next fa fa-step-forward"></i></div>
-        <div class="lap-album-step">
-          <i class="lap-next-album lap-center-child fa fa-chevron-right"></i>
-        </div>
-      </div>
-      
-      <div class="lap-control"><i class="lap-playlist fa fa-navicon"></i></div>
-      <div class="lap-control"><i class="lap-discog fa fa-th"></i></div>
-    </div>
-
-  </div>
-
-  <div id="lap2" class="lap">
-
-    <div class="lap-cover-wrap"><img class="lap-cover"></div>
-
-    <div class="lap-details">
-      <span class="lap-artist"></span><span class="lap-album"></span><br>
-      <span class="lap-track-number"></span><span class="lap-track-title"></span>
-    </div>
-
-    <div class="lap-controls">
-      <div class="lap-volume-wrapper">
-        <div class="lap-control lap-speaker-wrapper">
-          <i class="lap-speaker lap-i-volume"></i>
-        </div>
-        <div class="lap-volume-slider-wrapper">
-          <div class="lap-center-cell">
-            <input type="range" class="lap-volume-slider lap-hidden" min="0" max="100" value="80">
-          </div>
-        </div>
-      </div>
-
-      <div class="lap-non-volume">
-        <div class="lap-album-step">
-          <i class="lap-prev-album lap-center-child lap-i-arrow-left"></i>
-        </div>
-        <div class="lap-control"><i class="lap-prev lap-i-first"></i></div>
-        <div class="lap-control"><i class="lap-seek-backward lap-i-previous"></i></div>
+        <div class="lap-control"><i class="lap-prev-album lap-i-prev-album"></i></div>
+        <div class="lap-control"><i class="lap-prev lap-i-prev"></i></div>
+        <div class="lap-control"><i class="lap-seek-backward lap-i-backward"></i></div>
         <div class="lap-control"><i class="lap-play-pause lap-i-play"></i></div>
-        <div class="lap-control"><i class="lap-seek-forward lap-i-next"></i></div>
-        <div class="lap-control"><i class="lap-next lap-i-last"></i></div>
-        <div class="lap-album-step">
-          <i class="lap-next-album lap-center-child lap-i-arrow-right"></i>
+        <div class="lap-control"><i class="lap-seek-forward lap-i-forward"></i></div>
+        <div class="lap-control"><i class="lap-next lap-i-next"></i></div>
+        <div class="lap-control"><i class="lap-next-album lap-i-next-album"></i></div>
+      </div>
+      <div class="lap-control"><i class="lap-playlist lap-i-playlist"></i></div>
+      <div class="lap-control"><i class="lap-discog lap-i-discog"></i></div>
+    </div>
+  </div>
+  <div id="lap2" class="lap">
+    <div class="lap-cover-wrap"><img class="lap-cover">
+      <div class="lap-playlist-panel lap-hidden"></div>
+      <div class="lap-discog-panel lap-hidden"></div>
+    </div>
+    <table class="lap-details">
+      <tr>
+        <td><span class="lap-artist"></span><span class="lap-album"></span></td>
+        <td class="lap-control"><i class="lap-discog lap-i-discog"></i></td>
+      </tr>
+      <tr>
+        <td><span class="lap-track-number"></span><span class="lap-track-title"></span></td>
+        <td class="lap-control"><i class="lap-playlist lap-i-playlist"></i></td>
+      </tr>
+    </table>
+    <div class="lap-controls">
+      <div class="lap-volume-wrapper">
+        <div class="lap-control lap-speaker-wrapper"><i class="lap-speaker lap-i-volume-high"></i></div>
+        <div class="lap-volume-range-wrapper">
+          <div class="lap-center-cell">
+            <input type="range" min="0" max="100" value="80" class="lap-volume-range lap-hidden">
+          </div>
         </div>
       </div>
-      
-      <div class="lap-control"><i class="lap-playlist lap-i-list"></i></div>
-      <div class="lap-control"><i class="lap-discog lap-i-layout"></i></div>
+      <div class="lap-non-volume">
+        <div class="lap-control"><i class="lap-play-pause lap-i-play"></i></div>
+        <div class="lap-control"><i class="lap-prev lap-i-prev"></i></div>
+        <div class="lap-control"><i class="lap-next lap-i-next"></i></div>
+        <div class="lap-seek-range-wrapper">
+          <div class="lap-center-cell">
+            <progress min="0" max="100" class="lap-progress"></progress>
+            <input type="range" min="0" max="100" value="0" class="lap-seek-range">
+          </div>
+        </div>
+      </div>
     </div>
-
-  </div>  
-
+  </div>
 </body>
-</html>

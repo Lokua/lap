@@ -1,0 +1,235 @@
+@import 'muf';
+@import 'vars';
+
+// not(i) -> don't fuck with .fa icon boxes
+*,
+*:before:not(i),
+*:after:not(i) {
+  box-sizing: border-box;
+}
+
+// generic container, 
+// should be added to whatever element is passed as 
+// container arg to Lap constructor
+.lap {
+
+  // font-family: $lap-font;
+
+  border: 1px dotted $lap-border-color;
+  padding: 16px;
+  // margin: 0 40%;
+
+  display: inline-block;
+  color: $lap-text-color;
+
+  * {
+    cursor: normal;
+    user-select: none;
+    &:focus {
+      outline: 0;
+    }
+  }
+}
+
+.lap-i {
+  color: $lap-icon-color;
+}
+
+.lap-cover-wrap {
+  font-family: $lap-font;
+  position: relative;
+  width: $lap-cover-wrapper-size;
+  height: $lap-cover-wrapper-size;
+}
+.lap-cover {
+  margin: $lap-cover-margin;
+  width:$lap-cover-size;
+  height:$lap-cover-size;
+  border: 1px dotted $lap-border-color;
+}
+.lap-playlist-panel, .lap-discog-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: scroll;
+  width: $lap-cover-wrapper-size - 16px;
+  height: $lap-cover-wrapper-size - 16px;
+  margin: $lap-cover-margin;
+  color: gray-scale(245);
+  background: rgba(0,0,0,0.5);
+  font-size: $lap-text-size;
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.lap-details {
+  font-family: $lap-font;
+  font-size: $lap-text-size;
+  margin-bottom: 8px;
+  width: 100%;
+  td:not(.lap-control) {
+    padding-left: $lap-icon-size;
+    text-align: center;
+  }
+  .lap-label {
+    text-align: right;
+    font-size: $lap-text-size - 2;
+    color: lighten($lap-text-color, 15%);
+  }
+  .lap-control {
+    font-size: $lap-icon-size;
+    display: inline-block;
+    float: right;
+    text-align: right;
+  }
+}
+
+.lap-artist {
+  &:after {
+    content: ' - ';
+  }
+}
+.lap-album {
+  font-style: italic;
+}
+.lap-track-number {
+  font-family: consolas, monaco, menlo, monospace;
+  // font-size: $lap-text-size - 2px;
+  color: lighten($lap-text-color, 15%);
+  &:after {
+    content: ' - ';
+  }
+}
+
+.lap-controls {
+  margin: 0 auto;
+  width: $lap-icon-size * 14;
+}
+
+.lap-control {
+  display: inline-block;
+  width: $lap-icon-size;
+  height: $lap-icon-size;
+  margin: 0;
+  &:hover .lap-i {
+    color: lighten($lap-icon-color, 15%);
+  }
+}
+
+.lap-volume-wrapper {
+  display: inline-block;
+}
+
+// keep speaker fixed size, waves change width
+// when the icons are switched
+.lap-speaker-wrapper {
+  width: 16px;
+}
+
+// used to center the slider track
+.lap-volume-range-wrapper, .lap-seek-range-wrapper {
+  display: inline-block;
+  height: $lap-icon-size;
+  padding-bottom: 7px; // icon-height/2 (8px) - track-height/2 (1px)
+
+  input[type=range] {
+    vertical-align: middle;
+    -webkit-appearance: none;
+    background-color: $lap-icon-color;
+    // background-color: rgba(0,0,0,0);
+    width: $lap-icon-size * 8; // num-icons - volume-icon
+    height: 2px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    z-index: 26;
+    vertical-align: middle;
+    -webkit-appearance: none;
+    background-color: $lap-icon-color;
+    border: none;
+    width: 8px;
+    height: 14px;
+  }  
+}
+
+.lap-volume-range-wrapper {
+
+}
+
+.lap-seek-range-wrapper {
+  width: $lap-icon-size * 8;
+  position: relative;
+  z-index: 26;
+  input[type=range] {
+    background-color: rgba(0,0,0,0);
+    position: relative;
+    top: -18px;
+  }
+}
+
+.lap {
+  // container (track)
+  progress[value]::-webkit-progress-bar/*, progress[value]::-moz-progress-bar*/ {
+    background: lighten($lap-icon-color, 32%);
+  }
+  // value
+  progress[value]::-webkit-progress-value {
+    background: $lap-icon-color;
+  }
+  progress {
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    z-index: -26;
+    position: relative;
+    left: 2px;
+    top: -1px;
+    border: none; // firefox
+    background: rgba(0,0,0,0);
+    width: $lap-icon-size * 8;
+    height: 2px;
+    vertical-align: 2px;
+  }
+}
+
+// container for children that need to be centered
+// set vertical-align: middle; on the child
+.lap-center-cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.lap-album-step {
+  display: inline-block;
+  padding: 0 2px;
+  border: 1px solid $lap-border-color;
+}
+
+.lap-label {
+  font-size: 12px;
+  color: $lap-icon-color;
+}
+
+.lap-hidden {
+  display: none !important;
+}
+
+.lap-center-child {
+  vertical-align: middle;
+}
+
+.lap-inline-block {
+  display: inline-block;
+} 
+
+.lap-inline {
+  display: inline;
+}
+
+.lap-non-volume {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}

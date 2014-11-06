@@ -68,7 +68,7 @@ Lap.ExpandingVolumeRange.prototype.init = function() {
   // add the mouseup to the body so we can inc/dec volume by dragging
   // left or right regardless if we're in the same horizontal span as the slider
   // or not
-  $(lap.container).on('mouseup', function() {
+  $(/*lap.container*/'body').on('mouseup', function() {
     mouseState.down = false;
     if (!mouseState.entered) {
       $volumeSlider.addClass(hidden);
