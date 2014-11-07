@@ -1,4 +1,4 @@
-;(function(window) {
+;(function(window, undefined) {
 
   /*>>*/
   var logger = tooly.Logger(0, 'EXPANDING...');
@@ -19,7 +19,7 @@
     this.hideClass = hideClass;
     this.classes = classes || this.classes;
     return this;
-  }
+  };
 
   Lap.ExpandingVolumeRange.prototype.name = 'ExpandingVolumeRange';
 
@@ -90,4 +90,4 @@
     });
   };
 
-})(window, undefined);
+})(window);

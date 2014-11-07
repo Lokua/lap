@@ -40,7 +40,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  overflow: scroll;
+  overflow: auto;
   width: 256px;
   height: 256px;
   margin: 8px;
@@ -57,23 +57,9 @@
 .lap-details {
   font-family: verdana, sans-serif;
   font-size: 12px;
+  text-align: center;
   margin-bottom: 8px;
   width: 100%;
-}
-.lap-details td:not(.lap-control) {
-  padding-left: 16px;
-  text-align: center;
-}
-.lap-details .lap-label {
-  text-align: right;
-  font-size: 10px;
-  color: #8c8c8c;
-}
-.lap-details .lap-control {
-  font-size: 16px;
-  display: inline-block;
-  float: right;
-  text-align: right;
 }
 
 .lap-artist:after {
@@ -94,7 +80,7 @@
 
 .lap-controls {
   margin: 0 auto;
-  width: 224px;
+  width: 256px;
 }
 
 .lap-control {

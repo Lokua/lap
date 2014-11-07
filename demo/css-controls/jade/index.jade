@@ -5,6 +5,7 @@ head
   link(rel='stylesheet', href='lap-icons/style.css')
   script(src='../../dist/lap-debug.js')
   script(src='expanding-volume-range.js')
+  script(src='discog-populator.js')
   script(src='script.js')
 body
 
@@ -40,17 +41,12 @@ body
       .lap-playlist-panel.lap-hidden
       .lap-discog-panel.lap-hidden
 
-    table.lap-details
-      tr
-        td
-          span.lap-artist
-          span.lap-album
-        td.lap-control: i.lap-discog.lap-i-discog
-      tr
-        td
-          span.lap-track-number
-          span.lap-track-title
-        td.lap-control: i.lap-playlist.lap-i-playlist
+    .lap-details
+      span.lap-artist
+      span.lap-album      
+      br
+      span.lap-track-number
+      span.lap-track-title
 
     .lap-controls
       .lap-volume-wrapper
@@ -64,4 +60,6 @@ body
         .lap-seek-range-wrapper: .lap-center-cell
           progress.lap-progress(min='0', max='100')
           input.lap-seek-range(type='range', min='0', max='100', value='0')
+        .lap-control: i.lap-discog.lap-i-discog
+        .lap-control: i.lap-playlist.lap-i-playlist
 

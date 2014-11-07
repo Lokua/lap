@@ -51,7 +51,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  overflow: scroll;
+  // overflow: scroll;
+  overflow: auto;
   width: $lap-cover-wrapper-size - 16px;
   height: $lap-cover-wrapper-size - 16px;
   margin: $lap-cover-margin;
@@ -68,23 +69,9 @@
 .lap-details {
   font-family: $lap-font;
   font-size: $lap-text-size;
+  text-align: center;
   margin-bottom: 8px;
   width: 100%;
-  td:not(.lap-control) {
-    padding-left: $lap-icon-size;
-    text-align: center;
-  }
-  .lap-label {
-    text-align: right;
-    font-size: $lap-text-size - 2;
-    color: lighten($lap-text-color, 15%);
-  }
-  .lap-control {
-    font-size: $lap-icon-size;
-    display: inline-block;
-    float: right;
-    text-align: right;
-  }
 }
 
 .lap-artist {
@@ -106,7 +93,8 @@
 
 .lap-controls {
   margin: 0 auto;
-  width: $lap-icon-size * 14;
+  // width: $lap-icon-size * 14;
+  width: 256px;
 }
 
 .lap-control {

@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="lap-icons/style.css">
   <script src="../../dist/lap-debug.js"></script>
   <script src="expanding-volume-range.js"></script>
+  <script src="discog-populator.js"></script>
   <script src="script.js"></script>
 </head>
 <body>
@@ -38,16 +39,7 @@
       <div class="lap-playlist-panel lap-hidden"></div>
       <div class="lap-discog-panel lap-hidden"></div>
     </div>
-    <table class="lap-details">
-      <tr>
-        <td><span class="lap-artist"></span><span class="lap-album"></span></td>
-        <td class="lap-control"><i class="lap-discog lap-i-discog"></i></td>
-      </tr>
-      <tr>
-        <td><span class="lap-track-number"></span><span class="lap-track-title"></span></td>
-        <td class="lap-control"><i class="lap-playlist lap-i-playlist"></i></td>
-      </tr>
-    </table>
+    <div class="lap-details"><span class="lap-artist"></span><span class="lap-album">     </span><br><span class="lap-track-number"></span><span class="lap-track-title"></span></div>
     <div class="lap-controls">
       <div class="lap-volume-wrapper">
         <div class="lap-control lap-speaker-wrapper"><i class="lap-speaker lap-i-volume-high"></i></div>
@@ -67,6 +59,8 @@
             <input type="range" min="0" max="100" value="0" class="lap-seek-range">
           </div>
         </div>
+        <div class="lap-control"><i class="lap-discog lap-i-discog"></i></div>
+        <div class="lap-control"><i class="lap-playlist lap-i-playlist"></i></div>
       </div>
     </div>
   </div>
