@@ -1,5 +1,5 @@
 /*!
- * tooly - version 0.0.5 (built: 2014-11-05)
+ * tooly - version 0.0.5 (built: 2014-11-07)
  * js utility functions
  *
  * CUSTOM BUILD
@@ -684,6 +684,29 @@ tooly.Frankie.prototype.removeClass = function(klass) {
   this.els.forEach(function(x) {
     x.className = x.className.replace(_classReg(classes), ' ').trim();
   });
+  return this;
+};
+
+
+
+/**
+ * @param  {String} klass
+ * @return {this}
+ *
+ * @memberOf  tooly.Frankie
+ * @category  Frankie
+ * @instance
+ */
+tooly.Frankie.prototype.toggleClass = function(klass) {
+  var i = 0, len = this.els.length, el;
+  for (; i < len; i++) {
+    el = this.eq(i);
+    if (el.hasClass(klass)) {
+      el.removeClass(klass);
+    } else {
+      el.addClass(klass);
+    }
+  }
   return this;
 };
 
@@ -1562,7 +1585,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.6 (built: 2014-11-06)
+ * lap - version 0.0.6 (built: 2014-11-07)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -1590,10 +1613,9 @@ return tooly;
 
 /** @namespace  Lap */
 
-
-
 // internal id generator, indexed from one
-var _idGen = (_idGen || 0) + 1;
+// var _idGen = (_idGen || 0) + 1;
+var _idGen = _idGen || 0;
 // zero indexed
 var _pluginIdGen = _pluginIdGen || 0;
 
@@ -1620,18 +1642,28 @@ var $ = tooly.Frankie.bind(this);
  */
 function Lap(container, lib, options, init) {
   var lap = this;
-
   // init parent's instance
   // provides the `on` and `trigger` callback support
   tooly.Handler.call(lap);
+
+  lap.id = ++_idGen+0;
+
+
 
   // uninitialized
   lap.container = container;
   lap.lib = lib;
 
-  lap.settings = tooly.extend(lap.defaultSettings, options);
+  // extend
+  lap.settings = {};
+  for (var p in lap.defaultSettings) {
+    if (options.hasOwnProperty(p)) {
+      lap.settings[p] = options[p];
+    } else {
+      lap.settings[p] = lap.defaultSettings[p];
+    }
+  }
 
-  lap.id = _idGen++;
 
   // doc ready
   if (init || arguments.length === 3) {
@@ -1657,6 +1689,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
     defaultSettings: {
       callbacks: {},
+      discogPlaylistExclusive: true,
       plugins: {},
       prependTrackNumbers: true,
       replacementText: void 0,
@@ -1925,24 +1958,21 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         });
       }
 
-      // helper
-      var _checkAddAudioListener = function(audioEvent, prop, fn) {
-        if (lap.$els.hasOwnProperty(prop)) {
-          audio.addEventListener(audioEvent, function() {
-            fn.call(lap.$els[prop]);
-          });
-        }
-      };      
-      _checkAddAudioListener('timeupdate', 'currentTime', function() {
-        this.html(lap.currentTimeFormatted());
-      });
-      _checkAddAudioListener('durationchange', 'duration', function() {
-        this.html(lap.durationFormatted());        
-      });
-      _checkAddAudioListener('volumechange', 'volumeRead', function() {
-        this.html(lap.volumeFormatted());
-      });
-
+      if ($els.currentTime) {
+        audio.addEventListener('timeupdate', function() {
+          $els.currentTime.html(lap.currentTimeFormatted());
+        });
+      }
+      if ($els.duration) {
+        audio.addEventListener('durationchange', function() {
+          $els.duration.html(lap.durationFormatted());        
+        });
+      }
+      if ($els.volumeRead) {
+        audio.addEventListener('volumechange', function() {
+          $els.volumeRead.html(lap.volumeFormatted());
+        });
+      }
       audio.addEventListener('ended', function() {
         lap.next();
         if (lap.audio.paused) lap.audio.play();
@@ -1956,27 +1986,42 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       if ($els.volumeDown) $els.volumeDown.on('click', function() { lap.decVolume(); });
       if ($els.prevAlbum) $els.prevAlbum.on('click', function() { lap.prevAlbum(); });
       if ($els.nextAlbum) $els.nextAlbum.on('click', function() { lap.nextAlbum(); });
-      if ($els.playlistPanel && $els.playlist) {
+
+      var hasPlaylist = $els.playlistPanel && $els.playlist;
+      var hasDiscog = $els.discogPanel && $els.discog;
+
+      if (hasPlaylist) {
         $els.playlist.on('click', function() {
           if ($els.playlistPanel.hasClass('lap-hidden')) {
             $els.playlistPanel.removeClass('lap-hidden');
+            if (hasDiscog && discogPlaylistExclusive) {
+              $els.discogPanel.addClass('lap-hidden');
+            }
           } else {
             $els.playlistPanel.addClass('lap-hidden');
+            if (hasDiscog && discogPlaylistExclusive) {
+              $els.discogPanel.removeClass('lap-hidden');
+            }
           }
         });
       }
-      if ($els.discogPanel && $els.discog) {
+      if (hasDiscog) {
         $els.discog.on('click', function() {
           if ($els.discogPanel.hasClass('lap-hidden')) {
             $els.discogPanel.removeClass('lap-hidden');
+            if (hasPlaylist && discogPlaylistExclusive) {
+              $els.playlistPanel.addClass('lap-hidden');
+            }
           } else {
             $els.discogPanel.addClass('lap-hidden');
+            if (hasPlaylist && discogPlaylistExclusive) {
+              $els.playlistPanel.removeClass('lap-hidden');
+            }
           }
         });
       }
 
       lap.initSeekHandlers();
-
       lap.initVolumeHandlers();
 
       lap.on('load', function() {
@@ -2014,8 +2059,6 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           audio = lap.audio,
           seekRange = $els.seekRange,
           nativeSeek = lap.settings.useNativeSeekRange && seekRange && seekRange.els.length > 0;
-
-
 
       if (nativeSeek) {
         audio.addEventListener('timeupdate', function(e) {
@@ -2059,8 +2102,6 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           vslider = $els.volumeRange,
           nativeVolume = lap.settings.useNativeVolumeRange && vslider && vslider.els.length > 0;
 
-
-
       if (nativeVolume) {
         audio.addEventListener('volumechange', function() {
           if (!_volumeChanging) {
@@ -2071,6 +2112,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           _volumeChanging = true;
         }).on('mouseup', function() {
           audio.volume = vslider.get(0).value * 0.01;
+          lap.trigger('volumeChange');
           _volumeChanging = false;
         });
       }
@@ -2102,28 +2144,33 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       if (!this.settings.plugins) return;
       this.plugins = this.plugins || {};
       var lap = this,
-          plugins = lap.settings.plugins, plugin, name,
-          args = [],  
-          len = plugins.length, i = 0;
-      for (; i < len; i++) {
-        plugin = plugins[i];
+          plugins = lap.settings.plugins, 
+          name;
+      plugins.forEach(function(plugin, i) {
+        // plugin = plugins[i];
         if (plugin.constructor) {
           name = (plugin.name || plugin.constructor.prototype.name) 
             ? plugin.name || plugin.constructor.prototype.name
             : 'plugin' + '_' + lap.id + '_' + _pluginIdGen;
           lap.plugins[name] = (plugin.args) 
-            ? tooly.construct(plugin.constructor, args.concat(lap, plugin.args)) 
-            : tooly.construct(plugin.constructor);
+            ? tooly.construct(plugin.constructor, [].concat(lap, plugin.args)) 
+            : tooly.construct(plugin.constructor, lap);
           lap.on('load', function() { 
-            if (lap.plugins[name] && lap.plugins[name].init) {
-              lap.plugins[name].init(); 
-            } else {
-              throw new Error('Could not initialize ' + lap.plugins[name] +
-                '. The plugin has no #init property');
+            // monkey fix until we find out why this load handler is being called twice
+            // *hint: it is not named, so it looks identical?
+            lap.plugins[name].__INITIALIZED = lap.plugins[name].__INITIALIZED || false;
+            if (!lap.plugins[name].__INITIALIZED) {
+              if (lap.plugins[name] && lap.plugins[name].init) {
+                lap.plugins[name].init(); 
+              } else {
+                throw new Error('Could not initialize ' + lap.plugins[name] +
+                  '. The plugin has no #init property');
+              }
+              lap.plugins[name].__INITIALIZED = true;
             }
           });
         }
-      }
+      });
       return this;
     }, 
 

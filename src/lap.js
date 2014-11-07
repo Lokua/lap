@@ -91,7 +91,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
     defaultSettings: {
       callbacks: {},
-      discogPlaylistExclusive = true,
+      discogPlaylistExclusive: true,
       plugins: {},
       prependTrackNumbers: true,
       replacementText: void 0,
