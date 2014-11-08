@@ -12,21 +12,14 @@
 // should be added to whatever element is passed as 
 // container arg to Lap constructor
 .lap {
-
-  // font-family: $lap-font;
-
-  border: 1px dotted $lap-border-color;
+  box-shadow: 1px 1px 1px 1px $lap-border-color;
   padding: 16px;
-  // margin: 0 40%;
-
+  background: darken(white, 1%);
   display: inline-block;
   color: $lap-text-color;
-
   * {
     cursor: normal;
-    webkit-user-select: none;
-       moz-user-select: none;
-           user-select: none;
+    user-select: none;
     &:focus {
       outline: 0;
     }
@@ -47,7 +40,8 @@
   margin: $lap-cover-margin;
   width:$lap-cover-size;
   height:$lap-cover-size;
-  border: 1px dotted $lap-border-color;
+  // border: 1px dotted $lap-border-color;
+  box-shadow: 1px 1px 1px 1px $lap-border-color;
 }
 .lap-playlist-panel, .lap-discog-panel {
   position: absolute;
@@ -67,13 +61,21 @@
     padding: 0;
   }
 }
+.lap-playlist-current {
+  color: #AAD5FF;
+}
 .lap-playlist-track-title {
   @include underline-text-on-hover($lap-playlist-text-color);
-  // display: inline-block;
   text-decoration: none;
   transition: 0.5s;
-  // cursor: pointer;
+  cursor: pointer;
+}
 
+.lap-discog-item {
+  img {
+    width: $lap-discog-thumb-size;
+    height: $lap-discog-thumb-size;
+  }
 }
 
 .lap-details {

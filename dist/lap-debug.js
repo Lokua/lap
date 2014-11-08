@@ -1933,7 +1933,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.6 (built: 2014-11-07)
+ * lap - version 0.0.6 (built: 2014-11-08)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -2409,6 +2409,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         if ($els.trackTitle) lap.updateTrackTitleEl();
         if ($els.trackNumber) lap.updateTrackNumberEl();
         if ($els.playlistPanel) lap.updatePlaylistItem();
+        if ($els.currentTime) $els.currentTime.html(lap.currentTimeFormatted());
+        if ($els.duration) $els.duration.html(lap.durationFormatted());
       }).on('albumChange', function() {
         if ($els.trackTitle) lap.updateTrackTitleEl();
         if ($els.trackNumber) lap.updateTrackNumberEl();
@@ -2507,76 +2509,29 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf Lap
      */
     initPlugins: function() {
-      // if (!this.settings.plugins) return;
-      // this.plugins = this.plugins || [];
-      // var lap = this,
-      //     plugins = lap.settings.plugins,
-      //     args = [];
-      // plugins.forEach(function(plugin, i) {
-      //   if (plugin && plugin.constructor) {
-      //     var plug = plugin.args 
-      //       ? plugin.constructor.call(plugin.constructor, lap)
-      //       : plugin.constructor.apply(plugin.constructor, [].concat(lap, plugin.args));
-      //     lap.plugins[i] = plug;
-      //   }
-      // });
-      // lap.on('load', function() {
-      //   lap.plugins.forEach(function(plugin) {
-      //     if (plugin.init) {
-      //       plugin.init();
-      //     } else {
-      //       // throw new Error('Could not initialize ' + lap.plugins[name] +
-      //       //   '. The plugin has no #init property');
-      //     }
-      //   });
-      // });
-      // lap.logger.debug(lap.plugins);
-
       if (!this.settings.plugins) return;
-      this.plugins = this.plugins || {};
+      this.plugins = this.plugins || [];
       var lap = this,
-          plugins = lap.settings.plugins, 
+          plugins = lap.settings.plugins,
+          instance = {},
           args = [],
           name;
-      /*>>*/
-      console.group();
-      /*<<*/
       plugins.forEach(function(plugin, i) {
-        /*>>*/
-        lap.logger.debug(plugin, i);
-        /*<<*/
-        // plugin = plugins[i];
         if (plugin.constructor) {
-          /*>>*/
-          lap.logger.debug('yes ctor', plugin, i);
-          /*<<*/
-          // name = (plugin.name || plugin.constructor.prototype.name) 
-          //   ? plugin.name || plugin.constructor.prototype.name
-          //   : 'plugin' + '_' + lap.id + '_' + _pluginIdGen;
-          name = 'plugin' + '_' + lap.id + '_' + _pluginIdGen;
-          lap.plugins[name] = (plugin.args) 
+          instance = (plugin.args) 
             ? tooly.construct(plugin.constructor, args.concat(lap, plugin.args)) 
             : tooly.construct(plugin.constructor, lap);
+          lap.plugins[i] = instance;
           lap.on('load', function() { 
-            // monkey fix until we find out why this load handler is being called twice
-            // *hint: it is not named, so it looks identical?
-            lap.plugins[name].__INITIALIZED = lap.plugins[name].__INITIALIZED || false;
-            if (!lap.plugins[name].__INITIALIZED) {
-              if (lap.plugins[name] && lap.plugins[name].init) {
-                lap.plugins[name].init();
-                /*>>*/
-                lap.logger.debug('init called on %o', lap.plugins[name]);
-                /*<<*/ 
-              } else {
-                throw new Error('Could not initialize ' + lap.plugins[name] +
-                  '. The plugin has no #init property');
-              }
-              lap.plugins[name].__INITIALIZED = true;
+            if (lap.plugins[i] && lap.plugins[i].init) {
+              lap.plugins[i].init();
+            } else {
+              throw new Error('Could not initialize ' + lap.plugins[i] +
+                '. The plugin has no #init property');
             }
           });
         }
       });
-      console.groupEnd();
       return this;
     }, 
 
@@ -3012,7 +2967,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     currentTimeFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
-      if (this.audio.duration < 3600) {
+      if (this.audio.duration < 3600 || formatted === '00:00:00') {
         return formatted.slice(3); // two digits and the colon
       }
       return formatted;

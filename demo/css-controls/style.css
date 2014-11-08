@@ -5,15 +5,14 @@
 }
 
 .lap {
-  border: 1px dotted #ddd;
+  box-shadow: 1px 1px 1px 1px #ddd;
   padding: 16px;
+  background: #fcfcfc;
   display: inline-block;
   color: #666;
 }
 .lap * {
   cursor: normal;
-  webkit-user-select: none;
-  moz-user-select: none;
   user-select: none;
 }
 .lap *:focus {
@@ -35,7 +34,7 @@
   margin: 8px;
   width: 256px;
   height: 256px;
-  border: 1px dotted #ddd;
+  box-shadow: 1px 1px 1px 1px #ddd;
 }
 
 .lap-playlist-panel, .lap-discog-panel {
@@ -56,11 +55,16 @@
   padding: 0;
 }
 
+.lap-playlist-current {
+  color: #AAD5FF;
+}
+
 .lap-playlist-track-title {
   position: relative;
   text-decoration: none;
   text-decoration: none;
   transition: 0.5s;
+  cursor: pointer;
 }
 .lap-playlist-track-title:before {
   content: '';
@@ -77,6 +81,11 @@
 .lap-playlist-track-title:hover:before {
   visibility: visible;
   transform: scaleX(1);
+}
+
+.lap-discog-item img {
+  width: 80px;
+  height: 80px;
 }
 
 .lap-details {
