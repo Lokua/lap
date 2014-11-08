@@ -12,8 +12,7 @@
   Lap.DiscogPopulator.prototype.name = 'DiscogPopulator';
 
   Lap.DiscogPopulator.prototype.init = function() {
-    var dp = this, 
-        lap = dp.lap;
+    var lap = this.lap;
     lap.$els.discogPanel.html(tooly.tag('ul', lap.property('album').map(function(a) {
       return tooly.tag('li .lap-discog-item', a);
     }).join('')));

@@ -16,7 +16,7 @@
    */
   Lap.ExpandingVolumeRange = function(lap, hideClass, classes) {
     this.lap = lap;
-    this.hideClass = hideClass;
+    this.hideClass = hideClass || 'lap-hidden';
     this.classes = classes || this.classes;
     return this;
   };
@@ -64,17 +64,20 @@
 
     $('.lap-volume-wrapper', lap.container)
       .on('mouseenter', function() {
+        /*>>*/
+        logger.debug('mouseentered');
+        /*<<*/
         if (!mouseState.entered) {
-          $volumeRange.removeClass('lap-hidden');
-          $opps.addClass('lap-hidden');
+          $volumeRange.removeClass(hideClass);
+          $opps.addClass(hideClass);
           mouseState.entered = true;
         }
       })
       .on('mouseleave', function(e) {
         mouseState.entered = false;
         if (!mouseState.down) {
-          $volumeRange.addClass('lap-hidden');
-          $opps.removeClass('lap-hidden');
+          $volumeRange.addClass(hideClass);
+          $opps.removeClass(hideClass);
         };
       });
 
@@ -84,10 +87,14 @@
     $('body').on('mouseup', function() {
       mouseState.down = false;
       if (!mouseState.entered) {
-        $volumeRange.addClass('lap-hidden');
-        $opps.removeClass('lap-hidden');
+        $volumeRange.addClass(hideClass);
+        $opps.removeClass(hideClass);
       }
     });
+
+    /*>>*/
+    logger.debug('init called');
+    /*<<*/
   };
 
 })(window);

@@ -24,7 +24,9 @@
 
   * {
     cursor: normal;
-    user-select: none;
+    webkit-user-select: none;
+       moz-user-select: none;
+           user-select: none;
     &:focus {
       outline: 0;
     }
@@ -56,14 +58,22 @@
   width: $lap-cover-wrapper-size - 16px;
   height: $lap-cover-wrapper-size - 16px;
   margin: $lap-cover-margin;
-  color: gray-scale(245);
-  background: rgba(0,0,0,0.5);
+  color: $lap-playlist-text-color;
+  background: rgba(0,0,0,0.62);
   font-size: $lap-text-size;
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
   }
+}
+.lap-playlist-track-title {
+  @include underline-text-on-hover($lap-playlist-text-color);
+  // display: inline-block;
+  text-decoration: none;
+  transition: 0.5s;
+  // cursor: pointer;
+
 }
 
 .lap-details {
@@ -83,7 +93,7 @@
   font-style: italic;
 }
 .lap-track-number {
-  font-family: consolas, monaco, menlo, monospace;
+  font-family: $lap-monospace;
   // font-size: $lap-text-size - 2px;
   color: lighten($lap-text-color, 15%);
   &:after {
@@ -128,7 +138,7 @@
     -webkit-appearance: none;
     background-color: $lap-icon-color;
     // background-color: rgba(0,0,0,0);
-    width: $lap-icon-size * 8; // num-icons - volume-icon
+    width: $lap-progress-width;
     height: 2px;
   }
   input[type=range]::-webkit-slider-thumb {
@@ -142,12 +152,8 @@
   }  
 }
 
-.lap-volume-range-wrapper {
-
-}
-
 .lap-seek-range-wrapper {
-  width: $lap-icon-size * 8;
+  width: $lap-progress-width;
   position: relative;
   z-index: 26;
   input[type=range] {
@@ -176,10 +182,19 @@
     top: -1px;
     border: none; // firefox
     background: rgba(0,0,0,0);
-    width: $lap-icon-size * 8;
+    width: $lap-progress-width;
     height: 2px;
     vertical-align: 2px;
   }
+}
+
+// lap-current-time, lap-duration
+.lap-read {
+  // font-family: $lap-monospace;
+  display: inline;
+  font-size: 9px;
+  position: relative;
+  top: -3px;
 }
 
 // container for children that need to be centered

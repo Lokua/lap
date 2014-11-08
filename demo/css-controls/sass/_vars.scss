@@ -1,6 +1,7 @@
 $lap-text-color: #666;
 $lap-text-size: 12px;
 $lap-font: verdana, sans-serif;
+$lap-monospace: consolas, monaco, menlo, monospace;
 
 $lap-icon-size: 16px;
 $lap-icon-color: $lap-text-color;
@@ -10,3 +11,7 @@ $lap-border-color: #ddd;
 $lap-cover-size: 256px;
 $lap-cover-margin: 8px;
 $lap-cover-wrapper-size: $lap-cover-size + ($lap-cover-margin * 2);
+
+$lap-playlist-text-color: gray-scale(245);
+
+$lap-progress-width: 76px;
