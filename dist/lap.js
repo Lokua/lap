@@ -1585,7 +1585,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.6 (built: 2014-11-07)
+ * lap - version 0.0.6 (built: 2014-11-08)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -1613,14 +1613,11 @@ return tooly;
 
 /** @namespace  Lap */
 
-// internal id generator, indexed from one
-// var _idGen = (_idGen || 0) + 1;
 var _idGen = _idGen || 0;
-// zero indexed
 var _pluginIdGen = _pluginIdGen || 0;
 
 
-// alias tooly.Frankie constructor. Handles all jQuery dom selection.
+// alias tooly.Frankie constructor. Handles all jQuery-like dom selection.
 // TODO: make replacable with whatever selector lib that conforms to the API
 // @type {tooly.Selector}
 var $ = tooly.Frankie.bind(this);
@@ -1682,8 +1679,9 @@ function Lap(container, lib, options, init) {
 
 tooly.inherit(tooly.Handler, Lap, (function() {
 
-  var _seeking = _volumeChanging = false, 
-      _mouseDownTimer;
+  // shouldn't these be instance?
+  var _SEEKING = _VOLUME_CHANGING = _PLAYLIST_OPEN = _DISCOG_OPEN = false, 
+      _MOUSEDOWN_TIMER;
 
   return {
 
@@ -1888,33 +1886,32 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           re[0] = (flags !== undefined) ? new RegExp(re[0], flags) : new RegExp(re[0], 'g');
         }
       } 
-
       if (tooly.type(lap.files) === 'string') {
         lap.trackCount = 1;
       } else {
         lap.trackCount = lap.files.length;
       }
-      lap.matchtracklist();
+      lap.formatTracklist();
     },
 
     /**
      * Places relative file names in place of an empty or mismatched tracklist array.
      * Also applies any regex specified in settings.replacement
+     * 
      * @memberOf  Lap
      */
-    matchtracklist: function() {
-      var lap = this, i = 0;
+    formatTracklist: function() {
+      var lap = this;
       // if mismatch, ignore tracklist completely
       if (lap.tracklist === undefined || lap.trackCount > lap.tracklist.length) {
-        lap.tracklist = [];
-        var re = lap.replacement;
+        var re = lap.replacement, tracklist = [], i = 0;
         for (; i < lap.trackCount; i++) {
-
-          lap.tracklist[i] = tooly.sliceRel(lap.files[i].replace('.' + lap.getFileType(), ''));
+          tracklist[i] = tooly.sliceRel(tooly.stripExtension(lap.files[i]));
           if (re !== undefined) {
-            lap.tracklist[i] = lap.tracklist[i].replace(re[0], re[1]);
+            tracklist[i] = tracklist[i].replace(re[0], re[1]);
           }
         }
+        lap.tracklist = tracklist;
       }
     },
 
@@ -1941,10 +1938,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     addListeners: function() {
       var lap = this, 
           $els = lap.$els,
-          audio = lap.audio,
-          pre = lap.settings.selectorPrefix;
+          audio = lap.audio;
 
-      var nativeProgress = lap.settings.useNativeProgress && $els.progress && $els.progress.els.length;
+      var nativeProgress = 
+        lap.settings.useNativeProgress && $els.progress && $els.progress.els.length;
 
       if ($els.buffered || nativeProgress) {
         audio.addEventListener('progress', function() {
@@ -1994,12 +1991,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         $els.playlist.on('click', function() {
           if ($els.playlistPanel.hasClass('lap-hidden')) {
             $els.playlistPanel.removeClass('lap-hidden');
-            if (hasDiscog && discogPlaylistExclusive) {
+            _PLAYLIST_OPEN = true;
+            if (hasDiscog && lap.settings.discogPlaylistExclusive) {
               $els.discogPanel.addClass('lap-hidden');
             }
           } else {
             $els.playlistPanel.addClass('lap-hidden');
-            if (hasDiscog && discogPlaylistExclusive) {
+            _PLAYLIST_OPEN = false;
+            if (hasDiscog && lap.settings.discogPlaylistExclusive && _DISCOG_OPEN) {
               $els.discogPanel.removeClass('lap-hidden');
             }
           }
@@ -2009,12 +2008,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         $els.discog.on('click', function() {
           if ($els.discogPanel.hasClass('lap-hidden')) {
             $els.discogPanel.removeClass('lap-hidden');
-            if (hasPlaylist && discogPlaylistExclusive) {
+            _DISCOG_OPEN = true;
+            if (hasPlaylist && lap.settings.discogPlaylistExclusive) {
               $els.playlistPanel.addClass('lap-hidden');
             }
           } else {
             $els.discogPanel.addClass('lap-hidden');
-            if (hasPlaylist && discogPlaylistExclusive) {
+            _DISCOG_OPEN = false;
+            if (hasPlaylist && lap.settings.discogPlaylistExclusive && _PLAYLIST_OPEN) {
               $els.playlistPanel.removeClass('lap-hidden');
             }
           }
@@ -2043,6 +2044,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         if ($els.trackTitle) lap.updateTrackTitleEl();
         if ($els.trackNumber) lap.updateTrackNumberEl();
         if ($els.playlistPanel) lap.updatePlaylistItem();
+        if ($els.currentTime) $els.currentTime.html(lap.currentTimeFormatted());
+        if ($els.duration) $els.duration.html(lap.durationFormatted());
       }).on('albumChange', function() {
         if ($els.trackTitle) lap.updateTrackTitleEl();
         if ($els.trackNumber) lap.updateTrackNumberEl();
@@ -2062,34 +2065,34 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       if (nativeSeek) {
         audio.addEventListener('timeupdate', function(e) {
-          if (!_seeking) {
+          if (!_SEEKING) {
             seekRange.get(0).value = tooly.scale(audio.currentTime, 0, audio.duration, 0, 100);
           }
         });
         seekRange.on('mousedown', function(e) {
-          _seeking = true;
+          _SEEKING = true;
         }).on('mouseup', function(e) {
           var el = seekRange.get(0);
           audio.currentTime = tooly.scale(el.value, 0, el.max, 0, audio.duration);
           lap.trigger('seek');
-          _seeking = false;
+          _SEEKING = false;
         });
 
       } else { // using buttons
         [$els.seekForward, $els.seekBackward].forEach(function(el) {
           if (!el) return;
           el.on('mousedown', function(e) {
-            _seeking = true;
+            _SEEKING = true;
             if ($(e.target).hasClass('lap-seek-forward')) {
               lap.seekForward();
             } else {
               lap.seekBackward();
             }
           }).on('mouseup', function(e) {
-            _seeking = false;
-            // TODO: won't this private _mouseDownTimer be universal
+            _SEEKING = false;
+            // TODO: won't this private _MOUSEDOWN_TIMER be universal
             // to all Lap instance's? Should be instance member
-            clearTimeout(_mouseDownTimer);
+            clearTimeout(_MOUSEDOWN_TIMER);
           });
         });
       }
@@ -2104,16 +2107,16 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       if (nativeVolume) {
         audio.addEventListener('volumechange', function() {
-          if (!_volumeChanging) {
+          if (!_VOLUME_CHANGING) {
             vslider.get(0).value = lap.volumeFormatted();
           }
         });
         vslider.on('mousedown', function() {
-          _volumeChanging = true;
+          _VOLUME_CHANGING = true;
         }).on('mouseup', function() {
           audio.volume = vslider.get(0).value * 0.01;
           lap.trigger('volumeChange');
-          _volumeChanging = false;
+          _VOLUME_CHANGING = false;
         });
       }
     },   
@@ -2142,31 +2145,24 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     initPlugins: function() {
       if (!this.settings.plugins) return;
-      this.plugins = this.plugins || {};
+      this.plugins = this.plugins || [];
       var lap = this,
-          plugins = lap.settings.plugins, 
+          plugins = lap.settings.plugins,
+          instance = {},
+          args = [],
           name;
       plugins.forEach(function(plugin, i) {
-        // plugin = plugins[i];
         if (plugin.constructor) {
-          name = (plugin.name || plugin.constructor.prototype.name) 
-            ? plugin.name || plugin.constructor.prototype.name
-            : 'plugin' + '_' + lap.id + '_' + _pluginIdGen;
-          lap.plugins[name] = (plugin.args) 
-            ? tooly.construct(plugin.constructor, [].concat(lap, plugin.args)) 
+          instance = (plugin.args) 
+            ? tooly.construct(plugin.constructor, args.concat(lap, plugin.args)) 
             : tooly.construct(plugin.constructor, lap);
+          lap.plugins[i] = instance;
           lap.on('load', function() { 
-            // monkey fix until we find out why this load handler is being called twice
-            // *hint: it is not named, so it looks identical?
-            lap.plugins[name].__INITIALIZED = lap.plugins[name].__INITIALIZED || false;
-            if (!lap.plugins[name].__INITIALIZED) {
-              if (lap.plugins[name] && lap.plugins[name].init) {
-                lap.plugins[name].init(); 
-              } else {
-                throw new Error('Could not initialize ' + lap.plugins[name] +
-                  '. The plugin has no #init property');
-              }
-              lap.plugins[name].__INITIALIZED = true;
+            if (lap.plugins[i] && lap.plugins[i].init) {
+              lap.plugins[i].init();
+            } else {
+              throw new Error('Could not initialize ' + lap.plugins[i] +
+                '. The plugin has no #init property');
             }
           });
         }
@@ -2407,9 +2403,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     seekBackward: function() {
-      if (!_seeking) return;
+      if (!_SEEKING) return;
       var lap = this;
-      _mouseDownTimer = setInterval(function() {
+      _MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(false);
       }, lap.settings.seekTime);
       return this;
@@ -2423,9 +2419,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     seekForward: function() {
-      if (!_seeking) return;
+      if (!_SEEKING) return;
       var lap = this;
-      _mouseDownTimer = setInterval(function() {
+      _MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(true);
       }, lap.settings.seekTime);
       return this;
@@ -2603,7 +2599,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     currentTimeFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
-      if (this.audio.duration < 3600) {
+      if (this.audio.duration < 3600 || formatted === '00:00:00') {
         return formatted.slice(3); // two digits and the colon
       }
       return formatted;
