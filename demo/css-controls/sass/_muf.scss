@@ -5,6 +5,14 @@
 // --- MIXINS
 //
 
+@mixin clearfix {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
 @mixin underline-text-on-hover($color) {
   // display: inline-block;
   position: relative;
@@ -29,6 +37,10 @@
   }
 }
 
+@mixin minimal-box-shadow($color) {
+  box-shadow: 1px 1px 1px 1px $color;
+}
+
 // 
 // --- FUNCTIONS
 // 
@@ -37,4 +49,12 @@
 // are optional. Defaults to rgba(127, 127, 127, 1);
 @function gray-scale($val: 127, $alpha: 1) {
   @return rgba($val, $val, $val, $alpha);
+}
+
+// 
+// --- UTILITY CLASSES (@extend us)
+// 
+
+.clearfix {
+  @include clearfix;
 }

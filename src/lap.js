@@ -90,7 +90,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     defaultSettings: {
       callbacks: {},
       discogPlaylistExclusive: true,
-      plugins: {},
+      plugins: null,
       prependTrackNumbers: true,
       replacementText: void 0,
       startingAlbumIndex: 0,
@@ -565,8 +565,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
             if (lap.plugins[i] && lap.plugins[i].init) {
               lap.plugins[i].init();
             } else {
-              throw new Error('Could not initialize ' + lap.plugins[i] +
-                '. The plugin has no #init property');
+              /*>>*/
+              lap.logger.debug('lap.plugins: %o', lap.plugins);
+              /*<<*/
+              // throw new Error('Could not initialize ' + lap.plugins[i] +
+                // '. The plugin has no #init property');
             }
           });
         }
@@ -590,7 +593,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     updateTrackNumberEl: function() {
       var lap = this;
-      lap.$els.trackNumber.html(lap.trackIndex+1);
+      lap.$els.trackNumber.html(+lap.trackIndex+1);
       return lap;
     },
 
@@ -936,16 +939,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     updatePlaylistItem: function() {
       var lap = this;
-      // remove highlight
       $('li', lap.$els.playlistPanel).removeClass('lap-playlist-current')
-        // highlight
         .eq(lap.trackIndex).addClass('lap-playlist-current');
       return lap;
     },    
 
     /**
-     * TODO: shouldn't lib already be an array at this point (from #update)?
-     * 
      * @return {String} the currently qued file's extension sans `.`
      * @memberOf  Lap
      */
@@ -954,17 +953,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       if (this.libType === 'string') { // lib itself is the file
         file = this.lib;
       } else if (this.libType === 'object') { // full album
-        if (this.trackCount === 1) {
-          file = this.lib.files;
-        } else {
-          file = this.lib.files[this.trackIndex];
-        }
+        file = this.lib.files[this.trackIndex];
       } else if (this.libType === 'array') { // array of albums
-        if (this.trackCount === 1) {
-          file = this.lib[this.albumIndex].files;
-        } else {
-          file = this.lib[this.albumIndex].files[this.trackIndex];
-        }
+        file = this.lib[this.albumIndex].files[this.trackIndex];
       }
       return (file === undefined) ? '"unknown filetype"' : tooly.extension(file);
     },
@@ -984,7 +975,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         buffered = audio.buffered.end(audio.buffered.length-1);
       } catch(e) {
         return 0;
-        // tooly.trace('bufferFormatted', e.name);
+        // this.logger.trace('bufferFormatted', e.name);
       }
       var formatted = Math.round(tooly.scale(buffered, 0, audio.duration, 0, 100));
       // TODO: why are we returning 0?
@@ -1006,7 +997,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     currentTimeFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
-      if (this.audio.duration < 3600 || formatted === '00:00:00') {
+      if (this.audio.duration < 3600 || formatted === '00:00:00' || formatted === 'NaN:NaN:NaN') {
         return formatted.slice(3); // two digits and the colon
       }
       return formatted;
@@ -1018,7 +1009,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * ### Example
      * ```js
      * var duration  = lap.audio.duration;      //=> 151.222857
-     * var formatted = lap.durationFormatted(); //=> 0:02:31
+     * var formatted = lap.durationFormatted(); //=> 02:31
      * ```
      * 
      * @return {String} human readable time in hh:mm:ss format
@@ -1027,7 +1018,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     durationFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.duration.toFixed(1)));
-      if (this.audio.duration < 3600) {
+      if (this.audio.duration < 3600 || formatted === '00:00:00' || formatted === 'NaN:NaN:NaN') {
         return formatted.slice(3);
       }
       return formatted;
@@ -1099,15 +1090,6 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     getSelector: function() {
       return $;
-    },
-
-    /**
-     * Equivalent of calling `JSON.stringify(this)`
-     * 
-     * @memberOf  Lap
-     */
-    toString: function() {
-      return JSON.stringify(this);
     }
   }; // end return
 })()); // end anon }, end wrapper ), call wrapper (), end tooly.inherit );

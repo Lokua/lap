@@ -5,37 +5,35 @@
     var logger = tooly.Logger(0, 'CSS_DEMO');
     var $ = tooly.Frankie.bind(this);
 
-
-
-    var lap = new Lap('#lap', '../lib.json', { 
+/*    var player_01 = new Lap('#player_01', '../lib.json', { 
       startingAlbumIndex: 2,
       useNativeVolumeRange: true,
       callbacks: {
         play : function() { 
-          lap.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause'); 
+          player_01.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause'); 
         },
         pause: function() { 
-          lap.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
+          player_01.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
         }
       },
       plugins: [{ 
         constructor: Lap.ExpandingVolumeRange, 
         args: ['.lap-non-volume'] 
       }] 
-    }, false);
+    }, true);*/
 
 
 
-    var lap2 = new Lap('#lap2', '../lib.json', { 
+    var player_02 = new Lap('#player_02', '../lib.json', { 
       useNativeVolumeRange: true,
       useNativeSeekRange: true,
       useNativeProgress: true,
       callbacks: {
         play : function() { 
-          lap2.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
+          player_02.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
         },
         pause: function() { 
-          lap2.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
+          player_02.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
         }
       },
       plugins: [{ 
@@ -46,18 +44,38 @@
       }] 
     }, true);
 
-    // lap2.on('load', function() {
-    //   var PLAYLIST_OPEN = DISCOG_OPEN = false;
-    //   lap2.$els.discog.on('click', function() {
-    //     DISCOG_OPEN = !DISCOG_OPEN;
-    //     if (DISCOG_OPEN) lap2.$els.playlistPanel.addClass('lap-hidden');
-    //   });
-    //   lap2.$els.playlist.on('click', function() {
-    //     PLAYLIST_OPEN = !PLAYLIST_OPEN;
-    //     if (PLAYLIST_OPEN) lap2.$els.discogPanel.addClass('lap-hidden');
-    //   });
-    // });
+    var singleTrackPlayerLib = {
+      artist: 'Lokua',
+      files: ['../sh.mp3']
+    };
 
+    var singleTrackPlayer = new Lap('#single-track-player', singleTrackPlayerLib, {
+      useNativeVolumeRange: true,
+      useNativeSeekRange: true,
+      callbacks: {
+        play : function() { 
+          singleTrackPlayer.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
+        },
+        pause: function() { 
+          singleTrackPlayer.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
+        }
+      },
+      plugins: [{ 
+        constructor: Lap.ExpandingVolumeRange, 
+        args: ['.lap-non-volume'] 
+      }]       
+    }, true);
+
+    var miniPlayer = new Lap('#mini-player', '../sh.mp3', {
+      callbacks: {
+        play : function() { 
+          miniPlayer.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
+        },
+        pause: function() { 
+          miniPlayer.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
+        }
+      }
+    }, true);
 
   };
 })(window);

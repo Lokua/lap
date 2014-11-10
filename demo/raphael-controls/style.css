@@ -3,7 +3,7 @@
 }
 
 .lap-box-shadow, .lap-control[data-lap-tooltip]:hover:after, .lap-info-panel, .lap-playlist-panel {
-  box-shadow: 0 0 4px #888888;
+  box-shadow: 0 0 4px #888;
 }
 
 .lap {
@@ -11,7 +11,7 @@
   margin: 0 auto;
   position: relative;
   font-family: Consolas, 'Lucida Console', Monaco, monospace;
-  color: #888888;
+  color: #888;
 }
 
 *[id^='lap-rcs-'], *[id^='lap-rcf-'] {
@@ -24,15 +24,15 @@
   cursor: pointer;
 }
 .lap-control:hover *[id^='lap-rcs-'] {
-  stroke: #777777;
+  stroke: #777;
 }
 .lap-control:hover *[id^='lap-rcf-'] {
-  fill: #777777;
+  fill: #777;
 }
 .lap-control[data-lap-tooltip]:hover:after {
   content: attr(data-lap-tooltip);
   padding: 4px;
-  color: #888888;
+  color: #888;
   background: #fff;
   position: absolute;
   left: 0;
@@ -54,10 +54,9 @@
   cursor: pointer;
 }
 
-/* jQuery hide/show on volume-button hover */
 .lap-info-panel {
   display: none;
-  color: #888888;
+  color: #888;
   background: #fff;
   position: relative;
   left: 0;
@@ -72,16 +71,16 @@
 }
 
 .lap-artist, .lap-album-title, .lap-track-title, .lap-playlist-item {
-  color: #888888;
+  color: #888;
 }
 
 .lap-current {
-  color: #0080ff;
+  color: #0080FF;
 }
 
 .lap-playlist-panel {
   display: none;
-  color: #888888;
+  color: #888;
   background: #fff;
   padding: 4px;
 }

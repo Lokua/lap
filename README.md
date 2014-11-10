@@ -181,9 +181,8 @@ alternatively, from the Lap project root:
 1. `npm install`
 2. `grunt connect`
 
-With the `grunt-connect` server running, and you can access the file 
-from [localhost:3000/demo/basic/PAGE.HTML][3], where PAGE.HTML is the name of the demo
-(ie. _playpause.html_)
+With the `grunt-connect` server running, you can access the file 
+from [localhost:3000/demo/<folder>/index.html][3].
 
 ## License
 

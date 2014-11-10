@@ -1,5 +1,5 @@
 /*!
- * tooly - version 0.0.5 (built: 2014-11-07)
+ * tooly - version 0.2.4 (built: 2014-11-09)
  * js utility functions
  *
  * https://github.com/Lokua/tooly.git
@@ -59,17 +59,17 @@ function _toArray(obj) {
   return [].map.call(obj, function(el) { return el; });
 }
 
-/*!
- * @see  tooly#basicExtend
- */
-function _extend(dest, src) {
-  for (var p in src) {
-    if (src.hasOwnProperty(p)) {
-      dest[p] = src[p];
-    }
-  }
-  return dest;
-}
+// /*!
+//  * @see  tooly#basicExtend
+//  */
+// function _extend(dest, src) {
+//   for (var p in src) {
+//     if (src.hasOwnProperty(p)) {
+//       dest[p] = src[p];
+//     }
+//   }
+//   return dest;
+// }
 
 // modified from http://stackoverflow.com/a/9229821/2416000
 // TODO: this modifies original arr, find unaltering way
@@ -86,7 +86,7 @@ function _sortUnique(arr) {
  * @namespace  tooly
  * @type {Object}
  */
-var tooly = { version: '0.0.5' };
+var tooly = {};
 
 
 
@@ -258,7 +258,7 @@ function _pend(append, els, content) {
  * @example
  * ```js
  * // alias the Frankie namespace
- * var $ = Frankie.bind(this);
+ * var $ = tooly.Frankie.bind(this);
  * var $divs = $(divs);
  * $divs.css({color:'green'});
  * // multiple yet separate selectors must be comma separated
@@ -710,19 +710,6 @@ tooly.Frankie.prototype.toggleClass = function(klass) {
 
 
 /**
- * @return {String}
- * @memberOf  tooly.Frankie
- * @category  Frankie
- * @instance
- */
-tooly.Frankie.prototype.toString = function() { 
-  return JSON.stringify(this);
-  // return '[object Frankie]'; 
-};
-
-
-
-/**
  * @return {Boolean} `true` if this instance's inner elements array is empty.
  * 
  * @memberOf tooly.Frankie
@@ -736,7 +723,59 @@ tooly.Frankie.prototype.zilch = function() {
 
 
 /**
- * Constructor.
+ * Class constructor. Simple event handling, best when inherited. Execute named functions
+ * by triggering a Handler reference of the same name.
+ *
+ * ### Example
+ * ```js
+ * var handler = new tooly.Handler();
+ *
+ * function world() { 
+ *   console.log('world!'); 
+ * }
+ * 
+ * function hello() { 
+ *   console.log('hello '); 
+ *   handler.trigger('hello');
+ * }
+ * 
+ * handler.on('hello', function() { 
+ *   world(); 
+ * });
+ * 
+ * hello(); //=> "hello world!";
+ * ```
+ *
+ * Using [#inherit](`tooly.inherit`), you can add all Handler functionality to your class
+ * without having to use the handler reference:
+ *
+ * ```js
+ * function MyClass(name) {
+ *   // initialize the parent class
+ *   tooly.Handler.call(this);
+ *   this.name = name;
+ *   this.init();
+ *   return this;
+ * }
+ * 
+ * // add all of the tooly.Handler.prototype methods to MyClass.prototype.
+ * // third argument also augments MyClass.prototype
+ * tooly.inherit(MyClass, tooly.Handler, {
+ * 
+ *   init: function() {
+ *     this.on('load', function() {
+ *       console.log(this.name + ' loaded');
+ *     });
+ *   },
+ *   
+ *   load: function() {
+ *     // whatever...
+ *   }
+ * });
+ *
+ * var instance = new MyClass("let's drink a lot of Malort and get "); 
+ * instance.load(); //=> "let's drink a lot of Malort and get loaded"
+ * ```
  * 
  * @param {Object}  context   (optional) designates the owner of the `handlers` array that holds 
  *                            all callbacks. When blank the Handler instance uses its own internal
@@ -760,8 +799,11 @@ tooly.Handler = function(context) {
 
 
 /**
- * executes all handlers attached to the named function.
- * @example
+ * Executes all handlers attached to the named function.
+ * For `Handler#on(<name>)` to work, `<name>` itself needs to call `#executeHandler`.
+ * 
+ * ### Example
+ * ```js
  * var value = 0;
  * var handler = new tooly.Handler();
  * 
@@ -777,13 +819,15 @@ tooly.Handler = function(context) {
  * handler.on('inc', announce);
  * inc();
  * value; //=> 20;
+ * ```
  * 
- * @param  {(String|Object)} fn the name of the method to execute
- * @return {Object} `this` for chaining
- * 
+ * @param  {String|Object} fn the name of the function that will announce to attached handlers
+ * @return {this}
+ *
+ * @alias #trigger
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
- * @alias #exec #trigger
  */
 tooly.Handler.prototype.executeHandler = function(fn) {
   var handler = this.handlers[fn] || [],
@@ -804,6 +848,7 @@ tooly.Handler.prototype.executeHandler = function(fn) {
  * @return {Object} `this` for chaining
  * 
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
  */
 tooly.Handler.prototype.on = function(fn, handler) {
@@ -819,14 +864,15 @@ tooly.Handler.prototype.on = function(fn, handler) {
 /**
  * Add callbacks to the list of handlers. The callbacks must be an object collection of 
  * key-value pairs where the identifier key is the name of a function that calls the 
- * `executeHandler` method with the same name as the key, while the value is the callback 
+ * `#executeHandler` method with the same name as the key, while the value is the callback 
  * function itself. This method should not be used if only registering a single callback, 
- * for that use {@link #on}.
+ * for that use [#on](#on).
  * 
  * @param  {Object} handlers  collection of callback functions
- * @return {Object} `this` for chaining
+ * @return {this}
  * 
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
  */
 tooly.Handler.prototype.registerCallbacks = function(callbacks) {
@@ -845,13 +891,13 @@ tooly.Handler.prototype.registerCallbacks = function(callbacks) {
 
 /**
  * Remove all handler's attached to `fn`. All subsequent calls to 
- * `executeHandler(fn)` will no longer have an effect.
+ * `#executeHandler(fn)` will no longer have an effect.
  * 
  * @param  {Function} fn the named function that executes handler(s)
  * 
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
- * @alias #off
  */
 tooly.Handler.prototype.remove = function(fn) {
   if (this.handlers[fn] !== undefined) {
@@ -862,9 +908,10 @@ tooly.Handler.prototype.remove = function(fn) {
 
 
 /**
- * Remove all handlers. Any subsequent call to #executeHandler will have no effect.
+ * Remove all handlers. Any subsequent call to `#executeHandler` will have no effect.
  *
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
  */
 tooly.Handler.prototype.removeAll = function() {
@@ -874,21 +921,11 @@ tooly.Handler.prototype.removeAll = function() {
 
 
 /**
- * @return {String}
+ * alias for [#executeHandler](`#executeHandler`)
+ *
+ * @alias #executeHandler
  * @memberOf  tooly.Handler
- * @instance
- */
-tooly.Handler.prototype.toString = function() { 
-  return '[object Handler]'; 
-};
-
-
-
-/**
- * alias for #executeHandler
- * 
- * @ignore
- * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
  */
 tooly.Handler.prototype.trigger = function(fn) {
@@ -1075,14 +1112,6 @@ tooly.Logger.prototype.warn  = function() { _log(this, 4, _checkCaller(arguments
 tooly.Logger.prototype.error = function() { _log(this, 5, _checkCaller(arguments), arguments); };
 
 
-/**
- * @return {String}
- * @memberOf  tooly.Logger
- * @instance
- */
-tooly.Logger.prototype.toString = function() { 
-  return '[object Logger]'; 
-};
 
 
 
@@ -1096,13 +1125,11 @@ tooly.Logger.prototype.toString = function() {
  * @static
  */
 tooly.construct = function(ctor, args) {
-  function __SurrogateConstructor() {
-    return (_type(args) === 'array')
-      ? ctor.apply(this, args)
-      : ctor.call(this, args);
+  function F() {
+    return ctor.apply(this, args);
   }
-  __SurrogateConstructor.prototype = ctor.prototype;
-  return new __SurrogateConstructor();
+  F.prototype = ctor.prototype;
+  return new F();
 };
 
 
@@ -1122,7 +1149,21 @@ tooly.construct = function(ctor, args) {
  * @static
  */
 tooly.extend = function(dest, src) {
-  return _extend(dest, src);
+  var sources = _slice.call(arguments),
+      target = sources.shift();
+  target = target || {};
+  _each(sources, function(source) {
+    for (var prop in source) {
+      if (source.hasOwnProperty(prop)) {
+        if (_type(source[prop]) === 'object') {
+          target[prop] = tooly.extend(target[prop], source[prop]);
+        } else {
+          target[prop] = source[prop];
+        }
+      }
+    }
+  });
+  return target;
 };
 
 
@@ -1871,7 +1912,7 @@ tooly.Timer.prototype.stop = function() {
  * @instance
  */
 tooly.Timer.prototype.toString = function() { 
-  return '[object Timer]'; 
+  return this.elapsed + ''; 
 };
 
 
@@ -1933,7 +1974,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.6 (built: 2014-11-08)
+ * lap - version 0.0.6 (built: 2014-11-09)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -2051,7 +2092,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     defaultSettings: {
       callbacks: {},
       discogPlaylistExclusive: true,
-      plugins: {},
+      plugins: null,
       prependTrackNumbers: true,
       replacementText: void 0,
       startingAlbumIndex: 0,
@@ -2526,8 +2567,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
             if (lap.plugins[i] && lap.plugins[i].init) {
               lap.plugins[i].init();
             } else {
-              throw new Error('Could not initialize ' + lap.plugins[i] +
-                '. The plugin has no #init property');
+              /*>>*/
+              lap.logger.debug('lap.plugins: %o', lap.plugins);
+              /*<<*/
+              // throw new Error('Could not initialize ' + lap.plugins[i] +
+                // '. The plugin has no #init property');
             }
           });
         }
@@ -2551,7 +2595,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     updateTrackNumberEl: function() {
       var lap = this;
-      lap.$els.trackNumber.html(lap.trackIndex+1);
+      lap.$els.trackNumber.html(+lap.trackIndex+1);
       return lap;
     },
 
@@ -2897,16 +2941,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     updatePlaylistItem: function() {
       var lap = this;
-      // remove highlight
       $('li', lap.$els.playlistPanel).removeClass('lap-playlist-current')
-        // highlight
         .eq(lap.trackIndex).addClass('lap-playlist-current');
       return lap;
     },    
 
     /**
-     * TODO: shouldn't lib already be an array at this point (from #update)?
-     * 
      * @return {String} the currently qued file's extension sans `.`
      * @memberOf  Lap
      */
@@ -2915,17 +2955,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       if (this.libType === 'string') { // lib itself is the file
         file = this.lib;
       } else if (this.libType === 'object') { // full album
-        if (this.trackCount === 1) {
-          file = this.lib.files;
-        } else {
-          file = this.lib.files[this.trackIndex];
-        }
+        file = this.lib.files[this.trackIndex];
       } else if (this.libType === 'array') { // array of albums
-        if (this.trackCount === 1) {
-          file = this.lib[this.albumIndex].files;
-        } else {
-          file = this.lib[this.albumIndex].files[this.trackIndex];
-        }
+        file = this.lib[this.albumIndex].files[this.trackIndex];
       }
       return (file === undefined) ? '"unknown filetype"' : tooly.extension(file);
     },
@@ -2945,7 +2977,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         buffered = audio.buffered.end(audio.buffered.length-1);
       } catch(e) {
         return 0;
-        // tooly.trace('bufferFormatted', e.name);
+        // this.logger.trace('bufferFormatted', e.name);
       }
       var formatted = Math.round(tooly.scale(buffered, 0, audio.duration, 0, 100));
       // TODO: why are we returning 0?
@@ -2967,7 +2999,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     currentTimeFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
-      if (this.audio.duration < 3600 || formatted === '00:00:00') {
+      if (this.audio.duration < 3600 || formatted === '00:00:00' || formatted === 'NaN:NaN:NaN') {
         return formatted.slice(3); // two digits and the colon
       }
       return formatted;
@@ -2979,7 +3011,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * ### Example
      * ```js
      * var duration  = lap.audio.duration;      //=> 151.222857
-     * var formatted = lap.durationFormatted(); //=> 0:02:31
+     * var formatted = lap.durationFormatted(); //=> 02:31
      * ```
      * 
      * @return {String} human readable time in hh:mm:ss format
@@ -2988,7 +3020,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     durationFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.duration.toFixed(1)));
-      if (this.audio.duration < 3600) {
+      if (this.audio.duration < 3600 || formatted === '00:00:00' || formatted === 'NaN:NaN:NaN') {
         return formatted.slice(3);
       }
       return formatted;
@@ -3060,15 +3092,6 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     getSelector: function() {
       return $;
-    },
-
-    /**
-     * Equivalent of calling `JSON.stringify(this)`
-     * 
-     * @memberOf  Lap
-     */
-    toString: function() {
-      return JSON.stringify(this);
     }
   }; // end return
 })()); // end anon }, end wrapper ), call wrapper (), end tooly.inherit );

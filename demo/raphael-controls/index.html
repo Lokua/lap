@@ -4,9 +4,9 @@
   <title>Lokua Audio Player | Controls Demo</title>
 
   <script src="../../dist/lap-debug.js"></script>
-  <script src="../../dist/controls/raphael-controls/raphael-min.js"></script>
-  <script src="../../dist/controls/raphael-controls/raphael-controls-debug.js"></script>
-  <link rel="stylesheet" href="../../dist/controls/raphael-controls/style.css">
+  <script src="raphael-min.js"></script>
+  <script src="raphael-controls-debug.js"></script>
+  <link rel="stylesheet" href="style.css">
 
 </head>
 <style>
@@ -20,12 +20,12 @@
 </style>
 <body>
 
-  <h2>single track player</h2>
+  <h2>single track player  (under construction)</h2>
   
   <div class="lap" id="player_1">
     <span class="lap-control lap-play-pause"></span>
     <span class="lap-expand lap-hidden">
-      <span class="lap-control lap-seekbar"></span>
+      <span class="lap-control lap-seek-range"></span>
       <span class="lap-current-time"></span>
       <span class="lap-sep">/</span> 
       <span class="lap-duration"></span>
@@ -37,7 +37,7 @@
 
 window.onload = function() {
 
-  var tooly = Lap.prototype.getTooly();
+  var $ = tooly.Frankie;
   var logger = tooly.Logger(2, 'RCTRLS_DEMO');
 
   // create the players
@@ -47,21 +47,16 @@ window.onload = function() {
     startingTrackIndex: 1
   });
 
-  var $ = player_1.getSelector();
-  
   player_1_controls = new Lap.RaphaelControls(player_1, {
-    width: 16, height: 16, fill: '#888', stroke: '#777', seekbar: { width: 64 }
+    width: 16, height: 16, fill: '#888', stroke: '#777', 
+    seekStyle: 'range', seekRange: { width: 64 }
   });
-  player_1_controls.init();
 
-
-  var $expand = $('.lap-expand', player_1.$container);
-  player_1.on('play', function() {
-    $expand.removeClass('lap-hidden');
-  });
-  player_1.on('pause', function() {
-    $expand.addClass('lap-hidden');
-  });
+  var $expand = $('.lap-expand', player_1.container);
+  player_1
+    .on('load',  function() { player_1_controls.init(); })
+    .on('play',  function() { $expand.removeClass('lap-hidden'); })
+    .on('pause', function() { $expand.addClass('lap-hidden'); });
 };
 
 </script>

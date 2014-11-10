@@ -3,7 +3,7 @@
 <head>
   <title>Lap Test Suite</title>
   <script src="../../dist/lap-debug.js"></script>
-  <script src="../../src/plugins/progress-bar.js"></script>
+  <script src="progress.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -83,7 +83,7 @@ function run() {
     elements: 'auto',
     startingAlbumIndex: 1,
     plugins: [{ 
-      ctor: Lap.ProgressBar, 
+      constructor: Lap.Progress, 
       args: ['canvas', {
         playhead: {
           width: 6, 
@@ -100,25 +100,26 @@ function run() {
           height: 10
         }
       }],
-      name: 'CanvasProgressBar'
+      name: 'Progress'
     }]
   });
 
-  var progressBar = lap.plugins.ProgressBar;
-  // console.log(progressBar);
+  lap.on('load', function() {
+    // var progressBar = lap.plugins.ProgressBar;
+  });
 
-  var info = tooly.select('#info');
-  function append(key) {
-    var what = lap.property(key);
-    tooly.append(info, '<u>' + key +'</u><br>');
-    for (var i = 0; i < what.length; i++) {
-      tooly.append(info, key + '['+i+']: ' + what[i] + '<br>');
-    }
-    tooly.append(info, '<div class="hr">');
-  }
-  append('album');
-  append('date');
-  append('label');
+  // var info = tooly.select('#info');
+  // function append(key) {
+  //   var what = lap.property(key);
+  //   tooly.append(info, '<u>' + key +'</u><br>');
+  //   for (var i = 0; i < what.length; i++) {
+  //     tooly.append(info, key + '['+i+']: ' + what[i] + '<br>');
+  //   }
+  //   tooly.append(info, '<div class="hr">');
+  // }
+  // append('album');
+  // append('date');
+  // append('label');
   
 }
 

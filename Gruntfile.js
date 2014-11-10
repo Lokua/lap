@@ -5,9 +5,6 @@ module.exports = function(grunt) {
   var dist_lap_debug = 'dist/lap-debug.js';
   var dist_lap = 'dist/lap.js';
   var src_lap = 'src/lap.js';
-  var src_rc = 'src/controls/raphael-controls/';
-  var dist_rc_debug = 'dist/controls/raphael-controls/raphael-controls-debug.js';
-  var dist_rc = 'dist/controls/raphael-controls/raphael-controls.js';
 
   grunt.initConfig({
 
@@ -33,17 +30,17 @@ module.exports = function(grunt) {
       },
       rc_debug: {
         src: [
-          src_rc + 'ctor.js',
-          src_rc + 'components/*.js'
+          'demo/raphael-controls/controls/ctor.js',
+          'demo/raphael-controls/controls/components/*.js'
         ],
-        dest: dist_rc_debug
+        dest: 'demo/raphael-controls/raphael-controls-debug.js'
       },
       rc_bundle: {
         src: [
-          'dist/controls/raphael-controls/raphael-min.js',
-          'dist/controls/raphael-controls/raphael-controls.min.js'
+          'demo/raphael-controls/raphael-min.js',
+          'demo/raphael-controls/raphael-controls.min.js'
         ],
-        dest: 'dist/controls/raphael-controls/bundle.min.js'
+        dest: 'demo/raphael-controls/bundle.min.js'
       }
     },
 
@@ -52,7 +49,7 @@ module.exports = function(grunt) {
         logConcurrentOutput: true
       },
       debug: {
-        tasks: ['connect', 'watch:debug', 'watch:cssDemo', 'watch:cssDemoJade']
+        tasks: ['connect', 'watch']
       }
     },
 
@@ -76,16 +73,12 @@ module.exports = function(grunt) {
       },
       rc_deps: {
         src: 'node_modules/raphael/raphael-min.js',
-        dest: 'dist/controls/raphael-controls/raphael-min.js'
+        dest: 'demo/raphael-controls/raphael-min.js'
       },
       rc: {
-        src: dist_rc_debug,
-        dest: dist_rc
-      },
-      controls: {
-        src: src_rc + 'style.css',
-        dest: 'dist/controls/raphael-controls/style.css'
-      } 
+        src: 'demo/raphael-controls/raphael-controls-debug.js',
+        dest: 'demo/raphael-controls/raphael-controls.js'
+      }
     },
 
     jade: {
@@ -111,15 +104,15 @@ module.exports = function(grunt) {
           'test/test.css' : 'test/test.scss'
         }
       },
-      controls: {
+      rc: {
         options: {
           style: 'expanded',
-          cacheLocation: src_rc + '.sass-cache',
+          cacheLocation: 'demo/raphael-controls/sass/.sass-cache',
           noCache: true,
           sourcemap: 'none'
         },
         files: {
-          'src/controls/raphael-controls/style.css':'src/controls/raphael-controls/sass/style.scss'
+          'demo/raphael-controls/style.css': 'demo/raphael-controls/sass/style.scss'
         }
       },
       cssDemo: {
@@ -136,9 +129,6 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      jsdoc: {
-        command: 'rm -rf doc/jsdoc && jsdoc -c conf.json'
-      },
       push: {
         command: 'git commit -a -m "-auto-" && git push -u origin master'
       }
@@ -153,7 +143,7 @@ module.exports = function(grunt) {
         src: dist_lap
       },
       rc: {
-        src: dist_rc
+        src: 'demo/raphael-controls/raphael-controls.js'
       }
     },
 
@@ -163,8 +153,8 @@ module.exports = function(grunt) {
         dest: 'dist/lap.min.js'
       },
       rc: {
-        src: dist_rc,
-        dest: 'dist/controls/raphael-controls/raphael-controls.min.js'
+        src: 'demo/raphael-controls/raphael-controls.js',
+        dest: 'demo/raphael-controls/raphael-controls.min.js'
       }
     },
 
@@ -214,17 +204,17 @@ module.exports = function(grunt) {
         files: src_lap,
         tasks: ['debug'/*, 'build'*/]
       },
+      rc_sass: {
+        files: ['demo/raphael-controls/sass/*.scss'],
+        tasks: ['sass:rc']
+      },
       rc: {
         files: [
           'src/*.js', 
-          src_rc + '*.js', 
-          src_rc + 'components/*'
+          'demo/raphael-controls/controls/*.js', 
+          'demo/raphael-controls/controls/components/*.js'
         ], 
         tasks: ['rc_all']
-      },
-      controls: {
-        files: src_rc + 'sass/*.scss',
-        tasks: ['sass:controls']
       },
       cssDemo: {
         files: 'demo/css-controls/sass/*.scss',
@@ -233,6 +223,17 @@ module.exports = function(grunt) {
       cssDemoJade: {
         files: 'demo/css-controls/jade/*.jade',
         tasks: ['jade']
+      }
+    },
+
+    wrap: {
+      rc: {
+        src: ['demo/raphael-controls/raphael-controls-debug.js'],
+        dest: 'demo/raphael-controls/raphael-controls-debug.js',
+        options: {
+          indent: '  ',
+          wrapper: [';(function(window, Lap, undefined) {\n', '\n})(window, window.Lap);']
+        }
       }
     }
   });
@@ -251,6 +252,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-strip-code');
   grunt.loadNpmTasks('grunt-umd');
+  grunt.loadNpmTasks('grunt-wrap');
 
   grunt.registerTask('default', ['build']);
   grunt.registerTask('debug', [
@@ -269,12 +271,14 @@ module.exports = function(grunt) {
     'usebanner:post'
   ]);
   grunt.registerTask('rc_debug', [
-    'concat:rc_debug'
+    'concat:rc_debug',
+    'wrap:rc'
   ]);
   grunt.registerTask('rc', [
     'copy:rc',
     'strip_code:rc',
-    'uglify:rc'
+    'uglify:rc',
+    'concat:rc_bundle'
   ]);
   grunt.registerTask('lap_all', ['debug', 'build']);
   grunt.registerTask('rc_all', ['rc_debug', 'rc']);

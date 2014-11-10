@@ -1,6 +1,10 @@
 @import 'muf';
 @import 'vars';
 
+// 
+// --- GLOBAL (layout etc)
+// 
+
 // not(i) -> don't fuck with .fa icon boxes
 *,
 *:before:not(i),
@@ -8,15 +12,35 @@
   box-sizing: border-box;
 }
 
+section {
+  @extend .clearfix;
+  width: 50%;
+  min-width: $lap-min-width;
+  margin: 0 auto 3em;
+}
+.sub {
+  &:first-child {
+    float: left;
+  }
+  &:last-child {
+    float: right;
+  }
+}
+
+// 
+// --- ALL PLAYERS
+// 
+
 // generic container, 
 // should be added to whatever element is passed as 
 // container arg to Lap constructor
 .lap {
-  box-shadow: 1px 1px 1px 1px $lap-border-color;
+  @extend .minimal-box-shadow;
   padding: 16px;
   background: darken(white, 1%);
   display: inline-block;
   color: $lap-text-color;
+  clear: both;
   * {
     cursor: normal;
     user-select: none;
@@ -37,11 +61,10 @@
   height: $lap-cover-wrapper-size;
 }
 .lap-cover {
+  @extend .minimal-box-shadow;
   margin: $lap-cover-margin;
   width:$lap-cover-size;
   height:$lap-cover-size;
-  // border: 1px dotted $lap-border-color;
-  box-shadow: 1px 1px 1px 1px $lap-border-color;
 }
 .lap-playlist-panel, .lap-discog-panel {
   position: absolute;
@@ -85,7 +108,6 @@
   margin-bottom: 8px;
   width: 100%;
 }
-
 .lap-artist {
   &:after {
     content: ' - ';
@@ -134,12 +156,10 @@
   display: inline-block;
   height: $lap-icon-size;
   padding-bottom: 7px; // icon-height/2 (8px) - track-height/2 (1px)
-
   input[type=range] {
     vertical-align: middle;
     -webkit-appearance: none;
     background-color: $lap-icon-color;
-    // background-color: rgba(0,0,0,0);
     width: $lap-progress-width;
     height: 2px;
   }
@@ -167,7 +187,7 @@
 
 .lap {
   // container (track)
-  progress[value]::-webkit-progress-bar/*, progress[value]::-moz-progress-bar*/ {
+  progress[value]::-webkit-progress-bar {
     background: lighten($lap-icon-color, 32%);
   }
   // value
@@ -206,17 +226,6 @@
   vertical-align: middle;
 }
 
-.lap-album-step {
-  display: inline-block;
-  padding: 0 2px;
-  border: 1px solid $lap-border-color;
-}
-
-.lap-label {
-  font-size: 12px;
-  color: $lap-icon-color;
-}
-
 .lap-hidden {
   display: none !important;
 }
@@ -225,16 +234,41 @@
   vertical-align: middle;
 }
 
-.lap-inline-block {
-  display: inline-block;
-} 
-
-.lap-inline {
-  display: inline;
-}
-
 .lap-non-volume {
   margin: 0;
   padding: 0;
   display: inline-block;
+}
+
+// 
+// --- SPECIFIC PLAYER 
+// 
+
+#single-track-player {
+  width: 208px;
+  .lap-volume-wrapper input[type=range] {
+    width: 148px;
+  }
+}
+
+#mini-player {
+  .lap-current-time:after {
+    content: ' / ';
+  }
+}
+
+
+// 
+// --- UTILITY CLASSES
+// 
+
+.divider {
+  width: 50%;
+  margin: 0 auto;
+  min-width: $lap-min-width;
+  border-bottom: 1px solid $lap-border-color;
+}
+
+.minimal-box-shadow {
+  @include minimal-box-shadow($lap-border-color);
 }
