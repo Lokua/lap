@@ -1,8 +1,6 @@
 ;(function(window, undefined) {
 
-  /*>>*/
-  var logger = tooly.Logger(0, 'EXPANDING...');
-  /*<<*/  
+  var __id = __id || 0;  
 
   /**
    * Lap plugin providing support for hiding and showing
@@ -16,12 +14,15 @@
    */
   Lap.ExpandingVolumeRange = function(lap, hideClass, classes) {
     this.lap = lap;
+    this.id = ++__id;
+    this.name = 'EXPNDVOLRNG_' + this.id;
+    /*>>*/
+    this.logger = tooly.Logger(0, this.name);
+    /*<<*/
     this.hideClass = hideClass || 'lap-non-volume';
     this.classes = classes || this.classes;
     return this;
   };
-
-  Lap.ExpandingVolumeRange.prototype.name = 'ExpandingVolumeRange';
 
   Lap.ExpandingVolumeRange.prototype.classes = [
     'lap-i-volume-off',

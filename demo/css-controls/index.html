@@ -9,75 +9,85 @@
   <script src="script.js"></script>
 </head>
 <body>
-  <section>
-    <h1>full discography player</h1>
-    <div id="player_02" class="lap">
-      <div class="lap-cover-wrap"><img class="lap-cover">
-        <div class="lap-playlist-panel lap-hidden"></div>
-        <div class="lap-discog-panel lap-hidden"></div>
-      </div>
-      <div class="lap-details"><span class="lap-artist"></span><span class="lap-album">     </span><br><span class="lap-track-number"></span><span class="lap-track-title"></span></div>
-      <div class="lap-controls">
-        <div class="lap-volume-wrapper">
-          <div class="lap-control lap-speaker-wrapper"><i class="lap-speaker lap-i-volume-high"></i></div>
-          <div class="lap-volume-range-wrapper">
-            <div class="lap-center-cell">
-              <input type="range" min="0" max="100" value="80" class="lap-volume-range lap-hidden">
+  <header>
+    <h1 id="banner">Lap (Lokua Audio Player) Demos</h1>
+  </header>
+  <main id="main">
+    <section>
+      <h1>full discography player</h1>
+      <div id="player_02" class="lap">
+        <div class="lap-cover-wrap"><img class="lap-cover">
+          <div class="lap-playlist-panel lap-hidden"></div>
+          <div class="lap-discog-panel lap-hidden">
+            <h3>Albums</h3>
+            <div class="lap-discog-items">
             </div>
+            <div class="lap-discog-nav"><span class="lap-control"><i class="lap-discog-thumb-prev lap-i-prev-album"></i></span><span class="lap-discog-nav-index"></span><span class="lap-control"><i class="lap-discog-thumb-next lap-i-next-album"></i></span></div>
           </div>
         </div>
-        <div class="lap-non-volume">
+        <div class="lap-details"><span class="lap-artist"></span><span class="lap-album">     </span><br><span class="lap-track-number"></span><span class="lap-track-title"></span></div>
+        <div class="lap-controls">
+          <div class="lap-volume-wrapper">
+            <div class="lap-control lap-speaker-wrapper"><i class="lap-speaker lap-i-volume-high"></i></div>
+            <div class="lap-volume-range-wrapper">
+              <div class="lap-center-cell">
+                <input type="range" min="0" max="100" value="80" class="lap-volume-range lap-hidden">
+              </div>
+            </div>
+          </div>
+          <div class="lap-non-volume">
+            <div class="lap-control"><i class="lap-play-pause lap-i-play"></i></div>
+            <div class="lap-control"><i class="lap-prev lap-i-prev"></i></div>
+            <div class="lap-control"><i class="lap-next lap-i-next"></i></div>
+            <div class="lap-read lap-current-time">00:00</div>
+            <div class="lap-seek-range-wrapper">
+              <div class="lap-center-cell">
+                <progress min="0" max="100" class="lap-progress"></progress>
+                <input type="range" min="0" max="100" value="0" class="lap-seek-range">
+              </div>
+            </div>
+            <div class="lap-read lap-duration">00:00</div>
+            <div class="lap-control"><i class="lap-playlist lap-i-playlist"></i></div>
+            <div class="lap-control"><i class="lap-discog lap-i-discog"></i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="divider"></div>
+    <section>
+      <div class="sub">
+        <h1>single track player</h1>
+        <div id="single-track-player" class="lap">
+          <div class="lap-details"><span class="lap-artist"></span><span class="lap-track-title">   </span></div>
+          <div class="lap-volume-wrapper">
+            <div class="lap-control lap-speaker-wrapper"><i class="lap-speaker lap-i-volume-high"></i></div>
+            <div class="lap-volume-range-wrapper">
+              <div class="lap-center-cell">
+                <input type="range" min="0" max="100" value="80" class="lap-volume-range lap-hidden">
+              </div>
+            </div>
+          </div>
+          <div class="lap-non-volume">
+            <div class="lap-control"><i class="lap-play-pause lap-i-play"></i></div>
+            <div class="lap-read lap-current-time">00:00</div>
+            <div class="lap-seek-range-wrapper">
+              <div class="lap-center-cell">
+                <progress min="0" max="100" class="lap-progress"></progress>
+                <input type="range" min="0" max="100" value="0" class="lap-seek-range">
+              </div>
+            </div>
+            <div class="lap-read lap-duration">00:00</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub">
+        <h1>mini player</h1>
+        <div id="mini-player" class="lap">
           <div class="lap-control"><i class="lap-play-pause lap-i-play"></i></div>
-          <div class="lap-control"><i class="lap-prev lap-i-prev"></i></div>
-          <div class="lap-control"><i class="lap-next lap-i-next"></i></div>
           <div class="lap-read lap-current-time">00:00</div>
-          <div class="lap-seek-range-wrapper">
-            <div class="lap-center-cell">
-              <progress min="0" max="100" class="lap-progress"></progress>
-              <input type="range" min="0" max="100" value="0" class="lap-seek-range">
-            </div>
-          </div>
-          <div class="lap-read lap-duration">00:00</div>
-          <div class="lap-control"><i class="lap-playlist lap-i-playlist"></i></div>
-          <div class="lap-control"><i class="lap-discog lap-i-discog"></i></div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <div class="divider"></div>
-  <section>
-    <div class="sub">
-      <h1>single track player</h1>
-      <div id="single-track-player" class="lap">
-        <div class="lap-details"><span class="lap-artist"></span><span class="lap-track-title">   </span></div>
-        <div class="lap-volume-wrapper">
-          <div class="lap-control lap-speaker-wrapper"><i class="lap-speaker lap-i-volume-high"></i></div>
-          <div class="lap-volume-range-wrapper">
-            <div class="lap-center-cell">
-              <input type="range" min="0" max="100" value="80" class="lap-volume-range lap-hidden">
-            </div>
-          </div>
-        </div>
-        <div class="lap-non-volume">
-          <div class="lap-control"><i class="lap-play-pause lap-i-play"></i></div>
-          <div class="lap-read lap-current-time">00:00</div>
-          <div class="lap-seek-range-wrapper">
-            <div class="lap-center-cell">
-              <progress min="0" max="100" class="lap-progress"></progress>
-              <input type="range" min="0" max="100" value="0" class="lap-seek-range">
-            </div>
-          </div>
           <div class="lap-read lap-duration">00:00</div>
         </div>
       </div>
-    </div>
-    <div class="sub">
-      <h1>mini player</h1>
-      <div id="mini-player" class="lap">
-        <div class="lap-control"><i class="lap-play-pause lap-i-play"></i></div>
-        <div class="lap-read lap-current-time">00:00</div>
-        <div class="lap-read lap-duration">00:00</div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </main>
 </body>

@@ -1,5 +1,6 @@
 @import 'muf';
 @import 'vars';
+@import 'typography';
 
 // 
 // --- GLOBAL (layout etc)
@@ -14,7 +15,8 @@
 
 section {
   @extend .clearfix;
-  width: 50%;
+  // width: 50%;
+  width: $lap-min-width;
   min-width: $lap-min-width;
   margin: 0 auto 3em;
 }
@@ -25,6 +27,10 @@ section {
   &:last-child {
     float: right;
   }
+}
+
+#banner {
+  text-align: center;
 }
 
 // 
@@ -55,7 +61,7 @@ section {
 }
 
 .lap-cover-wrap {
-  font-family: $lap-font;
+  @extend .lap-sans;
   position: relative;
   width: $lap-cover-wrapper-size;
   height: $lap-cover-wrapper-size;
@@ -95,14 +101,37 @@ section {
 }
 
 .lap-discog-item {
+  padding: 8px;
+  width: $lap-cover-size - 16px;
+  margin: 0 auto;
   img {
+    @include minimal-box-shadow(gray-scale(255, 0.025));
+    display: block;
+    margin: 0 auto;
     width: $lap-discog-thumb-size;
     height: $lap-discog-thumb-size;
   }
 }
+.lap-discog-item h4, .lap-discog-panel h3 {
+  @extend .lap-sans;
+  color: $lap-playlist-text-color;
+  margin: 4px 0 0;
+  text-align: center;
+}
+.lap-discog-nav {
+  // width: $lap-cover-size - 16px;
+  margin: 0 auto;
+  text-align: center;
+}
+.lap-discog-thumb-prev, .lap-discog-thumb-next {
+  border: 1px solid $lap-playlist-text-color;
+}
+.lap-discog-nav-index {
+  margin: 48.89px;
+}
 
 .lap-details {
-  font-family: $lap-font;
+  @extend .lap-sans;
   font-size: $lap-text-size;
   text-align: center;
   margin-bottom: 8px;
@@ -117,7 +146,7 @@ section {
   font-style: italic;
 }
 .lap-track-number {
-  font-family: $lap-monospace;
+  @extend .lap-monospace;
   // font-size: $lap-text-size - 2px;
   color: lighten($lap-text-color, 15%);
   &:after {
@@ -195,6 +224,7 @@ section {
     background: $lap-icon-color;
   }
   progress {
+    // autoprefixer does not work with appearence - not part of any spec
     -webkit-appearance: none;
        -moz-appearance: none;
             appearance: none;
@@ -212,7 +242,7 @@ section {
 
 // lap-current-time, lap-duration
 .lap-read {
-  // font-family: $lap-monospace;
+  // @extend .lap-monospace;
   display: inline;
   font-size: 9px;
   position: relative;
@@ -243,6 +273,13 @@ section {
 // 
 // --- SPECIFIC PLAYER 
 // 
+
+// full discog player
+#player_02 {
+  .lap-volume-wrapper input[type=range] {
+    width: 216px;
+  }  
+}
 
 #single-track-player {
   width: 208px;

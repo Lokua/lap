@@ -10,6 +10,16 @@ module.exports = function(grunt) {
 
     pkg: grunt.file.readJSON('package.json'),
 
+    autoprefixer: {
+      options: {
+        browsers: ['> 1%'],
+        cascade: true
+      },
+      cssDemo: {
+        src: 'demo/css-controls/style.css'
+      }
+    },
+
     concat: {
       options: {
         separator: '\n\n'
@@ -218,7 +228,7 @@ module.exports = function(grunt) {
       },
       cssDemo: {
         files: 'demo/css-controls/sass/*.scss',
-        tasks: ['sass:cssDemo']
+        tasks: ['sass:cssDemo', 'autoprefixer:cssDemo']
       },
       cssDemoJade: {
         files: 'demo/css-controls/jade/*.jade',
@@ -245,6 +255,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-autoprefixer');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-line-remover');

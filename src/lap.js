@@ -1,5 +1,7 @@
 /** @namespace  Lap */
 
+
+
 var _idGen = _idGen || 0;
 var _pluginIdGen = _pluginIdGen || 0;
 
@@ -30,10 +32,10 @@ function Lap(container, lib, options, init) {
   // provides the `on` and `trigger` callback support
   tooly.Handler.call(lap);
 
-  lap.id = ++_idGen+0;
+  lap.id = ++_idGen;
 
   /*>>*/
-  lap.logger = new tooly.Logger(0, 'Lap['+lap.id+']');
+  lap.logger = new tooly.Logger(0, 'Lap_' + lap.id);
   /*<<*/
 
   // uninitialized
@@ -565,11 +567,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
             if (lap.plugins[i] && lap.plugins[i].init) {
               lap.plugins[i].init();
             } else {
-              /*>>*/
-              lap.logger.debug('lap.plugins: %o', lap.plugins);
-              /*<<*/
-              // throw new Error('Could not initialize ' + lap.plugins[i] +
-                // '. The plugin has no #init property');
+              console.error('Could not initialize ' + lap.plugins[i] +
+                '. The plugin has no #init property');
             }
           });
         }
@@ -758,6 +757,25 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       this.trigger('albumChange');
       return this;
     },
+
+    /**
+     * Set the current album. Fires the "albumChange" event.
+     *
+     * @param {number} index  the new index; under/overflow will be clamped
+     * @memberOf  Lap
+     * @return {this}
+     */
+    setAlbum: function(index) {
+      if (index <= 0) {
+        this.albumIndex = 0;
+      } else if (index >= this.albumCount) {
+        this.albumIndex = this.albumCount-1;
+      } else {
+        this.albumIndex = index;
+      }
+      this.trigger('albumChange');
+      return this;
+    },    
 
     /**
      * Increment audio volume by the [`Lap#settings.volumeInterval`](#settings) amount

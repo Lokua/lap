@@ -1,7 +1,25 @@
+@import url(http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic);
+@import url(http://fonts.googleapis.com/css?family=PT+Serif:400,700);
 .clearfix:after, section:after {
   content: '';
   display: table;
   clear: both;
+}
+
+.lap-sans, .lap-cover-wrap, .lap-discog-item h4, .lap-discog-panel h3, .lap-details {
+  font-family: 'PT Sans', verdana, sans-serif;
+}
+
+.lap-serif, h1, h2, h3, h4, h5, h6 {
+  font-family: 'PT Serif', 'times new roman', 'georgia', serif;
+}
+
+.lap-monospace, .lap-track-number {
+  font-family: consolas, monaco, menlo, monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #5c5c5c;
 }
 
 *,
@@ -11,7 +29,7 @@
 }
 
 section {
-  width: 50%;
+  width: 400px;
   min-width: 400px;
   margin: 0 auto 3em;
 }
@@ -23,6 +41,10 @@ section {
   float: right;
 }
 
+#banner {
+  text-align: center;
+}
+
 .lap {
   padding: 16px;
   background: #fcfcfc;
@@ -32,7 +54,10 @@ section {
 }
 .lap * {
   cursor: normal;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
 .lap *:focus {
   outline: 0;
@@ -43,7 +68,6 @@ section {
 }
 
 .lap-cover-wrap {
-  font-family: verdana, sans-serif;
   position: relative;
   width: 272px;
   height: 272px;
@@ -81,7 +105,8 @@ section {
   position: relative;
   text-decoration: none;
   text-decoration: none;
-  transition: 0.5s;
+  -webkit-transition: 0.5s;
+          transition: 0.5s;
   cursor: pointer;
 }
 .lap-playlist-track-title:before {
@@ -93,21 +118,52 @@ section {
   left: 0;
   background-color: whitesmoke;
   visibility: hidden;
-  transform: scaleX(0);
-  transition: all 0.2s ease-in-out 0s;
+  -webkit-transform: scaleX(0);
+      -ms-transform: scaleX(0);
+          transform: scaleX(0);
+  -webkit-transition: all 0.2s ease-in-out 0s;
+          transition: all 0.2s ease-in-out 0s;
 }
 .lap-playlist-track-title:hover:before {
   visibility: visible;
-  transform: scaleX(1);
+  -webkit-transform: scaleX(1);
+      -ms-transform: scaleX(1);
+          transform: scaleX(1);
 }
 
+.lap-discog-item {
+  padding: 8px;
+  width: 240px;
+  margin: 0 auto;
+}
 .lap-discog-item img {
-  width: 80px;
-  height: 80px;
+  box-shadow: 1px 1px 1px 1px rgba(255, 255, 255, 0.025);
+  display: block;
+  margin: 0 auto;
+  width: 156px;
+  height: 156px;
+}
+
+.lap-discog-item h4, .lap-discog-panel h3 {
+  color: whitesmoke;
+  margin: 4px 0 0;
+  text-align: center;
+}
+
+.lap-discog-nav {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lap-discog-thumb-prev, .lap-discog-thumb-next {
+  border: 1px solid whitesmoke;
+}
+
+.lap-discog-nav-index {
+  margin: 48.89px;
 }
 
 .lap-details {
-  font-family: verdana, sans-serif;
   font-size: 12px;
   text-align: center;
   margin-bottom: 8px;
@@ -123,7 +179,6 @@ section {
 }
 
 .lap-track-number {
-  font-family: consolas, monaco, menlo, monospace;
   color: #8c8c8c;
 }
 .lap-track-number:after {
@@ -231,6 +286,10 @@ section {
   margin: 0;
   padding: 0;
   display: inline-block;
+}
+
+#player_02 .lap-volume-wrapper input[type=range] {
+  width: 216px;
 }
 
 #single-track-player {

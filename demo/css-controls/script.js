@@ -42,7 +42,8 @@
       }, {
         constructor: Lap.DiscogPopulator
       }] 
-    }, true);
+    }, false);
+    player_02.initialize();
 
     var singleTrackPlayerLib = {
       artist: 'Lokua',

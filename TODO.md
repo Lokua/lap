@@ -1,13 +1,13 @@
 # TODO
 
-+ kill selectorPrefix settings - pain in the ass, not good for plugins
-+ mode selectors and defaults to prototype, no point in keeping in closure
-+ RaphaelControls should no longer be in the dist folder. Move to demo - update Gruntfile
 
 ---------
 
 # DONE!
 
++ kill selectorPrefix settings - pain in the ass, not good for plugins
++ mode selectors and defaults to prototype, no point in keeping in closure
++ RaphaelControls should no longer be in the dist folder. Move to demo - update Gruntfile
 + Gruntfile: update build to reflect debug tasks
   (currently hides tooly from global namespace - pointless if 
   using tooly elsewhere)

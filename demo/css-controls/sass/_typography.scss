@@ -1,0 +1,21 @@
+@import url(http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic);
+@import url(http://fonts.googleapis.com/css?family=PT+Serif:400,700);
+
+.lap-sans {
+  font-family: 'PT Sans', verdana, sans-serif;
+}
+
+.lap-serif {
+  font-family: 'PT Serif', 'times new roman', 'georgia', serif;
+}
+
+.lap-monospace {
+  font-family: consolas, monaco, menlo, monospace;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @extend .lap-serif;
+  color: $lap-heading-text-color;
+  // &:not(.lap-discog-panel h3), &:not(.lap-discog-panel h4) {
+  // }
+}
