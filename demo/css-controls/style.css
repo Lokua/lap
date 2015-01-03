@@ -63,8 +63,12 @@ section {
   outline: 0;
 }
 
-.lap-i {
+.lap i {
+  cursor: pointer;
   color: #666;
+}
+.lap i:hover {
+  color: #999999;
 }
 
 .lap-cover-wrap {
@@ -102,12 +106,12 @@ section {
 }
 
 .lap-playlist-track-title {
-  position: relative;
-  text-decoration: none;
   text-decoration: none;
   -webkit-transition: 0.5s;
           transition: 0.5s;
   cursor: pointer;
+  position: relative;
+  text-decoration: none;
 }
 .lap-playlist-track-title:before {
   content: '';
@@ -137,11 +141,12 @@ section {
   margin: 0 auto;
 }
 .lap-discog-item img {
-  box-shadow: 1px 1px 1px 1px rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(245, 245, 245, 0.25);
   display: block;
   margin: 0 auto;
   width: 156px;
   height: 156px;
+  box-shadow: 0px 1px 2px 0px rgba(255, 255, 255, 0.025);
 }
 
 .lap-discog-item h4, .lap-discog-panel h3 {
@@ -153,6 +158,12 @@ section {
 .lap-discog-nav {
   margin: 0 auto;
   text-align: center;
+}
+.lap-discog-nav i {
+  color: whitesmoke;
+}
+.lap-discog-nav i:hover {
+  color: #c2c2c2;
 }
 
 .lap-discog-thumb-prev, .lap-discog-thumb-next {
@@ -214,6 +225,7 @@ section {
   padding-bottom: 7px;
 }
 .lap-volume-range-wrapper input[type=range], .lap-seek-range-wrapper input[type=range] {
+  cursor: pointer;
   vertical-align: middle;
   -webkit-appearance: none;
   background-color: #666;
@@ -311,5 +323,5 @@ section {
 }
 
 .minimal-box-shadow, .lap, .lap-cover {
-  box-shadow: 1px 1px 1px 1px #ddd;
+  box-shadow: 0px 1px 2px 0px #ddd;
 }

@@ -1,10 +1,10 @@
 /*!
- * tooly - version 0.2.6 (built: 2014-11-10)
+ * tooly - version 0.4.0 (built: 2015-01-03)
  * js utility functions
  *
  * https://github.com/Lokua/tooly.git
  *
- * Copyright (c) 2014 Joshua Kleckner
+ * Copyright (c) 2015 Joshua Kleckner
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/MIT
  */
@@ -977,7 +977,7 @@ tooly.Handler.prototype.trigger = function(fn) {
  * @memberOf  tooly
  * @static
  */
-tooly.Logger = function(level, name) {
+tooly.Logger = function(level, name, bypassTimestamp) {
   var logger = this;
   tooly.Logger.loggers = tooly.Logger.loggers || [];
   // enable instantiation without new
@@ -986,10 +986,8 @@ tooly.Logger = function(level, name) {
     tooly.Logger.loggers.push(logger);
   }
   logger.level = (level !== undefined) ? level : 2;
+  logger.bypassTimestamp = bypassTimestamp || false;
   if (name) logger.name = name;
-  // automatically set this false as its only 
-  // for emergency "must track anonymous function location" purposes
-  logger.traceAnonymous = false;
   return logger;
 };
 var _cjs = typeof exports === 'object',
@@ -1008,7 +1006,7 @@ var _cjs = typeof exports === 'object',
     _o_re = /%o/gi,
     _j_re = /%j/gi; 
     
-function _log(instance, level, caller, args) {
+function _log(instance, level, /*caller,*/ args) {
   if (tooly.Logger.off || instance.level === -1 || level < instance.level || instance.level > 5) {
     return;
   }
@@ -1025,17 +1023,18 @@ function _log(instance, level, caller, args) {
     if (tooly.type(args[0], 'string') && args[0].match(_format_re)) {
       format += args.shift().replace(_o_re, '%j');
     }
-    pargs.unshift(format, _name(instance), _level(level));
+    pargs.unshift(format, _name(instance), _level(level, instance));
 
   } else { // window
-    format = '%c%s%c%s%c%s';
+    // format = '%c%s%c%s%c%s'; // from when check-caller was included
+    format = '%c%s%c%s';
     if (tooly.type(args[0], 'string') && args[0].match(_format_re)) {
       format += args.shift().replace(_j_re, '%o');
     }
-    caller = (caller !== undefined && caller.replace(_ws_re, '') === '') ? '' : caller;
+    // caller = (caller !== undefined && caller.replace(_ws_re, '') === '') ? '' : caller;
     var color = 'color:' + _colors[level] + ';',
-        purple = 'color:purple', black = 'color:black';
-    pargs = [format, purple, _name(instance), color, _level(level), black, caller];
+        purple = 'color:purple'/*, black = 'color:black'*/;
+    pargs = [format, purple, _name(instance), color, _level(level, instance)/*, black, caller*/];
   }
 
   _push.apply(pargs, args);
@@ -1045,7 +1044,7 @@ function _log(instance, level, caller, args) {
       return;
 
     case 0: 
-      console.log(arguments[3]); 
+      console.log(arguments[2]); 
       break;
 
     case 2: 
@@ -1066,27 +1065,27 @@ function _log(instance, level, caller, args) {
   }
 }
 
-function _checkCaller(args) {
-  if (!this.traceAnonymous) return '';
-  var name = ''; 
-  try { 
-    name = args.callee.caller.name; 
-  } catch(ignored) {
-  }
-  if (!name) {
-    return  '<anonymous> ' + args.callee.caller + '\n';
-  }
-  return '<'+name+'> ';
-}
+// function _checkCaller(args) {
+//   if (!this.traceAnonymous) return '';
+//   var name = ''; 
+//   try { 
+//     name = args.callee.caller.name; 
+//   } catch(ignored) {
+//   }
+//   if (!name) {
+//     return  '<anonymous> ' + args.callee.caller + '\n';
+//   }
+//   return '<'+name+'> ';
+// }
 
 function _name(instance) {
   var name = instance.name || '';
   return (_chalk) ? _chalk.magenta(name) : name;
 }
 
-function _level(level) {
+function _level(level, instance) {
   return _chalkify(level, ' ' + _levels[level].toUpperCase() + ' ') +
-    _chalkify(6, '[' + _dateFormatted() + '] ');
+    (instance.bypassTimestamp ? '' : _chalkify(6, '[' + _dateFormatted() + '] '));
 }
 
 function _dateFormatted() {
@@ -1104,12 +1103,12 @@ function _chalkify(level, str) {
   return (!_chalk) ? str : _chalk[ _colors[level] ](str);
 }
 
-tooly.Logger.prototype.log   = function() { _log(this, 0, _checkCaller(arguments), arguments); };
-tooly.Logger.prototype.trace = function() { _log(this, 1, _checkCaller(arguments), arguments); };
-tooly.Logger.prototype.debug = function() { _log(this, 2, _checkCaller(arguments), arguments); };
-tooly.Logger.prototype.info  = function() { _log(this, 3, _checkCaller(arguments), arguments); };
-tooly.Logger.prototype.warn  = function() { _log(this, 4, _checkCaller(arguments), arguments); };
-tooly.Logger.prototype.error = function() { _log(this, 5, _checkCaller(arguments), arguments); };
+tooly.Logger.prototype.log   = function() { _log(this, 0, /*_checkCaller(arguments),*/ arguments); };
+tooly.Logger.prototype.trace = function() { _log(this, 1, /*_checkCaller(arguments),*/ arguments); };
+tooly.Logger.prototype.debug = function() { _log(this, 2, /*_checkCaller(arguments),*/ arguments); };
+tooly.Logger.prototype.info  = function() { _log(this, 3, /*_checkCaller(arguments),*/ arguments); };
+tooly.Logger.prototype.warn  = function() { _log(this, 4, /*_checkCaller(arguments),*/ arguments); };
+tooly.Logger.prototype.error = function() { _log(this, 5, /*_checkCaller(arguments),*/ arguments); };
 
 
 
@@ -1974,12 +1973,12 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.6 (built: 2014-11-10)
+ * lap - version 0.0.7 (built: 2015-01-03)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
  *
- * Copyright © 2014 Joshua Kleckner
+ * Copyright © 2015 Joshua Kleckner
  * Licensed under the MIT license.
  * http://lokua.net/license-mit.html
  */
@@ -2291,7 +2290,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         // re may contain string-wrapped regexp (from json), convert if so
         if (tooly.type(re[0]) !== 'regexp') {
           var flags = re[2];
-          re[0] = (flags !== undefined) ? new RegExp(re[0], flags) : new RegExp(re[0], 'g');
+          re[0] = new RegExp(re[0], flags !== undefined ? flags : 'g');
         }
       } 
       if (tooly.type(lap.files) === 'string') {
@@ -2583,9 +2582,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateTrackTitleEl: function() {
-      var lap = this;
-      lap.$els.trackTitle.html(lap.tracklist[lap.trackIndex]);
-      return lap;
+      this.$els.trackTitle.html(this.tracklist[this.trackIndex]);
+      return this;
     },
 
     /**
@@ -2593,9 +2591,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateTrackNumberEl: function() {
-      var lap = this;
-      lap.$els.trackNumber.html(+lap.trackIndex+1);
-      return lap;
+      this.$els.trackNumber.html(+this.trackIndex+1);
+      return this;
     },
 
     // TODO: adapt update for multiple artist arrays
@@ -2604,9 +2601,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateArtistEl: function() {
-      var lap = this;
-      lap.$els.artist.html(lap.artist);
-      return lap;
+      this.$els.artist.html(this.artist);
+      return this;
     },
 
     /**
@@ -2614,9 +2610,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateAlbumEl: function() {
-      var lap = this;
-      lap.$els.album.html(lap.album);
-      return lap;
+      this.$els.album.html(this.album);
+      return this;
     },
 
     /**
@@ -2624,9 +2619,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateCover: function() {
-      var lap = this;
-      lap.$els.cover.get(0).src = lap.cover;
-      return lap;
+      this.$els.cover.get(0).src = this.cover;
+      return this;
     },
 
     /**
@@ -2636,14 +2630,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     togglePlay: function() {
-      var t = this;
-      if (t.audio.paused) {
-        t.play();
-      } else {
-        t.pause();
-      }
-      t.trigger('togglePlay');
-      return t;
+      this.audio.paused ? this.play() : this.pause();
+      this.trigger('togglePlay');
+      return this;
     },
 
     /**
@@ -2682,40 +2671,39 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       } else {
         this.trackIndex = index;
       }
+      var wasPlaying = !this.audio.paused;
+      this.setSource();
+      if (wasPlaying) this.audio.play();
       this.trigger('trackChange');
       return this;
     },
 
     /**
-     * Move the previous index in the file que.
+     * Move to the previous index in the file queue.
+     * 
      * @return {this}
      * @memberOf  Lap
      */
     prev: function() {
-      var t = this;
-      var wasPlaying = !t.audio.paused;
-      t.trackIndex = (t.trackIndex-1 < 0) ? t.trackCount-1 : t.trackIndex-1;
-      t.setSource();
-      if (wasPlaying) t.audio.play();
+      var wasPlaying = !this.audio.paused;
+      this.trackIndex = (this.trackIndex-1 < 0) ? this.trackCount-1 : this.trackIndex-1;
+      this.setSource();
+      if (wasPlaying) this.audio.play();
       this.trigger('trackChange');
       return this; 
     },
 
     /**
-     * Move to the next index in the file que.
+     * Move to the next index in the file queue.
+     * 
      * @return {this}
      * @memberOf  Lap
      */
     next: function() {
-      var lap = this;
-      /*>>*/
-      // lap.logger.debug(lap.audio);
-      // lap.logger.debug(lap.audio.paused);
-      /*<<*/
-      var wasPlaying = !lap.audio.paused;
-      lap.trackIndex = (lap.trackIndex+1 >= lap.trackCount) ? 0 : lap.trackIndex+1;
-      lap.setSource();
-      if (wasPlaying) lap.audio.play();
+      var wasPlaying = !this.audio.paused;
+      this.trackIndex = (this.trackIndex+1 >= this.trackCount) ? 0 : this.trackIndex+1;
+      this.setSource();
+      if (wasPlaying) this.audio.play();
       this.trigger('trackChange');
       return this;
     },
@@ -2728,14 +2716,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     prevAlbum: function() {
       var t = this;
-      var wasPlaying = !t.audio.paused;
-      t.albumIndex = (t.albumIndex-1 < 0) ? t.albumCount-1 : t.albumIndex-1;
-      t.update();
+      var wasPlaying = !this.audio.paused;
+      this.albumIndex = (this.albumIndex-1 < 0) ? this.albumCount-1 : this.albumIndex-1;
+      this.update();
 
-      t.trackIndex = 0;
-      t.setSource();
+      this.trackIndex = 0;
+      this.setSource();
 
-      if (wasPlaying) t.audio.play();
+      if (wasPlaying) this.audio.play();
       this.trigger('albumChange');
       return this;
     },
@@ -2747,15 +2735,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     nextAlbum: function() {
-      var t = this;
-      var wasPlaying= !t.audio.paused;
-      t.albumIndex = (t.albumIndex+1 > t.albumCount-1) ? 0 : t.albumIndex+1;
-      t.update();
+      var wasPlaying= !this.audio.paused;
+      this.albumIndex = (this.albumIndex+1 > this.albumCount-1) ? 0 : this.albumIndex+1;
+      this.update();
 
-      t.trackIndex = 0;
-      t.setSource();
+      this.trackIndex = 0;
+      this.setSource();
 
-      if (wasPlaying) t.audio.play();
+      if (wasPlaying) this.audio.play();
       this.trigger('albumChange');
       return this;
     },
@@ -2775,6 +2762,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       } else {
         this.albumIndex = index;
       }
+      this.update();
+      this.setTrack(this.lib[this.albumIndex].startingTrackIndex || 0);
       this.trigger('albumChange');
       return this;
     },    
@@ -2838,7 +2827,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       _MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(false);
       }, lap.settings.seekTime);
-      return this;
+      return lap;
     },
 
     /**
@@ -2854,7 +2843,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       _MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(true);
       }, lap.settings.seekTime);
-      return this;
+      return lap;
     },
 
     /**
@@ -2867,13 +2856,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     seek: function(forward) {
-      var lap = this, applied;
       if (forward) {
-        applied = lap.audio.currentTime + lap.settings.seekInterval;
-        lap.audio.currentTime = (applied >= lap.audio.duration) ? lap.audio.duration : applied;
+        applied = this.audio.currentTime + this.settings.seekInterval;
+        this.audio.currentTime = (applied >= this.audio.duration) ? this.audio.duration : applied;
       } else {
-        applied = lap.audio.currentTime + (lap.settings.seekInterval * -1);
-        lap.audio.currentTime = (applied <= 0) ? 0 : applied;
+        applied = this.audio.currentTime + (this.settings.seekInterval * -1);
+        this.audio.currentTime = (applied <= 0) ? 0 : applied;
       }
       this.trigger('seek');
       return this;
@@ -2930,6 +2918,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       $panel.find('li').on('click', function(e) {
         var $li = $(this);
+        /*>>*/
+        lap.logger.debug('playlist click fired');
+        /*<<*/
         lap.setTrack($li.attr('data-lap-playlist-index'));
       });
     },
@@ -2959,8 +2950,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     updatePlaylistItem: function() {
       var lap = this;
-      $('li', lap.$els.playlistPanel).removeClass('lap-playlist-current')
-        .eq(lap.trackIndex).addClass('lap-playlist-current');
+      $('li', lap.$els.playlistPanel)
+        .removeClass('lap-playlist-current')
+        .eq(lap.trackIndex)
+        .addClass('lap-playlist-current');
       return lap;
     },    
 

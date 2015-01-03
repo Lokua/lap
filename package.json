@@ -1,8 +1,8 @@
 {
   "name": "lap",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "HTML5 audio player",
-  "main": "dist/lap-0.0.5.js",
+  "main": "dist/lap.js",
   "bugs": "dev@lokua.net",
   "scripts": {
     "test": "none"
@@ -41,9 +41,10 @@
     "grunt-strip-code": "^0.1.2",
     "grunt-umd": "~2.0.0",
     "grunt-wrap": "^0.3.0",
+    "node-bourbon": "^1.2.3",
     "raphael": "^2.1.0"
   },
   "dependencies": {
-    "tooly": "^0.2.6"
+    "tooly": "^0.4.0"
   }
 }

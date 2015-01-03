@@ -16,6 +16,7 @@
 h1, h2, h3, h4, h5, h6 {
   @extend .lap-serif;
   color: $lap-heading-text-color;
-  // &:not(.lap-discog-panel h3), &:not(.lap-discog-panel h4) {
+  // &:not(.lap-discog-panel h3), 
+  // &:not(.lap-discog-panel h4) {
   // }
 }

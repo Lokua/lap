@@ -38,7 +38,7 @@
 }
 
 @mixin minimal-box-shadow($color) {
-  box-shadow: 1px 1px 1px 1px $color;
+  box-shadow: 0px 1px 2px 0px $color;
 }
 
 // 
@@ -49,6 +49,10 @@
 // are optional. Defaults to rgba(127, 127, 127, 1);
 @function gray-scale($val: 127, $alpha: 1) {
   @return rgba($val, $val, $val, $alpha);
+}
+
+@function adjust-alpha($color, $alpha: 1) {
+  @return rgba($color, $alpha);
 }
 
 // 

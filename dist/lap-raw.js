@@ -1,3 +1,30 @@
+/*!
+ * lap - version 0.0.7 (built: 2015-01-03)
+ * HTML5 audio player
+ *
+ * https://github.com/Lokua/lap.git
+ *
+ * Copyright © 2015 Joshua Kleckner
+ * Licensed under the MIT license.
+ * http://lokua.net/license-mit.html
+ */
+
+;(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define('Lap', [], function() {
+      return (root.returnExportsGlobal = factory());
+    });
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like enviroments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    root['Lap'] = factory();
+  }
+}(this, function() {
+
 /** @namespace  Lap */
 
 
@@ -34,9 +61,7 @@ function Lap(container, lib, options, init) {
 
   lap.id = ++_idGen;
 
-  /*>>*/
-  lap.logger = new tooly.Logger(0, 'Lap_' + lap.id);
-  /*<<*/
+
 
   // uninitialized
   lap.container = container;
@@ -63,20 +88,7 @@ function Lap(container, lib, options, init) {
     }, 10);
   }
 
-  /*>>*/
-  function echo(event) { 
-    console.log('%cid_%d: %c%s', 
-      'color:#999', lap.id, 'color:#555', event + ' handler called'); 
-  }
-  lap
-    .on('load',         function() { echo('load'); })
-    .on('play',         function() { echo('play'); })
-    .on('paused',       function() { echo('paused'); })
-    .on('seek',         function() { echo('seek'); })
-    .on('trackChange',  function() { echo('trackChange'); })
-    .on('albumChange',  function() { echo('albumChange'); })
-    .on('volumeChange', function() { echo('volumeChange'); });
-  /*<<*/
+
 
   return lap;
 }
@@ -173,9 +185,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       lap.trigger('load');
 
-      /*>>*/
-      lap.logger.info('post init: %o', lap);
-      /*<<*/      
+
     },
 
     /**
@@ -917,9 +927,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       $panel.find('li').on('click', function(e) {
         var $li = $(this);
-        /*>>*/
-        lap.logger.debug('playlist click fired');
-        /*<<*/
+
         lap.setTrack($li.attr('data-lap-playlist-index'));
       });
     },
@@ -1105,3 +1113,10 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     }
   }; // end return
 })()); // end anon }, end wrapper ), call wrapper (), end tooly.inherit );
+
+
+return Lap;
+
+
+}));
+

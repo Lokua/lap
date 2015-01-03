@@ -1,5 +1,9 @@
 ;(function(window, undefined) {
 
+  /*>>*/
+  var logger = tooly.Logger(0);
+  /*<<*/
+
   var __id = __id || 0;  
 
   /**
@@ -17,7 +21,7 @@
     this.id = ++__id;
     this.name = 'EXPNDVOLRNG_' + this.id;
     /*>>*/
-    this.logger = tooly.Logger(0, this.name);
+    logger.name = this.name;
     /*<<*/
     this.hideClass = hideClass || 'lap-non-volume';
     this.classes = classes || this.classes;

@@ -6,7 +6,7 @@
 // --- GLOBAL (layout etc)
 // 
 
-// not(i) -> don't fuck with .fa icon boxes
+// not(i) -> don't fuck with icon boxes
 *,
 *:before:not(i),
 *:after:not(i) {
@@ -56,8 +56,12 @@ section {
   }
 }
 
-.lap-i {
+.lap i {
+  cursor: pointer;
   color: $lap-icon-color;
+  &:hover {
+    color: lighten($lap-icon-color, 20%);
+  }
 }
 
 .lap-cover-wrap {
@@ -94,10 +98,10 @@ section {
   color: #AAD5FF;
 }
 .lap-playlist-track-title {
-  @include underline-text-on-hover($lap-playlist-text-color);
   text-decoration: none;
   transition: 0.5s;
   cursor: pointer;
+  @include underline-text-on-hover($lap-playlist-text-color);
 }
 
 .lap-discog-item {
@@ -105,11 +109,12 @@ section {
   width: $lap-cover-size - 16px;
   margin: 0 auto;
   img {
-    @include minimal-box-shadow(gray-scale(255, 0.025));
+    border: 1px solid rgba($lap-playlist-text-color, 0.25);
     display: block;
     margin: 0 auto;
     width: $lap-discog-thumb-size;
     height: $lap-discog-thumb-size;
+    @include minimal-box-shadow(gray-scale(255, 0.025));
   }
 }
 .lap-discog-item h4, .lap-discog-panel h3 {
@@ -122,6 +127,12 @@ section {
   // width: $lap-cover-size - 16px;
   margin: 0 auto;
   text-align: center;
+  i {
+    color: $lap-playlist-text-color;
+    &:hover {
+      color: darken($lap-playlist-text-color, 20%);
+    }
+  }
 }
 .lap-discog-thumb-prev, .lap-discog-thumb-next {
   border: 1px solid $lap-playlist-text-color;
@@ -186,6 +197,7 @@ section {
   height: $lap-icon-size;
   padding-bottom: 7px; // icon-height/2 (8px) - track-height/2 (1px)
   input[type=range] {
+    cursor: pointer;
     vertical-align: middle;
     -webkit-appearance: none;
     background-color: $lap-icon-color;

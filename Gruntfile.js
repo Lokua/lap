@@ -38,6 +38,13 @@ module.exports = function(grunt) {
         ],
         dest: dist_lap
       },
+      // raw: {
+      //   src: [
+      //     'node_modules/tooly/dist/tooly-slim.js',
+      //     dist_lap
+      //   ],
+      //   dest: dist_lap
+      // },
       rc_debug: {
         src: [
           'demo/raphael-controls/controls/ctor.js',
@@ -81,6 +88,10 @@ module.exports = function(grunt) {
         src: src_lap,
         dest: dist_lap
       },
+      raw: {
+        src: src_lap,
+        dest: 'dist/lap-raw.js'
+      },      
       rc_deps: {
         src: 'node_modules/raphael/raphael-min.js',
         dest: 'demo/raphael-controls/raphael-min.js'
@@ -152,6 +163,9 @@ module.exports = function(grunt) {
       build: {
         src: dist_lap
       },
+      raw: {
+        src: 'dist/lap-raw.js'
+      },
       rc: {
         src: 'demo/raphael-controls/raphael-controls.js'
       }
@@ -162,6 +176,10 @@ module.exports = function(grunt) {
         src: dist_lap,
         dest: 'dist/lap.min.js'
       },
+      raw: {
+        src: 'dist/lap-raw.js',
+        dest: 'dist/lap-raw.min.js'
+      },      
       rc: {
         src: 'demo/raphael-controls/raphael-controls.js',
         dest: 'demo/raphael-controls/raphael-controls.min.js'
@@ -175,6 +193,12 @@ module.exports = function(grunt) {
         amdModuleId: 'Lap',
         template: 'src/umd-template.hbs'
       },
+      raw: {
+        src: 'dist/lap-raw.js',
+        objectToExport: 'Lap',
+        amdModuleId: 'Lap',
+        template: 'src/umd-template.hbs'
+      },      
       debug: {
         src: dist_lap_debug,
         objectToExport: 'Lap',
@@ -206,6 +230,19 @@ module.exports = function(grunt) {
         files: {
           src: ['dist/lap.min.js']
         }
+      },
+      post_raw: {
+        options: {
+          banner: require('./src/banner-min')
+        },
+        files: {
+          src: ['dist/lap-raw.min.js']
+        }        
+      },
+      raw: {
+        files: {
+          src: ['dist/lap-raw.js']
+        }        
       }
     },
 
@@ -265,7 +302,15 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-umd');
   grunt.loadNpmTasks('grunt-wrap');
 
-  grunt.registerTask('default', ['build']);
+  grunt.registerTask('default', ['concurrent']);
+  grunt.registerTask('raw', [
+    'copy:raw',
+    'strip_code:raw',
+    'umd:raw', 
+    'usebanner:raw', 
+    'uglify:raw', 
+    'usebanner:post_raw'    
+  ]);
   grunt.registerTask('debug', [
     'copy:debug',
     'umd:debug', 

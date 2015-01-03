@@ -1,5 +1,5 @@
 /*!
- * tooly - version 0.0.5 (built: 2014-11-07)
+ * tooly - version 0.4.0 (built: 2015-01-03)
  * js utility functions
  *
  * CUSTOM BUILD
@@ -7,7 +7,7 @@
  *
  * https://github.com/Lokua/tooly.git
  *
- * Copyright (c) 2014 Joshua Kleckner
+ * Copyright (c) 2015 Joshua Kleckner
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/MIT
  */
@@ -62,17 +62,17 @@ function _toArray(obj) {
   return [].map.call(obj, function(el) { return el; });
 }
 
-/*!
- * @see  tooly#basicExtend
- */
-function _extend(dest, src) {
-  for (var p in src) {
-    if (src.hasOwnProperty(p)) {
-      dest[p] = src[p];
-    }
-  }
-  return dest;
-}
+// /*!
+//  * @see  tooly#basicExtend
+//  */
+// function _extend(dest, src) {
+//   for (var p in src) {
+//     if (src.hasOwnProperty(p)) {
+//       dest[p] = src[p];
+//     }
+//   }
+//   return dest;
+// }
 
 // modified from http://stackoverflow.com/a/9229821/2416000
 // TODO: this modifies original arr, find unaltering way
@@ -89,7 +89,7 @@ function _sortUnique(arr) {
  * @namespace  tooly
  * @type {Object}
  */
-var tooly = { version: '0.0.5' };
+var tooly = {};
 
 
 
@@ -261,7 +261,7 @@ function _pend(append, els, content) {
  * @example
  * ```js
  * // alias the Frankie namespace
- * var $ = Frankie.bind(this);
+ * var $ = tooly.Frankie.bind(this);
  * var $divs = $(divs);
  * $divs.css({color:'green'});
  * // multiple yet separate selectors must be comma separated
@@ -713,19 +713,6 @@ tooly.Frankie.prototype.toggleClass = function(klass) {
 
 
 /**
- * @return {String}
- * @memberOf  tooly.Frankie
- * @category  Frankie
- * @instance
- */
-tooly.Frankie.prototype.toString = function() { 
-  return JSON.stringify(this);
-  // return '[object Frankie]'; 
-};
-
-
-
-/**
  * @return {Boolean} `true` if this instance's inner elements array is empty.
  * 
  * @memberOf tooly.Frankie
@@ -739,7 +726,59 @@ tooly.Frankie.prototype.zilch = function() {
 
 
 /**
- * Constructor.
+ * Class constructor. Simple event handling, best when inherited. Execute named functions
+ * by triggering a Handler reference of the same name.
+ *
+ * ### Example
+ * ```js
+ * var handler = new tooly.Handler();
+ *
+ * function world() { 
+ *   console.log('world!'); 
+ * }
+ * 
+ * function hello() { 
+ *   console.log('hello '); 
+ *   handler.trigger('hello');
+ * }
+ * 
+ * handler.on('hello', function() { 
+ *   world(); 
+ * });
+ * 
+ * hello(); //=> "hello world!";
+ * ```
+ *
+ * Using [#inherit](`tooly.inherit`), you can add all Handler functionality to your class
+ * without having to use the handler reference:
+ *
+ * ```js
+ * function MyClass(name) {
+ *   // initialize the parent class
+ *   tooly.Handler.call(this);
+ *   this.name = name;
+ *   this.init();
+ *   return this;
+ * }
+ * 
+ * // add all of the tooly.Handler.prototype methods to MyClass.prototype.
+ * // third argument also augments MyClass.prototype
+ * tooly.inherit(MyClass, tooly.Handler, {
+ * 
+ *   init: function() {
+ *     this.on('load', function() {
+ *       console.log(this.name + ' loaded');
+ *     });
+ *   },
+ *   
+ *   load: function() {
+ *     // whatever...
+ *   }
+ * });
+ *
+ * var instance = new MyClass("let's drink a lot of Malort and get "); 
+ * instance.load(); //=> "let's drink a lot of Malort and get loaded"
+ * ```
  * 
  * @param {Object}  context   (optional) designates the owner of the `handlers` array that holds 
  *                            all callbacks. When blank the Handler instance uses its own internal
@@ -763,8 +802,11 @@ tooly.Handler = function(context) {
 
 
 /**
- * executes all handlers attached to the named function.
- * @example
+ * Executes all handlers attached to the named function.
+ * For `Handler#on(<name>)` to work, `<name>` itself needs to call `#executeHandler`.
+ * 
+ * ### Example
+ * ```js
  * var value = 0;
  * var handler = new tooly.Handler();
  * 
@@ -780,13 +822,15 @@ tooly.Handler = function(context) {
  * handler.on('inc', announce);
  * inc();
  * value; //=> 20;
+ * ```
  * 
- * @param  {(String|Object)} fn the name of the method to execute
- * @return {Object} `this` for chaining
- * 
+ * @param  {String|Object} fn the name of the function that will announce to attached handlers
+ * @return {this}
+ *
+ * @alias #trigger
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
- * @alias #exec #trigger
  */
 tooly.Handler.prototype.executeHandler = function(fn) {
   var handler = this.handlers[fn] || [],
@@ -807,6 +851,7 @@ tooly.Handler.prototype.executeHandler = function(fn) {
  * @return {Object} `this` for chaining
  * 
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
  */
 tooly.Handler.prototype.on = function(fn, handler) {
@@ -822,14 +867,15 @@ tooly.Handler.prototype.on = function(fn, handler) {
 /**
  * Add callbacks to the list of handlers. The callbacks must be an object collection of 
  * key-value pairs where the identifier key is the name of a function that calls the 
- * `executeHandler` method with the same name as the key, while the value is the callback 
+ * `#executeHandler` method with the same name as the key, while the value is the callback 
  * function itself. This method should not be used if only registering a single callback, 
- * for that use {@link #on}.
+ * for that use [#on](#on).
  * 
  * @param  {Object} handlers  collection of callback functions
- * @return {Object} `this` for chaining
+ * @return {this}
  * 
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
  */
 tooly.Handler.prototype.registerCallbacks = function(callbacks) {
@@ -848,13 +894,13 @@ tooly.Handler.prototype.registerCallbacks = function(callbacks) {
 
 /**
  * Remove all handler's attached to `fn`. All subsequent calls to 
- * `executeHandler(fn)` will no longer have an effect.
+ * `#executeHandler(fn)` will no longer have an effect.
  * 
  * @param  {Function} fn the named function that executes handler(s)
  * 
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
- * @alias #off
  */
 tooly.Handler.prototype.remove = function(fn) {
   if (this.handlers[fn] !== undefined) {
@@ -865,9 +911,10 @@ tooly.Handler.prototype.remove = function(fn) {
 
 
 /**
- * Remove all handlers. Any subsequent call to #executeHandler will have no effect.
+ * Remove all handlers. Any subsequent call to `#executeHandler` will have no effect.
  *
  * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
  */
 tooly.Handler.prototype.removeAll = function() {
@@ -877,21 +924,11 @@ tooly.Handler.prototype.removeAll = function() {
 
 
 /**
- * @return {String}
+ * alias for [#executeHandler](`#executeHandler`)
+ *
+ * @alias #executeHandler
  * @memberOf  tooly.Handler
- * @instance
- */
-tooly.Handler.prototype.toString = function() { 
-  return '[object Handler]'; 
-};
-
-
-
-/**
- * alias for #executeHandler
- * 
- * @ignore
- * @memberOf  tooly.Handler
+ * @category  Handler
  * @instance
  */
 tooly.Handler.prototype.trigger = function(fn) {
@@ -910,13 +947,11 @@ tooly.Handler.prototype.trigger = function(fn) {
  * @static
  */
 tooly.construct = function(ctor, args) {
-  function __SurrogateConstructor() {
-    return (_type(args) === 'array')
-      ? ctor.apply(this, args)
-      : ctor.call(this, args);
+  function F() { 
+    return _type(args) === 'array' ? ctor.apply(this, args) : ctor.call(this, args);
   }
-  __SurrogateConstructor.prototype = ctor.prototype;
-  return new __SurrogateConstructor();
+  F.prototype = ctor.prototype;
+  return new F();
 };
 
 
@@ -936,7 +971,21 @@ tooly.construct = function(ctor, args) {
  * @static
  */
 tooly.extend = function(dest, src) {
-  return _extend(dest, src);
+  var sources = _slice.call(arguments),
+      target = sources.shift();
+  target = target || {};
+  _each(sources, function(source) {
+    for (var prop in source) {
+      if (source.hasOwnProperty(prop)) {
+        if (_type(source[prop]) === 'object') {
+          target[prop] = tooly.extend(target[prop], source[prop]);
+        } else {
+          target[prop] = source[prop];
+        }
+      }
+    }
+  });
+  return target;
 };
 
 
@@ -1585,12 +1634,12 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.6 (built: 2014-11-08)
+ * lap - version 0.0.7 (built: 2015-01-03)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
  *
- * Copyright © 2014 Joshua Kleckner
+ * Copyright © 2015 Joshua Kleckner
  * Licensed under the MIT license.
  * http://lokua.net/license-mit.html
  */
@@ -1612,6 +1661,8 @@ return tooly;
 }(this, function() {
 
 /** @namespace  Lap */
+
+
 
 var _idGen = _idGen || 0;
 var _pluginIdGen = _pluginIdGen || 0;
@@ -1643,7 +1694,7 @@ function Lap(container, lib, options, init) {
   // provides the `on` and `trigger` callback support
   tooly.Handler.call(lap);
 
-  lap.id = ++_idGen+0;
+  lap.id = ++_idGen;
 
 
 
@@ -1688,7 +1739,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     defaultSettings: {
       callbacks: {},
       discogPlaylistExclusive: true,
-      plugins: {},
+      plugins: null,
       prependTrackNumbers: true,
       replacementText: void 0,
       startingAlbumIndex: 0,
@@ -1883,7 +1934,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         // re may contain string-wrapped regexp (from json), convert if so
         if (tooly.type(re[0]) !== 'regexp') {
           var flags = re[2];
-          re[0] = (flags !== undefined) ? new RegExp(re[0], flags) : new RegExp(re[0], 'g');
+          re[0] = new RegExp(re[0], flags !== undefined ? flags : 'g');
         }
       } 
       if (tooly.type(lap.files) === 'string') {
@@ -2161,7 +2212,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
             if (lap.plugins[i] && lap.plugins[i].init) {
               lap.plugins[i].init();
             } else {
-              throw new Error('Could not initialize ' + lap.plugins[i] +
+              console.error('Could not initialize ' + lap.plugins[i] +
                 '. The plugin has no #init property');
             }
           });
@@ -2175,9 +2226,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateTrackTitleEl: function() {
-      var lap = this;
-      lap.$els.trackTitle.html(lap.tracklist[lap.trackIndex]);
-      return lap;
+      this.$els.trackTitle.html(this.tracklist[this.trackIndex]);
+      return this;
     },
 
     /**
@@ -2185,9 +2235,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateTrackNumberEl: function() {
-      var lap = this;
-      lap.$els.trackNumber.html(lap.trackIndex+1);
-      return lap;
+      this.$els.trackNumber.html(+this.trackIndex+1);
+      return this;
     },
 
     // TODO: adapt update for multiple artist arrays
@@ -2196,9 +2245,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateArtistEl: function() {
-      var lap = this;
-      lap.$els.artist.html(lap.artist);
-      return lap;
+      this.$els.artist.html(this.artist);
+      return this;
     },
 
     /**
@@ -2206,9 +2254,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateAlbumEl: function() {
-      var lap = this;
-      lap.$els.album.html(lap.album);
-      return lap;
+      this.$els.album.html(this.album);
+      return this;
     },
 
     /**
@@ -2216,9 +2263,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     updateCover: function() {
-      var lap = this;
-      lap.$els.cover.get(0).src = lap.cover;
-      return lap;
+      this.$els.cover.get(0).src = this.cover;
+      return this;
     },
 
     /**
@@ -2228,14 +2274,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     togglePlay: function() {
-      var t = this;
-      if (t.audio.paused) {
-        t.play();
-      } else {
-        t.pause();
-      }
-      t.trigger('togglePlay');
-      return t;
+      this.audio.paused ? this.play() : this.pause();
+      this.trigger('togglePlay');
+      return this;
     },
 
     /**
@@ -2274,37 +2315,39 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       } else {
         this.trackIndex = index;
       }
+      var wasPlaying = !this.audio.paused;
+      this.setSource();
+      if (wasPlaying) this.audio.play();
       this.trigger('trackChange');
       return this;
     },
 
     /**
-     * Move the previous index in the file que.
+     * Move to the previous index in the file queue.
+     * 
      * @return {this}
      * @memberOf  Lap
      */
     prev: function() {
-      var t = this;
-      var wasPlaying = !t.audio.paused;
-      t.trackIndex = (t.trackIndex-1 < 0) ? t.trackCount-1 : t.trackIndex-1;
-      t.setSource();
-      if (wasPlaying) t.audio.play();
+      var wasPlaying = !this.audio.paused;
+      this.trackIndex = (this.trackIndex-1 < 0) ? this.trackCount-1 : this.trackIndex-1;
+      this.setSource();
+      if (wasPlaying) this.audio.play();
       this.trigger('trackChange');
       return this; 
     },
 
     /**
-     * Move to the next index in the file que.
+     * Move to the next index in the file queue.
+     * 
      * @return {this}
      * @memberOf  Lap
      */
     next: function() {
-      var lap = this;
-
-      var wasPlaying = !lap.audio.paused;
-      lap.trackIndex = (lap.trackIndex+1 >= lap.trackCount) ? 0 : lap.trackIndex+1;
-      lap.setSource();
-      if (wasPlaying) lap.audio.play();
+      var wasPlaying = !this.audio.paused;
+      this.trackIndex = (this.trackIndex+1 >= this.trackCount) ? 0 : this.trackIndex+1;
+      this.setSource();
+      if (wasPlaying) this.audio.play();
       this.trigger('trackChange');
       return this;
     },
@@ -2317,14 +2360,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     prevAlbum: function() {
       var t = this;
-      var wasPlaying = !t.audio.paused;
-      t.albumIndex = (t.albumIndex-1 < 0) ? t.albumCount-1 : t.albumIndex-1;
-      t.update();
+      var wasPlaying = !this.audio.paused;
+      this.albumIndex = (this.albumIndex-1 < 0) ? this.albumCount-1 : this.albumIndex-1;
+      this.update();
 
-      t.trackIndex = 0;
-      t.setSource();
+      this.trackIndex = 0;
+      this.setSource();
 
-      if (wasPlaying) t.audio.play();
+      if (wasPlaying) this.audio.play();
       this.trigger('albumChange');
       return this;
     },
@@ -2336,18 +2379,38 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     nextAlbum: function() {
-      var t = this;
-      var wasPlaying= !t.audio.paused;
-      t.albumIndex = (t.albumIndex+1 > t.albumCount-1) ? 0 : t.albumIndex+1;
-      t.update();
+      var wasPlaying= !this.audio.paused;
+      this.albumIndex = (this.albumIndex+1 > this.albumCount-1) ? 0 : this.albumIndex+1;
+      this.update();
 
-      t.trackIndex = 0;
-      t.setSource();
+      this.trackIndex = 0;
+      this.setSource();
 
-      if (wasPlaying) t.audio.play();
+      if (wasPlaying) this.audio.play();
       this.trigger('albumChange');
       return this;
     },
+
+    /**
+     * Set the current album. Fires the "albumChange" event.
+     *
+     * @param {number} index  the new index; under/overflow will be clamped
+     * @memberOf  Lap
+     * @return {this}
+     */
+    setAlbum: function(index) {
+      if (index <= 0) {
+        this.albumIndex = 0;
+      } else if (index >= this.albumCount) {
+        this.albumIndex = this.albumCount-1;
+      } else {
+        this.albumIndex = index;
+      }
+      this.update();
+      this.setTrack(this.lib[this.albumIndex].startingTrackIndex || 0);
+      this.trigger('albumChange');
+      return this;
+    },    
 
     /**
      * Increment audio volume by the [`Lap#settings.volumeInterval`](#settings) amount
@@ -2408,7 +2471,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       _MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(false);
       }, lap.settings.seekTime);
-      return this;
+      return lap;
     },
 
     /**
@@ -2424,7 +2487,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       _MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(true);
       }, lap.settings.seekTime);
-      return this;
+      return lap;
     },
 
     /**
@@ -2437,13 +2500,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     seek: function(forward) {
-      var lap = this, applied;
       if (forward) {
-        applied = lap.audio.currentTime + lap.settings.seekInterval;
-        lap.audio.currentTime = (applied >= lap.audio.duration) ? lap.audio.duration : applied;
+        applied = this.audio.currentTime + this.settings.seekInterval;
+        this.audio.currentTime = (applied >= this.audio.duration) ? this.audio.duration : applied;
       } else {
-        applied = lap.audio.currentTime + (lap.settings.seekInterval * -1);
-        lap.audio.currentTime = (applied <= 0) ? 0 : applied;
+        applied = this.audio.currentTime + (this.settings.seekInterval * -1);
+        this.audio.currentTime = (applied <= 0) ? 0 : applied;
       }
       this.trigger('seek');
       return this;
@@ -2500,6 +2562,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       $panel.find('li').on('click', function(e) {
         var $li = $(this);
+
         lap.setTrack($li.attr('data-lap-playlist-index'));
       });
     },
@@ -2529,16 +2592,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     updatePlaylistItem: function() {
       var lap = this;
-      // remove highlight
-      $('li', lap.$els.playlistPanel).removeClass('lap-playlist-current')
-        // highlight
-        .eq(lap.trackIndex).addClass('lap-playlist-current');
+      $('li', lap.$els.playlistPanel)
+        .removeClass('lap-playlist-current')
+        .eq(lap.trackIndex)
+        .addClass('lap-playlist-current');
       return lap;
     },    
 
     /**
-     * TODO: shouldn't lib already be an array at this point (from #update)?
-     * 
      * @return {String} the currently qued file's extension sans `.`
      * @memberOf  Lap
      */
@@ -2547,17 +2608,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       if (this.libType === 'string') { // lib itself is the file
         file = this.lib;
       } else if (this.libType === 'object') { // full album
-        if (this.trackCount === 1) {
-          file = this.lib.files;
-        } else {
-          file = this.lib.files[this.trackIndex];
-        }
+        file = this.lib.files[this.trackIndex];
       } else if (this.libType === 'array') { // array of albums
-        if (this.trackCount === 1) {
-          file = this.lib[this.albumIndex].files;
-        } else {
-          file = this.lib[this.albumIndex].files[this.trackIndex];
-        }
+        file = this.lib[this.albumIndex].files[this.trackIndex];
       }
       return (file === undefined) ? '"unknown filetype"' : tooly.extension(file);
     },
@@ -2577,7 +2630,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         buffered = audio.buffered.end(audio.buffered.length-1);
       } catch(e) {
         return 0;
-        // tooly.trace('bufferFormatted', e.name);
+        // this.logger.trace('bufferFormatted', e.name);
       }
       var formatted = Math.round(tooly.scale(buffered, 0, audio.duration, 0, 100));
       // TODO: why are we returning 0?
@@ -2599,7 +2652,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     currentTimeFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
-      if (this.audio.duration < 3600 || formatted === '00:00:00') {
+      if (this.audio.duration < 3600 || formatted === '00:00:00' || formatted === 'NaN:NaN:NaN') {
         return formatted.slice(3); // two digits and the colon
       }
       return formatted;
@@ -2611,7 +2664,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * ### Example
      * ```js
      * var duration  = lap.audio.duration;      //=> 151.222857
-     * var formatted = lap.durationFormatted(); //=> 0:02:31
+     * var formatted = lap.durationFormatted(); //=> 02:31
      * ```
      * 
      * @return {String} human readable time in hh:mm:ss format
@@ -2620,7 +2673,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     durationFormatted: function() {
       var formatted = tooly.formatTime(Math.floor(this.audio.duration.toFixed(1)));
-      if (this.audio.duration < 3600) {
+      if (this.audio.duration < 3600 || formatted === '00:00:00' || formatted === 'NaN:NaN:NaN') {
         return formatted.slice(3);
       }
       return formatted;
@@ -2692,15 +2745,6 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     getSelector: function() {
       return $;
-    },
-
-    /**
-     * Equivalent of calling `JSON.stringify(this)`
-     * 
-     * @memberOf  Lap
-     */
-    toString: function() {
-      return JSON.stringify(this);
     }
   }; // end return
 })()); // end anon }, end wrapper ), call wrapper (), end tooly.inherit );
