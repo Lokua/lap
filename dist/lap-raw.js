@@ -317,7 +317,6 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       if (tooly.type(lap.files) === 'string') {
         lap.trackCount = 1;
       } else {
-        lap.logger.debug(lap);
         lap.trackCount = lap.files.length;
       }
       
