@@ -652,9 +652,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     togglePlay: function() {
-      this.logger.debug('togglePlay -> this.audio.paused: %o', this.audio.paused);
       this.audio.paused ? this.play() : this.pause();
-      this.logger.debug('togglePlay -> this.audio.paused: %o', this.audio.paused);
       this.trigger('togglePlay');
       return this;
     },
