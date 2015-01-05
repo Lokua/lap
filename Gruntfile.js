@@ -336,7 +336,7 @@ module.exports = function(grunt) {
     'uglify:rc',
     'concat:rc_bundle'
   ]);
-  grunt.registerTask('lap_all', ['debug', 'build']);
+  grunt.registerTask('lap_all', ['debug', 'build', 'raw']);
   grunt.registerTask('rc_all', ['rc_debug', 'rc']);
   grunt.registerTask('all', ['lap_all', 'rc_all']);
 };

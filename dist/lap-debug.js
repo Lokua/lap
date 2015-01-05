@@ -1973,7 +1973,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.7 (built: 2015-01-05)
+ * lap - version 0.1.1 (built: 2015-01-05)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git

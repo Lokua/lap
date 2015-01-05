@@ -1634,7 +1634,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.0.7 (built: 2015-01-03)
+ * lap - version 0.1.1 (built: 2015-01-05)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -1755,39 +1755,46 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     },    
 
     selectors: {
-      album:               'lap-album',
-      artist:              'lap-artist',
-      buffered:            'lap-buffered',
-      control:             'lap-control',
-      controls:            'lap-controls',
-      cover:               'lap-cover',
-      currentTime:         'lap-current-time',
-      discog:              'lap-discog',
-      discogItem:          'lap-discog-item',
-      discogPanel:         'lap-discog-panel',
-      duration:            'lap-duration',
-      info:                'lap-info', // button
-      infoPanel:           'lap-info-panel',
-      next:                'lap-next',
-      nextAlbum:           'lap-next-album',
-      playPause:           'lap-play-pause',
-      playlist:            'lap-playlist', // button
-      playlistItem:        'lap-playlist-item', // list item
-      playlistPanel:       'lap-playlist-panel',
-      playlistTrackNumber: 'lap-playlist-track-number',
-      prev:                'lap-prev',
-      prevAlbum:           'lap-prev-album',
-      progress:            'lap-progress',
-      seekBackward:        'lap-seek-backward',
-      seekForward:         'lap-seek-forward',
-      seekRange:           'lap-seek-range',
-      trackNumber:         'lap-track-number', // the currently cued track
-      trackTitle:          'lap-track-title',
-      volumeButton:        'lap-volume-button',
-      volumeDown:          'lap-volume-down',
-      volumeRead:          'lap-volume-read',
-      volumeRange:         'lap-volume-range',
-      volumeUp:            'lap-volume-up'
+      state: {
+        playlistItemCurrent: 'lap__playlist__item--current',
+        playing            : 'lap--playing',
+        paused             : 'lap--paused',
+        hidden             : 'lap--hidden'
+      },
+      album:               'lap__album',
+      artist:              'lap__artist',
+      buffered:            'lap__buffered',
+      // control:             'lap__control',
+      // controls:            'lap__controls',
+      cover:               'lap__cover',
+      currentTime:         'lap__current-time',
+      discog:              'lap__discog',
+      discogItem:          'lap__discog__item',
+      discogPanel:         'lap__discog__panel',
+      duration:            'lap__duration',
+      info:                'lap__info', // button
+      infoPanel:           'lap__info-panel',
+      next:                'lap__next',
+      nextAlbum:           'lap__next-album',
+      playPause:           'lap__play-pause',
+      playlist:            'lap__playlist', // button
+      playlistItem:        'lap__playlist__item', // list item
+      playlistPanel:       'lap__playlist__panel',
+      playlistTrackNumber: 'lap__playlist__track-number',
+      playlistTrackTitle : 'lap__playlist__track-title',
+      prev:                'lap__prev',
+      prevAlbum:           'lap__prev-album',
+      progress:            'lap__progress',
+      seekBackward:        'lap__seek-backward',
+      seekForward:         'lap__seek-forward',
+      seekRange:           'lap__seek-range',
+      trackNumber:         'lap__track-number', // the currently cued track
+      trackTitle:          'lap__track-title',
+      volumeButton:        'lap__volume-button',
+      volumeDown:          'lap__volume-down',
+      volumeRead:          'lap__volume-read',
+      volumeRange:         'lap__volume-range',
+      volumeUp:            'lap__volume-up'
     },    
 
     initialize: function() {
@@ -1857,6 +1864,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       var lap = this;
       lap.$els = {};
       tooly.each(lap.selectors, function(el, key) {
+        // do not add selectors.state classes
+        if (tooly.type(el, 'object')) return;
+
         var $el = $('.'+el, lap.container);
         // only add the Frankie instance if element really exists
         if (!$el.zilch()) lap.$els[key] = $el;
@@ -1887,17 +1897,18 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           // at this point lap.lib is a regular js object, and is either a single unnamed object
           // representing a single album, or a named array containing mutliple albums.
           // using "data" for the array name...
-          if (lap.lib.data !== 'undefined' && tooly.toType(lap.lib.data) === 'array') {
+          if (lap.lib.data !== 'undefined' && tooly.type(lap.lib.data) === 'array') {
             lap.lib = lap.lib.data; // no point in hanging on to object-wrapped array
-            lap.libType = tooly.toType(lap.lib);
+            lap.libType = tooly.type(lap.lib);
             lap.albumCount = lap.lib.length;
             // call this function again to proceed to the ===array block
             lap.update();
             return;
           }
-          lap.libType = tooly.toType(lap.lib);
+          lap.libType = tooly.type(lap.lib);
+
           if (lap.libType === 'object') {
-            lap.albumCount = tooly.propCount(lap.lib);
+            lap.albumCount = Object.keys(lap.lib).length;
             // call this function again to proceed to the ===object block
             lap.update();
             return;
@@ -1937,11 +1948,14 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           re[0] = new RegExp(re[0], flags !== undefined ? flags : 'g');
         }
       } 
+
       if (tooly.type(lap.files) === 'string') {
         lap.trackCount = 1;
       } else {
+        lap.logger.debug(lap);
         lap.trackCount = lap.files.length;
       }
+      
       lap.formatTracklist();
     },
 
@@ -2040,34 +2054,34 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
       if (hasPlaylist) {
         $els.playlist.on('click', function() {
-          if ($els.playlistPanel.hasClass('lap-hidden')) {
-            $els.playlistPanel.removeClass('lap-hidden');
+          if ($els.playlistPanel.hasClass(lap.selectors.state.hidden)) {
+            $els.playlistPanel.removeClass(lap.selectors.state.hidden);
             _PLAYLIST_OPEN = true;
             if (hasDiscog && lap.settings.discogPlaylistExclusive) {
-              $els.discogPanel.addClass('lap-hidden');
+              $els.discogPanel.addClass(lap.selectors.state.hidden);
             }
           } else {
-            $els.playlistPanel.addClass('lap-hidden');
+            $els.playlistPanel.addClass(lap.selectors.state.hidden);
             _PLAYLIST_OPEN = false;
             if (hasDiscog && lap.settings.discogPlaylistExclusive && _DISCOG_OPEN) {
-              $els.discogPanel.removeClass('lap-hidden');
+              $els.discogPanel.removeClass(lap.selectors.state.hidden);
             }
           }
         });
       }
       if (hasDiscog) {
         $els.discog.on('click', function() {
-          if ($els.discogPanel.hasClass('lap-hidden')) {
-            $els.discogPanel.removeClass('lap-hidden');
+          if ($els.discogPanel.hasClass(lap.selectors.state.hidden)) {
+            $els.discogPanel.removeClass(lap.selectors.state.hidden);
             _DISCOG_OPEN = true;
             if (hasPlaylist && lap.settings.discogPlaylistExclusive) {
-              $els.playlistPanel.addClass('lap-hidden');
+              $els.playlistPanel.addClass(lap.selectors.state.hidden);
             }
           } else {
-            $els.discogPanel.addClass('lap-hidden');
+            $els.discogPanel.addClass(lap.selectors.state.hidden);
             _DISCOG_OPEN = false;
             if (hasPlaylist && lap.settings.discogPlaylistExclusive && _PLAYLIST_OPEN) {
-              $els.playlistPanel.removeClass('lap-hidden');
+              $els.playlistPanel.removeClass(lap.selectors.state.hidden);
             }
           }
         });
@@ -2084,11 +2098,11 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         if ($els.cover) lap.updateCover();
         if ($els.playlistPanel) lap.populatePlaylist();
         if ($els.playPause) {
-          $els.playPause.addClass('lap-paused');
+          $els.playPause.addClass(lap.selectors.state.paused);
           lap.on('play', function() {
-            $els.playPause.removeClass('lap-paused').addClass('lap-playing');
+            $els.playPause.removeClass(lap.selectors.state.paused).addClass(lap.selectors.state.playing);
           }).on('pause', function() {
-            $els.playPause.removeClass('lap-playing').addClass('lap-paused');
+            $els.playPause.removeClass(lap.selectors.state.playing).addClass(lap.selectors.state.paused);
           });
         }
       }).on('trackChange', function() {
@@ -2134,7 +2148,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           if (!el) return;
           el.on('mousedown', function(e) {
             _SEEKING = true;
-            if ($(e.target).hasClass('lap-seek-forward')) {
+            if ($(e.target).hasClass(lap.selectors.seekForward)) {
               lap.seekForward();
             } else {
               lap.seekBackward();
@@ -2186,7 +2200,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      *   this.lap = lap;
      *   return this;
      * }
-     * Lap.MyPlugin.prototype.init = function() {
+     * Lap.MyPlugin.protype.init = function() {
      *   // do stuff
      * }
      * ```
@@ -2274,7 +2288,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @return {this}
      */
     togglePlay: function() {
+      this.logger.debug('togglePlay -> this.audio.paused: %o', this.audio.paused);
       this.audio.paused ? this.play() : this.pause();
+      this.logger.debug('togglePlay -> this.audio.paused: %o', this.audio.paused);
       this.trigger('togglePlay');
       return this;
     },
@@ -2545,17 +2561,17 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       $panel.html(
         tooly.tag('ul', lap.tracklist.map(function(track, i) {
 
-          var tagFormat = 'li .lap-playlist-item ' + 
-            ((i === lap.trackIndex) ? '.lap-playlist-current ' : '') +
+          var tagFormat = 'li .'+lap.selectors.playlistItem+' ' + 
+            ((i === lap.trackIndex) ? '.'+lap.selectors.state.playlistItemCurrent+' ' : '') +
             'data-lap-playlist-index="' + i + '"';
 
           return tooly.tag(tagFormat, tooly.stringFormat('{0}{1}',
             // 0
             prepend 
-              ? tooly.tag('span .lap-playlist-track-number', lap.trackNumberFormatted(i+1)) 
+              ? tooly.tag('span .' + lap.selectors.playlistTrackNumber+ '', lap.trackNumberFormatted(i+1)) 
               : '',
             // 1
-            tooly.tag('span .lap-playlist-track-title', lap.tracklist[i].trim()))
+            tooly.tag('span .'+lap.selectors.playlistTrackTitle, lap.tracklist[i].trim()))
           );
         }).join(''))
       );
@@ -2593,9 +2609,9 @@ tooly.inherit(tooly.Handler, Lap, (function() {
     updatePlaylistItem: function() {
       var lap = this;
       $('li', lap.$els.playlistPanel)
-        .removeClass('lap-playlist-current')
+        .removeClass(lap.selectors.state.playlistItemCurrent)
         .eq(lap.trackIndex)
-        .addClass('lap-playlist-current');
+        .addClass(lap.selectors.state.playlistItemCurrent);
       return lap;
     },    
 
