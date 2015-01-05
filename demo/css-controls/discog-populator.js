@@ -25,20 +25,21 @@
         albums = lap.property('album'),
         covers = lap.property('cover'),
         $panel = lap.$els.discogPanel,
+        discogItem = lap.selectors.discogItem,
         html = '';
 
     // --- populate thumb-nails
     albums.forEach(function(album, i) {
-      var tag = 'div .lap-discog-item data-album-index="' + i + '"' + 
-        (i === lap.albumIndex ? '' : ' .lap-hidden');
+      var tag = 'div .'+discogItem+' data-lap-album-index="' + i + '"' + 
+        (i === lap.albumIndex ? '' : ' .'+lap.selectors.state.hidden);
       var imgTag = 'img src="' + covers[i] + '"';
       html += tooly.tag(tag, tooly.tag(imgTag, tooly.tag('h4', album)));
     });
-    $panel.find('.lap-discog-items').append(html);
+    $panel.find('.lap__discog__items').append(html);
 
     // --- write nav index, ie: < 2/7 >
-    var $index = $panel.find('.lap-discog-nav-index'),
-        $items = $panel.find('.lap-discog-item'),
+    var $index = $panel.find('.lap__discog__nav-index'),
+        $items = $panel.find('.lap__discog__item'),
         navIndex = lap.albumIndex;
 
     function updateIndex(index) {
@@ -52,20 +53,20 @@
     });
 
     // --- bind nav controls to hide/show selected album cover, update nav/index
-    $panel.find('.lap-discog-thumb-prev, .lap-discog-thumb-next')
+    $panel.find('.lap__discog__thumb--prev, .lap__discog__thumb--next')
       .on('click', function() {
-        if ($(this).hasClass('lap-discog-thumb-prev')) {
+        if ($(this).hasClass('lap__discog__thumb--prev')) {
           navIndex = navIndex - 1 < 0 ? albums.length-1 : navIndex - 1;
         } else {
           navIndex = navIndex + 1 > albums.length-1 ? 0 : navIndex + 1;
         }
         updateIndex(navIndex);
-        $items.addClass('lap-hidden').eq(navIndex).removeClass('hidden');
+        $items.addClass(lap.selectors.state.hidden).eq(navIndex).removeClass(lap.selectors.state.hidden);
       });
 
     // --- direct click on item -> album change
     $items.on('click', function() {
-      lap.setAlbum($(this).attr('data-album-index'));
+      lap.setAlbum($(this).attr('data-lap-album-index'));
     });
   };
 

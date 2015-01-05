@@ -6,7 +6,7 @@
   clear: both;
 }
 
-.lap-sans, .lap-cover-wrap, .lap-discog-item h4, .lap-discog-panel h3, .lap-details {
+.lap-sans, .lap__cover__container, .lap__discog__item h4, .lap__discog__panel h3, .lap__details {
   font-family: 'PT Sans', verdana, sans-serif;
 }
 
@@ -14,7 +14,7 @@
   font-family: 'PT Serif', 'times new roman', 'georgia', serif;
 }
 
-.lap-monospace, .lap-track-number {
+.lap-monospace, .lap__track-number {
   font-family: consolas, monaco, menlo, monospace;
 }
 
@@ -71,19 +71,19 @@ section {
   color: #999999;
 }
 
-.lap-cover-wrap {
+.lap__cover__container {
   position: relative;
   width: 272px;
   height: 272px;
 }
 
-.lap-cover {
+.lap__cover {
   margin: 8px;
   width: 256px;
   height: 256px;
 }
 
-.lap-playlist-panel, .lap-discog-panel {
+.lap__playlist__panel, .lap__discog__panel {
   position: absolute;
   top: 0;
   left: 0;
@@ -95,17 +95,17 @@ section {
   background: rgba(0, 0, 0, 0.62);
   font-size: 12px;
 }
-.lap-playlist-panel ul, .lap-discog-panel ul {
+.lap__playlist__panel ul, .lap__discog__panel ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.lap-playlist-current {
+.lap__playlist__item--current {
   color: #AAD5FF;
 }
 
-.lap-playlist-track-title {
+.lap__playlist__track-title {
   text-decoration: none;
   -webkit-transition: 0.5s;
           transition: 0.5s;
@@ -113,7 +113,7 @@ section {
   position: relative;
   text-decoration: none;
 }
-.lap-playlist-track-title:before {
+.lap__playlist__track-title:before {
   content: '';
   position: absolute;
   width: 100%;
@@ -128,19 +128,19 @@ section {
   -webkit-transition: all 0.2s ease-in-out 0s;
           transition: all 0.2s ease-in-out 0s;
 }
-.lap-playlist-track-title:hover:before {
+.lap__playlist__track-title:hover:before {
   visibility: visible;
   -webkit-transform: scaleX(1);
       -ms-transform: scaleX(1);
           transform: scaleX(1);
 }
 
-.lap-discog-item {
+.lap__discog__item {
   padding: 8px;
   width: 240px;
   margin: 0 auto;
 }
-.lap-discog-item img {
+.lap__discog__item img {
   border: 1px solid rgba(245, 245, 245, 0.25);
   display: block;
   margin: 0 auto;
@@ -149,82 +149,82 @@ section {
   box-shadow: 0px 1px 2px 0px rgba(255, 255, 255, 0.025);
 }
 
-.lap-discog-item h4, .lap-discog-panel h3 {
+.lap__discog__item h4, .lap__discog__panel h3 {
   color: whitesmoke;
   margin: 4px 0 0;
   text-align: center;
 }
 
-.lap-discog-nav {
+.lap__discog__nav {
   margin: 0 auto;
   text-align: center;
 }
-.lap-discog-nav i {
+.lap__discog__nav i {
   color: whitesmoke;
 }
-.lap-discog-nav i:hover {
+.lap__discog__nav i:hover {
   color: #c2c2c2;
 }
 
-.lap-discog-thumb-prev, .lap-discog-thumb-next {
+.lap__discog__thumb--prev, .lap__discog__thumb--next {
   border: 1px solid whitesmoke;
 }
 
-.lap-discog-nav-index {
+.lap__discog__nav-index {
   margin: 48.89px;
 }
 
-.lap-details {
+.lap__details {
   font-size: 12px;
   text-align: center;
   margin-bottom: 8px;
   width: 100%;
 }
 
-.lap-artist:after {
+.lap__artist:after {
   content: ' - ';
 }
 
-.lap-album {
+.lap__album {
   font-style: italic;
 }
 
-.lap-track-number {
+.lap__track-number {
   color: #8c8c8c;
 }
-.lap-track-number:after {
+.lap__track-number:after {
   content: ' - ';
 }
 
-.lap-controls {
+.lap__controls {
   margin: 0 auto;
   width: 256px;
 }
 
-.lap-control {
+.lap__control {
   display: inline-block;
   width: 16px;
   height: 16px;
   margin: 0;
 }
-.lap-control:hover .lap-i {
+.lap__control:hover .lap-i {
   color: #8c8c8c;
 }
 
-.lap-volume-wrapper {
+.lap__volume__container {
   display: inline-block;
 }
 
-.lap-speaker-wrapper {
+.lap__speaker__container {
   width: 16px;
 }
 
-.lap-volume-range-wrapper, .lap-seek-range-wrapper {
+.lap__volume-range__container, .lap__seek-range__container {
   display: inline-block;
   height: 16px;
   padding-bottom: 7px;
 }
-.lap-volume-range-wrapper input[type=range], .lap-seek-range-wrapper input[type=range] {
+.lap__volume-range__container input[type=range], .lap__seek-range__container input[type=range] {
   cursor: pointer;
   vertical-align: middle;
   -webkit-appearance: none;
@@ -232,7 +232,7 @@ section {
   width: 76px;
   height: 2px;
 }
-.lap-volume-range-wrapper input[type=range]::-webkit-slider-thumb, .lap-seek-range-wrapper input[type=range]::-webkit-slider-thumb {
+.lap__volume-range__container input[type=range]::-webkit-slider-thumb, .lap__seek-range__container input[type=range]::-webkit-slider-thumb {
   z-index: 26;
   vertical-align: middle;
   -webkit-appearance: none;
@@ -242,12 +242,12 @@ section {
   height: 14px;
 }
 
-.lap-seek-range-wrapper {
+.lap__seek-range__container {
   width: 76px;
   position: relative;
   z-index: 26;
 }
-.lap-seek-range-wrapper input[type=range] {
+.lap__seek-range__container input[type=range] {
   background-color: transparent;
   position: relative;
   top: -18px;
@@ -274,33 +274,33 @@ section {
   vertical-align: 2px;
 }
 
-.lap-read {
+.lap__read {
   display: inline;
   font-size: 9px;
   position: relative;
   top: -3px;
 }
 
-.lap-center-cell {
+.lap__cell--parent {
   display: table-cell;
   vertical-align: middle;
 }
 
-.lap-hidden {
-  display: none !important;
-}
-
-.lap-center-child {
+.lap__cell--child {
   vertical-align: middle;
 }
 
-.lap-non-volume {
+.lap--hidden {
+  display: none !important;
+}
+
+.lap__controls--non-volume {
   margin: 0;
   padding: 0;
   display: inline-block;
 }
 
-#player_02 .lap-volume-wrapper input[type=range] {
+#full-discography-player .lap-volume-wrapper input[type=range] {
   width: 216px;
 }
 
@@ -322,6 +322,6 @@ section {
   border-bottom: 1px solid #ddd;
 }
 
-.minimal-box-shadow, .lap, .lap-cover {
+.minimal-box-shadow, .lap, .lap__cover {
   box-shadow: 0px 1px 2px 0px #ddd;
 }

@@ -1,4 +1,4 @@
-;(function(window, undefined) {
+!function(window, undefined) {
 
   /*>>*/
   var logger = tooly.Logger(0);
@@ -13,22 +13,23 @@
    * and the volume range appears; move away, it is again hidden.
    * 
    * @param {Lap}    lap       the Lap instance
-   * @param {String} hideClass class name for elements to hide
-   *                           when volume range is shown, and vis a versa
+   * @param {String} nonVolumeControlsClass class name for elements to hide when volume range is shown
    */
-  Lap.ExpandingVolumeRange = function(lap, hideClass, classes) {
+  Lap.ExpandingVolumeRange = function(lap, container, speaker, nonVolumeControlsClass, levelClasses) {
     this.lap = lap;
     this.id = ++__id;
     this.name = 'EXPNDVOLRNG_' + this.id;
     /*>>*/
     logger.name = this.name;
     /*<<*/
-    this.hideClass = hideClass || 'lap-non-volume';
-    this.classes = classes || this.classes;
+    this.container = container || '.lap__volume__container';
+    this.speaker= speaker || '.lap__speaker';
+    this.nonVolumeControlsClass = nonVolumeControlsClass || '.lap__controls--non-volume';
+    this.levelClasses = levelClasses || this.levelClasses;
     return this;
   };
 
-  Lap.ExpandingVolumeRange.prototype.classes = [
+  Lap.ExpandingVolumeRange.prototype.levelClasses = [
     'lap-i-volume-off',
     'lap-i-volume-low',
     'lap-i-volume-mid',
@@ -40,9 +41,9 @@
     var lev = this,
         lap = lev.lap,
         $ = tooly.Frankie,
-        $speaker = $('.lap-speaker', lap.container), 
+        $speaker = $(lev.speakerClass, lap.container), 
         $volumeRange = lap.$els.volumeRange,
-        $opps = $(lev.hideClass, lap.container),
+        $opps = $(lev.nonVolumeControlsClass, lap.container),
         mouseState = { down: false, entered: false };
 
     if (!$volumeRange) {
@@ -55,11 +56,11 @@
       .on('change', function() {
         var v = this.value;
 
-        var classNum = v > 0 ? Math.ceil(tooly.scale(v, 0, 100, 0, lev.classes.length-1)) : 0;
+        var classNum = v > 0 ? Math.ceil(tooly.scale(v, 0, 100, 0, lev.levelClasses.length-1)) : 0;
 
-        $speaker.removeClass(lev.classes.filter(function(c) {
-          return c !== lev.classes[classNum];
-        }).join(' ')).addClass(lev.classes[classNum]);
+        $speaker.removeClass(lev.levelClasses.filter(function(c) {
+          return c !== lev.levelClasses[classNum];
+        }).join(' ')).addClass(lev.levelClasses[classNum]);
 
       })
       .on('mousedown', function() {
@@ -67,19 +68,19 @@
       });
 
 
-    $('.lap-volume-wrapper', lap.container)
+    $(lev.container, lap.container)
       .on('mouseenter', function() {
         if (!mouseState.entered) {
-          $volumeRange.removeClass('lap-hidden');
-          $opps.addClass('lap-hidden');
+          $volumeRange.removeClass(lap.selectors.state.hidden);
+          $opps.addClass(lap.selectors.state.hidden);
           mouseState.entered = true;
         }
       })
       .on('mouseleave', function(e) {
         mouseState.entered = false;
         if (!mouseState.down) {
-          $volumeRange.addClass('lap-hidden');
-          $opps.removeClass('lap-hidden');
+          $volumeRange.addClass(lap.selectors.state.hidden);
+          $opps.removeClass(lap.selectors.state.hidden);
         };
       });
 
@@ -89,10 +90,10 @@
     $('body').on('mouseup', function() {
       mouseState.down = false;
       if (!mouseState.entered) {
-        $volumeRange.addClass('lap-hidden');
-        $opps.removeClass('lap-hidden');
+        $volumeRange.addClass(lap.selectors.state.hidden);
+        $opps.removeClass(lap.selectors.state.hidden);
       }
     });
   };
 
-})(window);
+}(window);

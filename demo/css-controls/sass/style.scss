@@ -64,19 +64,19 @@ section {
   }
 }
 
-.lap-cover-wrap {
+.lap__cover__container {
   @extend .lap-sans;
   position: relative;
   width: $lap-cover-wrapper-size;
   height: $lap-cover-wrapper-size;
 }
-.lap-cover {
+.lap__cover {
   @extend .minimal-box-shadow;
   margin: $lap-cover-margin;
   width:$lap-cover-size;
   height:$lap-cover-size;
 }
-.lap-playlist-panel, .lap-discog-panel {
+.lap__playlist__panel, .lap__discog__panel {
   position: absolute;
   top: 0;
   left: 0;
@@ -94,17 +94,17 @@ section {
     padding: 0;
   }
 }
-.lap-playlist-current {
+.lap__playlist__item--current {
   color: #AAD5FF;
 }
-.lap-playlist-track-title {
+.lap__playlist__track-title {
   text-decoration: none;
   transition: 0.5s;
   cursor: pointer;
   @include underline-text-on-hover($lap-playlist-text-color);
 }
 
-.lap-discog-item {
+.lap__discog__item {
   padding: 8px;
   width: $lap-cover-size - 16px;
   margin: 0 auto;
@@ -117,13 +117,13 @@ section {
     @include minimal-box-shadow(gray-scale(255, 0.025));
   }
 }
-.lap-discog-item h4, .lap-discog-panel h3 {
+.lap__discog__item h4, .lap__discog__panel h3 {
   @extend .lap-sans;
   color: $lap-playlist-text-color;
   margin: 4px 0 0;
   text-align: center;
 }
-.lap-discog-nav {
+.lap__discog__nav {
   // width: $lap-cover-size - 16px;
   margin: 0 auto;
   text-align: center;
@@ -134,29 +134,29 @@ section {
     }
   }
 }
-.lap-discog-thumb-prev, .lap-discog-thumb-next {
+.lap__discog__thumb--prev, .lap__discog__thumb--next {
   border: 1px solid $lap-playlist-text-color;
 }
-.lap-discog-nav-index {
+.lap__discog__nav-index {
   margin: 48.89px;
 }
 
-.lap-details {
+.lap__details {
   @extend .lap-sans;
   font-size: $lap-text-size;
   text-align: center;
   margin-bottom: 8px;
   width: 100%;
 }
-.lap-artist {
+.lap__artist {
   &:after {
     content: ' - ';
   }
 }
-.lap-album {
+.lap__album {
   font-style: italic;
 }
-.lap-track-number {
+.lap__track-number {
   @extend .lap-monospace;
   // font-size: $lap-text-size - 2px;
   color: lighten($lap-text-color, 15%);
@@ -165,13 +165,13 @@ section {
   }
 }
 
-.lap-controls {
+.lap__controls {
   margin: 0 auto;
   // width: $lap-icon-size * 14;
   width: 256px;
 }
 
-.lap-control {
+.lap__control {
   display: inline-block;
   width: $lap-icon-size;
   height: $lap-icon-size;
@@ -181,18 +181,18 @@ section {
   }
 }
 
-.lap-volume-wrapper {
+.lap__volume__container {
   display: inline-block;
 }
 
 // keep speaker fixed size, waves change width
 // when the icons are switched
-.lap-speaker-wrapper {
+.lap__speaker__container {
   width: 16px;
 }
 
 // used to center the slider track
-.lap-volume-range-wrapper, .lap-seek-range-wrapper {
+.lap__volume-range__container, .lap__seek-range__container {
   display: inline-block;
   height: $lap-icon-size;
   padding-bottom: 7px; // icon-height/2 (8px) - track-height/2 (1px)
@@ -215,7 +215,7 @@ section {
   }  
 }
 
-.lap-seek-range-wrapper {
+.lap__seek-range__container {
   width: $lap-progress-width;
   position: relative;
   z-index: 26;
@@ -253,7 +253,7 @@ section {
 }
 
 // lap-current-time, lap-duration
-.lap-read {
+.lap__read {
   // @extend .lap-monospace;
   display: inline;
   font-size: 9px;
@@ -263,20 +263,19 @@ section {
 
 // container for children that need to be centered
 // set vertical-align: middle; on the child
-.lap-center-cell {
+.lap__cell--parent {
   display: table-cell;
   vertical-align: middle;
 }
-
-.lap-hidden {
-  display: none !important;
-}
-
-.lap-center-child {
+.lap__cell--child {
   vertical-align: middle;
 }
 
-.lap-non-volume {
+.lap--hidden {
+  display: none !important;
+}
+
+.lap__controls--non-volume {
   margin: 0;
   padding: 0;
   display: inline-block;
@@ -287,7 +286,7 @@ section {
 // 
 
 // full discog player
-#player_02 {
+#full-discography-player {
   .lap-volume-wrapper input[type=range] {
     width: 216px;
   }  
