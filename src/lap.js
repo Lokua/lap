@@ -1020,9 +1020,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @example
      */
     currentTimeFormatted: function() {
+      if (isNaN(this.audio.duration)) {
+        return '00:00';
+      }      
       var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
-      if (this.audio.duration < 3600 || formatted === '00:00:00' || formatted === 'NaN:NaN:NaN') {
-        return formatted.slice(3); // two digits and the colon
+      if (this.audio.duration < 3600 || formatted === '00:00:00') {
+        return formatted.slice(3); // nn:nn
       }
       return formatted;
     },
@@ -1041,9 +1044,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     durationFormatted: function() {
+      if (isNaN(this.audio.duration)) {
+        return '00:00';
+      }
       var formatted = tooly.formatTime(Math.floor(this.audio.duration.toFixed(1)));
-      if (this.audio.duration < 3600 || formatted === '00:00:00' || formatted === 'NaN:NaN:NaN') {
-        return formatted.slice(3);
+      if (this.audio.duration < 3600 || formatted === '00:00:00') {
+        return formatted.slice(3); // nn:nn
       }
       return formatted;
     },
