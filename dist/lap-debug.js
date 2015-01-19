@@ -1973,7 +1973,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.1.1 (built: 2015-01-10)
+ * lap - version 0.1.2 (built: 2015-01-19)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -2036,7 +2036,7 @@ function Lap(container, lib, options, init) {
   lap.id = ++_idGen;
 
   /*>>*/
-  lap.logger = new tooly.Logger(0, 'Lap_' + lap.id);
+  lap.logger = new tooly.Logger('Lap_' + lap.id, { level: 0 });
   /*<<*/
 
   // uninitialized

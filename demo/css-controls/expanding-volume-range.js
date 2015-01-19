@@ -1,7 +1,7 @@
 !function(window, undefined) {
 
   /*>>*/
-  var logger = tooly.Logger(0);
+  var logger = tooly.Logger('EXPVOL', { level: 0 });
   /*<<*/
 
   var __id = __id || 0;  

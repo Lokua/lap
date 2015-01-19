@@ -35,7 +35,7 @@ function Lap(container, lib, options, init) {
   lap.id = ++_idGen;
 
   /*>>*/
-  lap.logger = new tooly.Logger(0, 'Lap_' + lap.id);
+  lap.logger = new tooly.Logger('Lap_' + lap.id, { level: 0 });
   /*<<*/
 
   // uninitialized
