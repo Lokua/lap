@@ -328,6 +328,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
           if (re !== undefined) {
             tracklist[i] = tracklist[i].replace(re[0], re[1]);
           }
+          tracklist[i] = tracklist[i].trim();
         }
         lap.tracklist = tracklist;
       }
