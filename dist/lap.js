@@ -1816,6 +1816,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       lap.artist      = '';
       lap.cover       = '';
       lap.replacement = '';
+      lap.playlistPopulated = false;
 
       lap.update();
 
@@ -2579,6 +2580,8 @@ tooly.inherit(tooly.Handler, Lap, (function() {
 
         lap.setTrack($li.attr('data-lap-playlist-index'));
       });
+
+      lap.playlistPopulated = true;
     },
 
     /**
@@ -2606,10 +2609,12 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     updatePlaylistItem: function() {
       var lap = this;
-      $('li', lap.$els.playlistPanel)
-        .removeClass(lap.selectors.state.playlistItemCurrent)
-        .eq(lap.trackIndex)
-        .addClass(lap.selectors.state.playlistItemCurrent);
+      if (lap.playlistPopulated) {
+        $('li', lap.$els.playlistPanel)
+          .removeClass(lap.selectors.state.playlistItemCurrent)
+          .eq(lap.trackIndex)
+          .addClass(lap.selectors.state.playlistItemCurrent);
+      }
       return lap;
     },    
 
