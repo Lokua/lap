@@ -175,7 +175,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       lap.initAudio();
       lap.initElements();
       lap.addListeners();
-      lap.registerCallbacks(lap.settings.callbacks);
+      lap.register(lap.settings.callbacks);
       lap.initPlugins();
 
       lap.trigger('load');

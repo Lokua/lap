@@ -1,5 +1,5 @@
 /*!
- * lap - version 0.1.2 (built: 2015-01-19)
+ * lap - version 0.1.2 (built: 2015-03-10)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -188,7 +188,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       lap.initAudio();
       lap.initElements();
       lap.addListeners();
-      lap.registerCallbacks(lap.settings.callbacks);
+      lap.register(lap.settings.callbacks);
       lap.initPlugins();
 
       lap.trigger('load');
