@@ -2212,10 +2212,14 @@ return tooly;
 var _idGen = _idGen || 0;
 var _pluginIdGen = _pluginIdGen || 0;
 
+/*>>*/
+var logger;
+/*<<*/
+
 
 // alias tooly.Frankie constructor. Handles all jQuery-like dom selection.
 // TODO: make replacable with whatever selector lib that conforms to the API
-// @type {tooly.Selector}
+// @type {tooly.Frankie}
 var $ = tooly.Frankie.bind(this);
  
 
@@ -2242,7 +2246,7 @@ function Lap(container, lib, options, init) {
   lap.id = ++_idGen;
 
   /*>>*/
-  lap.logger = new tooly.Logger('Lap_' + lap.id, { level: 0 });
+  logger = new tooly.Logger('Lap_' + lap.id, { level: 0 });
   /*<<*/
 
   // uninitialized
@@ -2388,7 +2392,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       lap.trigger('load');
 
       /*>>*/
-      lap.logger.info('post init: %o', lap);
+      logger.info('post init: %o', lap);
       /*<<*/      
     },
 
@@ -2435,7 +2439,6 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       });
     },
 
-
     /**
      * Sets the reference of the current album's files to an array, regardless of whether
      * this player is single, album, or discography based. Used to avoid excessive run-time type
@@ -2445,58 +2448,17 @@ tooly.inherit(tooly.Handler, Lap, (function() {
      */
     update: function() {
       var lap = this;
-      // either something stupid is happening or we are testing
-      if (lap.libType === 'null' || lap.libType === 'undefined') return;
-      if (lap.libType === 'string') {
-        if (tooly.extension(lap.lib.toLowerCase()) === 'json') {
-          // TODO: break this function into two parts so
-          // we can async
-          tooly.getJSON(lap.lib, function(data) {
-            // lap.lib = JSON.parse(data);
-            lap.lib = data;
-          }, false); // sync
+      if (lap.libType === 'object' || lap.libType === 'array') {
 
-          // at this point lap.lib is a regular js object, and is either a single unnamed object
-          // representing a single album, or a named array containing mutliple albums.
-          // using "data" for the array name...
-          if (lap.lib.data !== 'undefined' && tooly.type(lap.lib.data) === 'array') {
-            lap.lib = lap.lib.data; // no point in hanging on to object-wrapped array
-            lap.libType = tooly.type(lap.lib);
-            lap.albumCount = lap.lib.length;
-            // call this function again to proceed to the ===array block
-            lap.update();
-            return;
-          }
-          lap.libType = tooly.type(lap.lib);
-
-          if (lap.libType === 'object') {
-            lap.albumCount = Object.keys(lap.lib).length;
-            // call this function again to proceed to the ===object block
-            lap.update();
-            return;
-          }
-        }
-        // if we end up here, lib is (or should be) just a single file-string
-        lap.files = [lap.lib];
-        lap.tracklist = [lap.lib]; // TODO: fixme
-        // make sure nothing stupid is set
-        lap.trackIndex = 0;
-        lap.albumIndex = 0;
-        lap.startingTrackIndex = 0;
-        lap.startingAlbumIndex = 0;
-
-      } else if (lap.libType === 'object' || lap.libType === 'array') {
         var lib = lap.libType === 'array' ? lap.lib[lap.albumIndex] : lap.lib;
-        lap.artist = lib.artist;
-        lap.album = lib.album;
-        lap.files = lib.files;
-        lap.cover = lib.cover;
-        lap.tracklist = lib.tracklist;
-        lap.replacement = lib.replacement;
+
+        ['artist', 'album', 'files', 'cover', 'tracklist', 'replacement'].forEach(function(key) {
+          lap[key] = lib[key];
+        });
+        lap.trackCount = lap.files.length;
 
       } else {
-        throw new TypeError(
-          'Lap.lib must be of type String (audio or json file), Object, or Array');
+        throw new TypeError('Lap.lib must be of type Object, or Array');
       }
 
       // parse replacement
@@ -2511,14 +2473,94 @@ tooly.inherit(tooly.Handler, Lap, (function() {
         }
       } 
 
-      if (tooly.type(lap.files) === 'string') {
-        lap.trackCount = 1;
-      } else {
-        lap.trackCount = lap.files.length;
-      }
-      
       lap.formatTracklist();
     },
+
+
+    /**
+     * Sets the reference of the current album's files to an array, regardless of whether
+     * this player is single, album, or discography based. Used to avoid excessive run-time type
+     * identification checks throughout the application.
+     * 
+     * @memberOf  Lap
+     */
+    // update: function() {
+    //   var lap = this;
+    //   // either something stupid is happening or we are testing
+    //   if (lap.libType === 'null' || lap.libType === 'undefined') return;
+    //   if (lap.libType === 'string') {
+    //     if (tooly.extension(lap.lib.toLowerCase()) === 'json') {
+    //       // TODO: break this function into two parts so
+    //       // we can async
+    //       tooly.getJSON(lap.lib, function(data) {
+    //         // lap.lib = JSON.parse(data);
+    //         lap.lib = data;
+    //       }, false); // sync
+
+    //       // at this point lap.lib is a regular js object, and is either a single unnamed object
+    //       // representing a single album, or a named array containing mutliple albums.
+    //       // using "data" for the array name...
+    //       if (lap.lib.data !== 'undefined' && tooly.type(lap.lib.data) === 'array') {
+    //         lap.lib = lap.lib.data; // no point in hanging on to object-wrapped array
+    //         lap.libType = tooly.type(lap.lib);
+    //         lap.albumCount = lap.lib.length;
+    //         // call this function again to proceed to the ===array block
+    //         lap.update();
+    //         return;
+    //       }
+    //       lap.libType = tooly.type(lap.lib);
+
+    //       if (lap.libType === 'object') {
+    //         lap.albumCount = Object.keys(lap.lib).length;
+    //         // call this function again to proceed to the ===object block
+    //         lap.update();
+    //         return;
+    //       }
+    //     }
+    //     // if we end up here, lib is (or should be) just a single file-string
+    //     lap.files = [lap.lib];
+    //     lap.tracklist = [lap.lib]; // TODO: fixme
+    //     // make sure nothing stupid is set
+    //     lap.trackIndex = 0;
+    //     lap.albumIndex = 0;
+    //     lap.startingTrackIndex = 0;
+    //     lap.startingAlbumIndex = 0;
+
+    //   } else if (lap.libType === 'object' || lap.libType === 'array') {
+    //     var lib = lap.libType === 'array' ? lap.lib[lap.albumIndex] : lap.lib;
+    //     lap.artist = lib.artist;
+    //     lap.album = lib.album;
+    //     lap.files = lib.files;
+    //     lap.cover = lib.cover;
+    //     lap.tracklist = lib.tracklist;
+    //     lap.replacement = lib.replacement;
+
+    //   } else {
+    //     throw new TypeError(
+    //       'Lap.lib must be of type String (audio or json file), Object, or Array');
+    //   }
+
+    //   // parse replacement
+    //   if (lap.replacement !== undefined) {
+    //     var re = lap.replacement;
+    //     // for replacment without value specified, empty string
+    //     if (tooly.type(re) === 'string') re = [re, ''];
+    //     // re may contain string-wrapped regexp (from json), convert if so
+    //     if (tooly.type(re[0]) !== 'regexp') {
+    //       var flags = re[2];
+    //       re[0] = new RegExp(re[0], flags !== undefined ? flags : 'g');
+    //     }
+    //   } 
+
+    //   if (tooly.type(lap.files) === 'string') {
+    //     lap.trackCount = 1;
+    //   } else {
+    //     logger.debug(lap);
+    //     lap.trackCount = lap.files.length;
+    //   }
+      
+    //   lap.formatTracklist();
+    // },
 
     /**
      * Places relative file names in place of an empty or mismatched tracklist array.
@@ -2603,13 +2645,13 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       });
 
       // clicks ->
-      if ($els.playPause) $els.playPause.on('click', function() { lap.togglePlay(); });
-      if ($els.prev) $els.prev.on('click', function() { lap.prev(); });
-      if ($els.next) $els.next.on('click', function() { lap.next(); });
-      if ($els.volumeUp) $els.volumeUp.on('click', function() { lap.incVolume(); });
+      if ($els.playPause)  $els.playPause .on('click', function() { lap.togglePlay(); });
+      if ($els.prev)       $els.prev      .on('click', function() { lap.prev(); });
+      if ($els.next)       $els.next      .on('click', function() { lap.next(); });
+      if ($els.volumeUp)   $els.volumeUp  .on('click', function() { lap.incVolume(); });
       if ($els.volumeDown) $els.volumeDown.on('click', function() { lap.decVolume(); });
-      if ($els.prevAlbum) $els.prevAlbum.on('click', function() { lap.prevAlbum(); });
-      if ($els.nextAlbum) $els.nextAlbum.on('click', function() { lap.nextAlbum(); });
+      if ($els.prevAlbum)  $els.prevAlbum .on('click', function() { lap.prevAlbum(); });
+      if ($els.nextAlbum)  $els.nextAlbum .on('click', function() { lap.nextAlbum(); });
 
       var hasPlaylist = $els.playlistPanel && $els.playlist;
       var hasDiscog = $els.discogPanel && $els.discog;
@@ -3139,7 +3181,7 @@ tooly.inherit(tooly.Handler, Lap, (function() {
       $panel.find('li').on('click', function(e) {
         var $li = $(this);
         /*>>*/
-        lap.logger.debug('playlist click fired');
+        logger.debug('playlist click fired');
         /*<<*/
         lap.setTrack($li.attr('data-lap-playlist-index'));
       });

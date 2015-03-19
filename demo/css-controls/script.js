@@ -1,20 +1,30 @@
 ;(function(window, undefined) {
 
-  window.onload = function() {
+  tooly.ready(function() {
+    tooly.getJSON('../lib.json', function(data) {
+      run(data.data);
+    }, true);
+  });
+
+  function run(data) {
 
     var logger = tooly.Logger(0, 'CSS_DEMO');
     var $ = tooly.Frankie.bind(this);
 
-    var fullDiscogPlayer = new Lap('#full-discography-player', '../lib.json', { 
+    var fullDiscogPlayer = new Lap('#full-discography-player', data, { 
       useNativeVolumeRange: true,
       useNativeSeekRange: true,
       useNativeProgress: true,
       callbacks: {
         play : function() { 
-          fullDiscogPlayer.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
+          fullDiscogPlayer.$els.playPause
+            .removeClass('lap-i-play')
+            .addClass('lap-i-pause');
         },
         pause: function() { 
-          fullDiscogPlayer.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
+          fullDiscogPlayer.$els.playPause
+            .removeClass('lap-i-pause')
+            .addClass('lap-i-play'); 
         }
       },
       plugins: [{ 
@@ -29,39 +39,40 @@
         constructor: Lap.DiscogPopulator
       }] 
     }, false);
+
     fullDiscogPlayer.initialize();
 
-    var singleTrackPlayerLib = {
-      artist: 'Lokua',
-      files: ['../sh.mp3']
-    };
+    // var singleTrackPlayerLib = {
+    //   artist: 'Lokua',
+    //   files: ['../sh.mp3']
+    // };
 
-    var singleTrackPlayer = new Lap('#single-track-player', singleTrackPlayerLib, {
-      useNativeVolumeRange: true,
-      useNativeSeekRange: true,
-      callbacks: {
-        play: function() { 
-          singleTrackPlayer.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
-        },
-        pause: function() { 
-          singleTrackPlayer.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
-        }
-      },
-      plugins: [{ constructor: Lap.ExpandingVolumeRange }]
-    }, false);
-    singleTrackPlayer.initialize();
+    // var singleTrackPlayer = new Lap('#single-track-player', singleTrackPlayerLib, {
+    //   useNativeVolumeRange: true,
+    //   useNativeSeekRange: true,
+    //   callbacks: {
+    //     play: function() { 
+    //       singleTrackPlayer.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
+    //     },
+    //     pause: function() { 
+    //       singleTrackPlayer.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
+    //     }
+    //   },
+    //   plugins: [{ constructor: Lap.ExpandingVolumeRange }]
+    // }, false);
+    // singleTrackPlayer.initialize();
 
-    var miniPlayer = new Lap('#mini-player', '../sh.mp3', {
-      callbacks: {
-        play: function() { 
-          miniPlayer.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
-        },
-        pause: function() { 
-          miniPlayer.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
-        }
-      }
-    }, false);
-    miniPlayer.initialize();
+    // var miniPlayer = new Lap('#mini-player', { files: ['../sh.mp3'] }, {
+    //   callbacks: {
+    //     play: function() { 
+    //       miniPlayer.$els.playPause.removeClass('lap-i-play').addClass('lap-i-pause');
+    //     },
+    //     pause: function() { 
+    //       miniPlayer.$els.playPause.removeClass('lap-i-pause').addClass('lap-i-play'); 
+    //     }
+    //   }
+    // }, false);
+    // miniPlayer.initialize();
 
-  };
+  }
 })(window);

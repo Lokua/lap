@@ -71,15 +71,19 @@
 
 <script>
 
-window.onload = run;
 
-function run() {
 
-  var tooly = Lap.prototype.getTooly();
+var tooly = Lap.prototype.getTooly();
 
-  var lib = '../lib.json';
+var lib = tooly.getJSON('../lib.json', function(data) {
+  tooly.ready(function() {
+    run(data.data);
+  });
+}, true);
 
-  var lap = new Lap('#player', lib, {
+function run(data) {
+  console.log(tooly.Frankie('canvas'));
+  var lap = new Lap('#player', data, {
     elements: 'auto',
     startingAlbumIndex: 1,
     plugins: [{ 
@@ -103,25 +107,9 @@ function run() {
       name: 'Progress'
     }]
   });
-
-  lap.on('load', function() {
-    // var progressBar = lap.plugins.ProgressBar;
-  });
-
-  // var info = tooly.select('#info');
-  // function append(key) {
-  //   var what = lap.property(key);
-  //   tooly.append(info, '<u>' + key +'</u><br>');
-  //   for (var i = 0; i < what.length; i++) {
-  //     tooly.append(info, key + '['+i+']: ' + what[i] + '<br>');
-  //   }
-  //   tooly.append(info, '<div class="hr">');
-  // }
-  // append('album');
-  // append('date');
-  // append('label');
-  
 }
+
+
 
 </script>
 </body>

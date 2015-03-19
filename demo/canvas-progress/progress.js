@@ -1,11 +1,16 @@
-var $ = tooly.Frankie;
 
 Lap.Progress = function(lap, canvas, options) {
+
+  console.log(arguments);
+  var $ = tooly.Frankie;
 
   var t = this;
 
   t.lap = lap;
+  console.log(canvas);
   t.canvas = $(canvas, lap.container).get(0);
+  console.log($(canvas), tooly.Frankie(canvas), $('canvas'));
+  return this;
   t.ctx = t.canvas.getContext('2d');
 
   var _h = 16; // default height
@@ -46,6 +51,7 @@ Lap.Progress.prototype = (function() {
   return {
 
     init: function() {
+      return this;
 
       var t = this,
           audio = t.lap.audio,

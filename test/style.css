@@ -192,7 +192,8 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 /* container(track) */
-progress[value]::-webkit-progress-bar/*, progress[value]::-moz-progress-bar*/ {
+progress[value]::-webkit-progress-bar/*, 
+progress[value]::-moz-progress-bar*/ {
   background: #eee;
 }
 /* value (the "bar") */

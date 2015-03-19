@@ -76,58 +76,6 @@
 
   <div id="guts" class="container"></div>
 
-<script>
-
-window.onload = run;
-
-function run() {
-
-  var $ = tooly.Frankie.bind(this);
-  var logger = tooly.Logger(0, 'TEST');
-
-  var lap = new Lap('#player', 'lib.json', { 
-    startingAlbumIndex: 1,
-    startingTrackIndex: 1,
-    selectorPrefix: 'lap',
-    useNativeProgress: true,
-    useNativeSeekRange: true,
-    useNativeVolumeRange: true 
-  }, true);
-
-  lap.on('load', function() {
-
-    // data info from passed json lib
-    var $info = $('#info div');
-    function append(key) {
-      var what = lap.property(key);
-      $info.append(tooly.tag('h2', key));
-      for (var i = 0; i < what.length; i++) {
-        $info.append(tooly.tag('h3', '['+i+']: ' + what[i]));
-      }
-    }
-    append('album');
-    append('date');
-    append('label');
-
-    var $guts = $('#guts'), guts = [];
-    tooly.each(lap, function(v, k) {
-      try {
-        guts.push(tooly.tag('pre .gut .prettyprint .lang-javascript', tooly.format('%s: %s', 
-          tooly.tag('span .key', k), 
-          v && v.nodeType ? ' &lt;Node&gt; ' : JSON.stringify(v, null, ' '))));
-      } catch(e) {
-        guts.push(tooly.tag('pre .gut .prettyprint .lang-json', tooly.tag('span .key', k) +
-          ': (cannot convert circular structure to JSON)'));
-      }
-    });
-    var div = document.createElement('div');
-    div.innerHTML = guts.sort().join('');
-    $guts.append(div);
-    
-    prettyPrint();
-  });
-}
-
-</script>
+<script src='script.js'></script>
 </body>
 </html>
