@@ -1,11 +1,11 @@
-!function(undefined) { 'use strict';
+!function(_, $, undefined) { 'use strict';
 
-  tooly.ready(function() {
-    tooly.getJSON('lib.json', construct, true);
+  var logger = _.Logger('TEST', 0);
+
+  _.ready(function() {
+    _.getJSON('lib.json', construct, true);
   });
 
-  var logger = tooly.Logger('TEST', 0),
-      $ = tooly.Frankie;
 
   function construct(data) {
 
@@ -15,15 +15,19 @@
       selectorPrefix: 'lap',
       useNativeProgress: true,
       useNativeSeekRange: true,
-      useNativeVolumeRange: true 
+      useNativeVolumeRange: true,
+      callbacks: {
+        load: updateMeta,
+        albumChange: updateMeta
+      }
     }, false);
 
-
-    lap.on('play', function() {
-      logger.debug('what the fuck?');
-    });
+    function updateMeta() {
+      $('#lap__album-index').html(lap.albumIndex);
+      $('#lap__els-length').html(Object.keys(lap.$els).length);
+    }
     
     lap.initialize();
   }
 
-}();
+}(tooly, tooly.Frankie);

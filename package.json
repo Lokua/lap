@@ -42,6 +42,7 @@
     "grunt-umd": "~2.0.0",
     "grunt-wrap": "^0.3.0",
     "node-bourbon": "^1.2.3",
+    "nodedump": "0.0.8",
     "raphael": "^2.1.0"
   },
   "dependencies": {

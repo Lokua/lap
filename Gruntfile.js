@@ -264,11 +264,11 @@ module.exports = function(grunt) {
         tasks: ['rc_all']
       },
       cssDemo: {
-        files: 'demo/css-controls/sass/*.scss',
+        files: 'demo/sass/*.scss',
         tasks: ['sass:cssDemo', 'autoprefixer:cssDemo']
       },
       cssDemoJade: {
-        files: 'demo/css-controls/jade/*.jade',
+        files: 'demo/jade/*.jade',
         tasks: ['jade']
       }
     },

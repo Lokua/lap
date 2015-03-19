@@ -1,11 +1,11 @@
 [
   {  
     "artist": "Lokua",
-    "album": "13",
+    "album": "Unreleased",
     "date": "2012.01.31",
     "label": "unreleased",
-    "cover": "http://lokua.net/images/earth/disco3.png",
-    "replacement": ["Lokua_-_|_+|\\s{2,}", " "],
+    "cover": "http://lokua.net/images/earth/grass1.png",
+    "replacement": ["[_-]|Lokua", " "],
     "files": [
       "http://lokua.net/audio/13/Lokua_-_16.wav",
       "http://lokua.net/audio/13/Lokua_-_All_Most.wav",
@@ -40,8 +40,8 @@
     "album": "osd",
     "date": "2012.01.31",
     "label": "unreleased",
-    "cover": "http://lokua.net/images/earth/disco3.png",
-    "replacement": ["Lokua_-_O.S.D._-_+[0-9]{2}_|_+|\\s{2,}", " "],
+    "cover": "http://lokua.net/images/earth/ibis.jpg",
+    "replacement": ["[_-]|Lokua|O\\.S\\.D\\.|[0-9]{2}", " "],
     "files": [
       "http://lokua.net/audio/OSD/Lokua_-_O.S.D._-_01_Mercury.mp3",
       "http://lokua.net/audio/OSD/Lokua_-_O.S.D._-_02_Eartheia_(Coalesce).mp3",
@@ -57,8 +57,8 @@
     "album": "Vacuus",
     "date": "2012.01.31",
     "label": "unreleased",
-    "cover": "http://lokua.net/images/earth/disco3.png",
-    "replacement": ["Lokua_-_Vacuus_-_[0-9]{2}_-_|_+|\\s{2,}", " "],
+    "cover": "http://lokua.net/images/earth/snakeby.png",
+    "replacement": ["[_-]|Lokua|Vacuus|[0-9]{2}", " "],
     "files": [
       "http://lokua.net/audio/vacuus/Lokua_-_Vacuus_-_01_-_Dark_Energy.mp3",
       "http://lokua.net/audio/vacuus/Lokua_-_Vacuus_-_02_-_Source_Direct.mp3",
