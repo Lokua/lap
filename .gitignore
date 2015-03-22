@@ -1,10 +1,4 @@
 node_modules
-bower_components
-legacy
-doc/sftp-config.json
-src/controls/raphael-controls/.sass-cache
-demo/css-controls/.sass-cache
-doc
+demo/.sass-cache
 bin
 src/lap_temp.js
-artwork

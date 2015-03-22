@@ -1,3 +1,7 @@
+# [0.2.1] 2015.03.10
+
++ branch[dev]: removed raphael stuff
+
 # [0.2.0] 2015.03.10
 
 + Updated to newest `tooly` dependency

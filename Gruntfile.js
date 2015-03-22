@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         cascade: true
       },
       cssDemo: {
-        src: 'demo/css-controls/style.css'
+        src: 'demo/style.css'
       }
     },
 
@@ -37,27 +37,6 @@ module.exports = function(grunt) {
           dist_lap
         ],
         dest: dist_lap
-      },
-      // raw: {
-      //   src: [
-      //     'node_modules/tooly/dist/tooly-slim.js',
-      //     dist_lap
-      //   ],
-      //   dest: dist_lap
-      // },
-      rc_debug: {
-        src: [
-          'demo/raphael-controls/controls/ctor.js',
-          'demo/raphael-controls/controls/components/*.js'
-        ],
-        dest: 'demo/raphael-controls/raphael-controls-debug.js'
-      },
-      rc_bundle: {
-        src: [
-          'demo/raphael-controls/raphael-min.js',
-          'demo/raphael-controls/raphael-controls.min.js'
-        ],
-        dest: 'demo/raphael-controls/bundle.min.js'
       }
     },
 
@@ -91,14 +70,6 @@ module.exports = function(grunt) {
       raw: {
         src: src_lap,
         dest: 'dist/lap-raw.js'
-      },      
-      rc_deps: {
-        src: 'node_modules/raphael/raphael-min.js',
-        dest: 'demo/raphael-controls/raphael-min.js'
-      },
-      rc: {
-        src: 'demo/raphael-controls/raphael-controls-debug.js',
-        dest: 'demo/raphael-controls/raphael-controls.js'
       }
     },
 
@@ -109,7 +80,7 @@ module.exports = function(grunt) {
           timestamp: '<%= grunt.template.today("yyyy-mm-dd") %> <%= new Date().getTime() %>'
         },
         files: {
-          'demo/css-controls/index.html': ['demo/css-controls/jade/index.jade']
+          'demo/index.html': ['demo/index.jade']
         }
       }
     },
@@ -125,26 +96,15 @@ module.exports = function(grunt) {
           'test/test.css' : 'test/test.scss'
         }
       },
-      rc: {
-        options: {
-          style: 'expanded',
-          cacheLocation: 'demo/raphael-controls/sass/.sass-cache',
-          noCache: true,
-          sourcemap: 'none'
-        },
-        files: {
-          'demo/raphael-controls/style.css': 'demo/raphael-controls/sass/style.scss'
-        }
-      },
       cssDemo: {
         options: {
           style: 'expanded',
-          cacheLocation: 'demo/css-controls/.sass-cache',
+          cacheLocation: 'demo/.sass-cache',
           noCache: true,
           sourcemap: 'none'
         },
         files: {
-          'demo/css-controls/style.css':'demo/css-controls/sass/style.scss'
+          'demo/style.css':'demo/sass/style.scss'
         }
       }
     },
@@ -165,9 +125,6 @@ module.exports = function(grunt) {
       },
       raw: {
         src: 'dist/lap-raw.js'
-      },
-      rc: {
-        src: 'demo/raphael-controls/raphael-controls.js'
       }
     },
 
@@ -179,10 +136,6 @@ module.exports = function(grunt) {
       raw: {
         src: 'dist/lap-raw.js',
         dest: 'dist/lap-raw.min.js'
-      },      
-      rc: {
-        src: 'demo/raphael-controls/raphael-controls.js',
-        dest: 'demo/raphael-controls/raphael-controls.min.js'
       }
     },
 
@@ -251,18 +204,6 @@ module.exports = function(grunt) {
         files: src_lap,
         tasks: ['debug'/*, 'build'*/]
       },
-      rc_sass: {
-        files: ['demo/raphael-controls/sass/*.scss'],
-        tasks: ['sass:rc']
-      },
-      rc: {
-        files: [
-          'src/*.js', 
-          'demo/raphael-controls/controls/*.js', 
-          'demo/raphael-controls/controls/components/*.js'
-        ], 
-        tasks: ['rc_all']
-      },
       cssDemo: {
         files: 'demo/sass/*.scss',
         tasks: ['sass:cssDemo', 'autoprefixer:cssDemo']
@@ -270,17 +211,6 @@ module.exports = function(grunt) {
       cssDemoJade: {
         files: 'demo/jade/*.jade',
         tasks: ['jade']
-      }
-    },
-
-    wrap: {
-      rc: {
-        src: ['demo/raphael-controls/raphael-controls-debug.js'],
-        dest: 'demo/raphael-controls/raphael-controls-debug.js',
-        options: {
-          indent: '  ',
-          wrapper: [';(function(window, Lap, undefined) {\n', '\n})(window, window.Lap);']
-        }
       }
     }
   });
@@ -295,14 +225,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-autoprefixer');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-concurrent');
-  grunt.loadNpmTasks('grunt-line-remover');
-  grunt.loadNpmTasks('grunt-remove');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-strip-code');
   grunt.loadNpmTasks('grunt-umd');
-  grunt.loadNpmTasks('grunt-wrap');
 
   grunt.registerTask('default', ['concurrent']);
+  grunt.registerTask('all', ['debug', 'build', 'raw']);
   grunt.registerTask('raw', [
     'copy:raw',
     'strip_code:raw',
@@ -326,17 +254,4 @@ module.exports = function(grunt) {
     'uglify:build', 
     'usebanner:post'
   ]);
-  grunt.registerTask('rc_debug', [
-    'concat:rc_debug',
-    'wrap:rc'
-  ]);
-  grunt.registerTask('rc', [
-    'copy:rc',
-    'strip_code:rc',
-    'uglify:rc',
-    'concat:rc_bundle'
-  ]);
-  grunt.registerTask('lap_all', ['debug', 'build', 'raw']);
-  grunt.registerTask('rc_all', ['rc_debug', 'rc']);
-  grunt.registerTask('all', ['lap_all', 'rc_all']);
 };
