@@ -1,0 +1,161 @@
+$lap-background-color:#fbfbfb;
+$lap-font-size: 14px;
+$lap-icon-size: 16px;
+$lap-progress-width: 76px;
+$lap-text-color: #555;
+$lap-icon-color: #555;
+$lap-margin: 4px;
+$lap-info-text-size: 10px;
+$lap-font-family: 'Source Code Pro';
+$lap-track-color: lighten($lap-icon-color, 32%);
+
+.lap {
+  padding: 16px;
+  background: darken($lap-background-color, 1%);
+  color: $lap-text-color;
+  clear: both;
+  @include o-media(small) {
+    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
+  }
+
+  * {
+    cursor: normal;
+    user-select: none;
+    &:focus {
+      outline: 0;
+    }
+    // --- not(i) -> don't fuck with icon boxes
+    &:before:not(i), &:after:not(i) {
+      box-sizing: border-box;
+    }
+  }
+  i {
+    font-size: $lap-icon-size;
+    cursor: pointer;
+    color: $lap-icon-color;
+    &:hover {
+      color: lighten($lap-icon-color, 20%);
+    }
+  }
+}
+
+.lap__controls {
+  margin: 0 auto;
+  width: 280px;
+  height: $lap-icon-size;
+  min-height: $lap-icon-size;
+}
+
+.lap__control {
+  display: inline-block;
+  width: $lap-icon-size;
+  height: $lap-icon-size;
+  margin: 0;
+  margin-right: $lap-margin;
+  &:hover .lap-i {
+    color: lighten($lap-icon-color, 15%);
+  }
+}
+
+.lap__volume__container {
+  display: inline-block;
+  input[type=range] {
+    width: 216px;
+  }
+}
+
+// --- keep speaker fixed size, waves change width
+// when the icons are switched
+.lap__speaker__container {
+  width: $lap-icon-size;
+}
+
+// --- used to center the slider track
+.lap__volume-range__container, .lap__seek-range__container {
+  display: inline-block;
+  height: $lap-icon-size;
+  @include o-input-range($lap-track-color, $lap-icon-color);
+}
+
+.lap__seek-range__container {
+  width: $lap-progress-width;
+  position: relative;
+  z-index: 26;
+  margin-right: $lap-margin;
+}
+
+// -- container (track)
+.lap progress[value]::-webkit-progress-bar {
+  background: lighten($lap-icon-color, 32%);
+}
+
+// -- value
+.lap progress[value]::-webkit-progress-value {
+  background: $lap-icon-color;
+}
+
+.lap progress {
+  // -- autoprefixer does not work with appearence - not part of any spec
+  // @include appearence(none);
+  z-index: -26;
+  position: relative;
+  left: 2px;
+  top: -1px;
+  border: none;
+  // -- firefox
+  background: rgba(0, 0, 0, 0);
+  width: $lap-progress-width;
+  height: 2px;
+  vertical-align: 2px;
+}
+
+// -- lap-current-time, lap-duration
+.lap__read {
+  display: inline;
+  font-family: $lap-font-family;
+  font-size: $lap-info-text-size;
+  position: relative;
+  top: -3px;
+  margin-right: $lap-margin;
+}
+
+.lap__duration {
+  margin-left: $lap-margin;
+}
+
+.lap__cell--parent {
+  @include o--(o-v-center-parent);
+}
+
+.lap__cell--child {
+  @include o--(o-v-center-child);
+}
+
+.lap--hidden {
+  display: none !important;
+}
+
+.lap__controls--non-volume {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+}
+
+.lap__info-panel {
+  display: block;
+  margin: 0 auto;
+  // 2px offset + 3 top from .lap__read + font size
+  height: 5 + $lap-info-text-size;
+  min-height: 5 + $lap-info-text-size;
+  text-align: center;
+}
+
+.lap__artist {
+  &:after {
+    content: " - ";
+  }
+}
+
+.lap__album {
+  font-style: italic;
+}

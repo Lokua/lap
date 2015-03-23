@@ -1,35 +1,39 @@
-!function(window, undefined) {
+!function(undefined) {
 
   /*>>*/
   var logger = tooly.Logger('EXPVOL', { level: 0 });
   /*<<*/
 
-  var __id = __id || 0;  
+  var _id = _id || 0;
+
+  Lap.prototype.ExpandingVolumeRange = ExpandingVolumeRange;  
 
   /**
    * Lap plugin providing support for hiding and showing
-   * of a native range input on speaker-icon hover.
-   * Works exactly like YouTube. Hover over the speaker icon 
-   * and the volume range appears; move away, it is again hidden.
+   * of a native range input on speaker-icon hover - like Youtube.
+   * Hover over the speaker icon and the volume range appears; move away, 
+   * it is again hidden.
    * 
    * @param {Lap}    lap       the Lap instance
+   * @param {String} container valid css3 selector string, defaults to '.lap__volume__container'
+   * @param {String} speaker valid css3 selector string for the speaker icon, defaults to '.lap__speaker'
    * @param {String} nonVolumeControlsClass class name for elements to hide when volume range is shown
+   * @param {Array} levelClasses classes to add the speaker element whenever the volume changes (used
+   *                             to show differentvolume icons depending on the volume level)
    */
-  Lap.ExpandingVolumeRange = function(lap, container, speaker, nonVolumeControlsClass, levelClasses) {
-    this.lap = lap;
-    this.id = ++__id;
-    this.name = 'EXPNDVOLRNG_' + this.id;
-    /*>>*/
-    logger.name = this.name;
-    /*<<*/
-    this.container = container || '.lap__volume__container';
-    this.speaker= speaker || '.lap__speaker';
-    this.nonVolumeControlsClass = nonVolumeControlsClass || '.lap__controls--non-volume';
-    this.levelClasses = levelClasses || this.levelClasses;
-    return this;
-  };
+  function ExpandingVolumeRange(lap, container, speaker, nonVolumeControlsClass, levelClasses) {
+    var plug = this;
+    plug.lap = lap;
+    plug.id = ++_id;
+    plug.name = 'EXPNDVOLRNG_' + plug.id;
+    plug.container = container || '.lap__volume__container';
+    plug.speaker = speaker || '.lap__speaker';
+    plug.nonVolumeControlsClass = nonVolumeControlsClass || '.lap__controls--non-volume';
+    plug.levelClasses = levelClasses || plug.levelClasses;
+    return plug;
+  }
 
-  Lap.ExpandingVolumeRange.prototype.levelClasses = [
+  ExpandingVolumeRange.prototype.levelClasses = [
     'lap-i-volume-off',
     'lap-i-volume-low',
     'lap-i-volume-mid',
@@ -37,14 +41,14 @@
     'lap-i-volume-max'
   ];
 
-  Lap.ExpandingVolumeRange.prototype.init = function() {
+  ExpandingVolumeRange.prototype.init = function() {
     var lev = this,
         lap = lev.lap,
         $ = tooly.Frankie,
         $speaker = $(lev.speakerClass, lap.container), 
         $volumeRange = lap.$els.volumeRange,
         $opps = $(lev.nonVolumeControlsClass, lap.container),
-        mouseState = { down: false, entered: false };
+        DOWN = ENTERED = false;
 
     if (!$volumeRange) {
       console.error(
@@ -54,31 +58,32 @@
 
     $volumeRange
       .on('change', function() {
-        var v = this.value;
-
-        var classNum = v > 0 ? Math.ceil(tooly.scale(v, 0, 100, 0, lev.levelClasses.length-1)) : 0;
-
+        var v = this.value,
+            classNum = 0;
+        if (v > 0) {
+          var n = tooly.scale(v, 0, 100, 0, lev.levelClasses.length-1);
+          classNum = Math.ceil(n); 
+        }
         $speaker.removeClass(lev.levelClasses.filter(function(c) {
           return c !== lev.levelClasses[classNum];
         }).join(' ')).addClass(lev.levelClasses[classNum]);
-
       })
       .on('mousedown', function() {
-        mouseState.down = true;
+        DOWN = true;
       });
 
 
     $(lev.container, lap.container)
       .on('mouseenter', function() {
-        if (!mouseState.entered) {
+        if (!ENTERED) {
           $volumeRange.removeClass(lap.selectors.state.hidden);
           $opps.addClass(lap.selectors.state.hidden);
-          mouseState.entered = true;
+          ENTERED = true;
         }
       })
       .on('mouseleave', function(e) {
-        mouseState.entered = false;
-        if (!mouseState.down) {
+        ENTERED = false;
+        if (!DOWN) {
           $volumeRange.addClass(lap.selectors.state.hidden);
           $opps.removeClass(lap.selectors.state.hidden);
         };
@@ -88,12 +93,11 @@
     // left or right regardless if we're in the same horizontal span as the slider
     // or not
     $('body').on('mouseup', function() {
-      mouseState.down = false;
-      if (!mouseState.entered) {
+      DOWN = false;
+      if (!ENTERED) {
         $volumeRange.addClass(lap.selectors.state.hidden);
         $opps.removeClass(lap.selectors.state.hidden);
       }
     });
   };
-
 }(window);

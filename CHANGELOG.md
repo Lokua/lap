@@ -1,6 +1,9 @@
 # [0.2.1] 2015.03.10
 
++ removed `initPlugins` - pointless, better to use `load` callback
 + branch[dev]: removed raphael stuff
++ switch grunt-contrib-sass to grunt-sass
++ added o- to demo/sass, must be git cloned to update
 
 # [0.2.0] 2015.03.10
 

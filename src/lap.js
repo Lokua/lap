@@ -182,7 +182,6 @@ _.inherit(_.Handler, Lap, (function() {
       lap.initElements();
       lap.addListeners();
       lap.register(lap.settings.callbacks);
-      lap.initPlugins();
 
       lap.trigger('load');
 
@@ -269,28 +268,6 @@ _.inherit(_.Handler, Lap, (function() {
       } 
 
       lap.formatTracklist();
-    },
-
-    /**
-     * Places relative file names in place of an empty or mismatched tracklist array.
-     * Also applies any regex specified in settings.replacement
-     * 
-     * @memberOf  Lap
-     */
-    formatTracklist: function() {
-      var lap = this;
-      // if mismatch, ignore tracklist completely
-      if (lap.tracklist === undefined || lap.trackCount > lap.tracklist.length) {
-        var re = lap.replacement, tracklist = [], i = 0;
-        for (; i < lap.trackCount; i++) {
-          tracklist[i] = _.sliceRel(_.stripExtension(lap.files[i]));
-          if (re !== undefined) {
-            tracklist[i] = tracklist[i].replace(re[0], re[1]);
-          }
-          tracklist[i] = tracklist[i].trim();
-        }
-        lap.tracklist = tracklist;
-      }
     },
 
     /**
@@ -502,56 +479,7 @@ _.inherit(_.Handler, Lap, (function() {
           _VOLUME_CHANGING = false;
         });
       }
-    },   
-
-    /**
-     * Initialize plugins passed to the constructor.
-     * Plugins by minimum must contain a constructor attached to the Lap
-     * namespace with a first argument referencing a lap instance 
-     * and an init function which will be called to instantiate 
-     * the plugin when the Lap instance's "load" event is fired.
-     *
-     * ### Plugin Template
-     * ```js
-     * // constructor
-     * Lap.MyPlugin = function(lap) {
-     *   this.lap = lap;
-     *   return this;
-     * }
-     * Lap.MyPlugin.protype.init = function() {
-     *   // do stuff
-     * }
-     * ```
-     * 
-     * @return {Object} this
-     * @memberOf Lap
-     */
-    initPlugins: function() {
-      if (!this.settings.plugins) return;
-      this.plugins = this.plugins || [];
-      var lap = this,
-          plugins = lap.settings.plugins,
-          instance = {},
-          args = [],
-          name;
-      plugins.forEach(function(plugin, i) {
-        if (plugin.constructor) {
-          instance = (plugin.args) 
-            ? _.construct(plugin.constructor, args.concat(lap, plugin.args)) 
-            : _.construct(plugin.constructor, lap);
-          lap.plugins[i] = instance;
-          lap.on('load', function() { 
-            if (lap.plugins[i] && lap.plugins[i].init) {
-              lap.plugins[i].init();
-            } else {
-              console.error('Could not initialize ' + lap.plugins[i] +
-                '. The plugin has no #init property');
-            }
-          });
-        }
-      });
-      return this;
-    }, 
+    },    
 
     /**
      * @memberOf  Lap
@@ -878,38 +806,43 @@ _.inherit(_.Handler, Lap, (function() {
           $panel = lap.$els.playlistPanel,
           prepend = lap.settings.prependTrackNumbers;
 
-      // TODO: test-me -> should remove all pre-existing listeners
-      $panel.remove();
+      var tracklist = lap.tracklist.map(function(track, i) {
+        return _.tag('li.'+lap.selectors.playlistItem, { 
+          content: track,
+          'data-lap-playlist-index': i 
+        }, true);
+      }).join('');
 
-      $panel.html(
-        _.tag('ul', lap.tracklist.map(function(track, i) {
+      $panel.html(tracklist);
 
-          var tagFormat = 'li.'+lap.selectors.playlistItem + 
-            ((i === lap.trackIndex) ? '.'+lap.selectors.state.playlistItemCurrent : '') +
-            'data-lap-playlist-index="' + i + '"';
-
-          return _.tag(tagFormat, _.stringFormat('{0}{1}',
-            // 0
-            prepend 
-              ? _.tag('span.' + lap.selectors.playlistTrackNumber, 
-                lap.trackNumberFormatted(i+1)) 
-              : '',
-            // 1
-            _.tag('span.'+lap.selectors.playlistTrackTitle, lap.tracklist[i].trim()))
-          );
-        }).join(''))
-      );
-
-      $panel.find('li').on('click', function(e) {
-        var $li = $(this);
-        /*>>*/
-        logger.debug('playlist click fired');
-        /*<<*/
-        lap.setTrack($li.attr('data-lap-playlist-index'));
+      $panel.find('.'+lap.selectors.playlistItem).on('click', function(e) {
+        lap.setTrack($(this).attr('data-lap-playlist-index'));
       });
 
       lap.playlistPopulated = true;
     },
+
+    /**
+     * Places relative file names in place of an empty or mismatched tracklist array.
+     * Also applies any regex specified in settings.replacement
+     * 
+     * @memberOf  Lap
+     */
+    formatTracklist: function() {
+      var lap = this;
+      // if mismatch, ignore tracklist completely
+      if (lap.tracklist === undefined || lap.trackCount > lap.tracklist.length) {
+        var re = lap.replacement, tracklist = [], i = 0;
+        for (; i < lap.trackCount; i++) {
+          tracklist[i] = _.sliceRel(_.stripExtension(lap.files[i]));
+          if (re !== undefined) {
+            tracklist[i] = tracklist[i].replace(re[0], re[1]);
+          }
+          tracklist[i] = tracklist[i].trim();
+        }
+        lap.tracklist = tracklist;
+      }
+    },    
 
     /**
      * Read only. Get the #tracklist (same as the #lib.files array without path garbage) and 

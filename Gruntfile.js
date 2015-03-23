@@ -15,7 +15,7 @@ module.exports = function(grunt) {
         browsers: ['> 1%'],
         cascade: true
       },
-      cssDemo: {
+      demo: {
         src: 'demo/style.css'
       }
     },
@@ -74,7 +74,7 @@ module.exports = function(grunt) {
     },
 
     jade: {
-      cssDemo: {
+      demo: {
         options: {
           pretty: true,
           timestamp: '<%= grunt.template.today("yyyy-mm-dd") %> <%= new Date().getTime() %>'
@@ -96,15 +96,15 @@ module.exports = function(grunt) {
           'test/test.css' : 'test/test.scss'
         }
       },
-      cssDemo: {
+      demo: {
         options: {
           style: 'expanded',
           cacheLocation: 'demo/.sass-cache',
           noCache: true,
-          sourcemap: 'none'
+          sourceMap: 'none'
         },
         files: {
-          'demo/style.css':'demo/sass/style.scss'
+          'demo/style.css': 'demo/sass/style.scss'
         }
       }
     },
@@ -204,12 +204,12 @@ module.exports = function(grunt) {
         files: src_lap,
         tasks: ['debug'/*, 'build'*/]
       },
-      cssDemo: {
+      demo: {
         files: 'demo/sass/*.scss',
-        tasks: ['sass:cssDemo', 'autoprefixer:cssDemo']
+        tasks: ['sass:demo', 'autoprefixer:demo']
       },
-      cssDemoJade: {
-        files: 'demo/jade/*.jade',
+      demoJade: {
+        files: 'demo/*.jade',
         tasks: ['jade']
       }
     }
@@ -218,19 +218,20 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-sass');
+  // grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-autoprefixer');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-concurrent');
+  grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-strip-code');
   grunt.loadNpmTasks('grunt-umd');
 
   grunt.registerTask('default', ['concurrent']);
-  grunt.registerTask('all', ['debug', 'build', 'raw']);
+  grunt.registerTask('all', ['debug', 'build', 'raw']);4
   grunt.registerTask('raw', [
     'copy:raw',
     'strip_code:raw',
