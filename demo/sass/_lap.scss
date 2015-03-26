@@ -10,6 +10,11 @@ $lap-font-family: 'Source Code Pro';
 $lap-track-color: lighten($lap-icon-color, 32%);
 
 .lap {
+
+  *, *:before, *:after {
+    box-sizing: border-box;
+  }
+
   padding: 16px;
   background: darken($lap-background-color, 1%);
   color: $lap-text-color;
@@ -24,7 +29,7 @@ $lap-track-color: lighten($lap-icon-color, 32%);
     &:focus {
       outline: 0;
     }
-    // --- not(i) -> don't fuck with icon boxes
+    // - not(i) -> don't fuck with icon boxes
     &:before:not(i), &:after:not(i) {
       box-sizing: border-box;
     }
@@ -41,7 +46,7 @@ $lap-track-color: lighten($lap-icon-color, 32%);
 
 .lap__controls {
   margin: 0 auto;
-  width: 280px;
+  width: 296px;
   height: $lap-icon-size;
   min-height: $lap-icon-size;
 }
@@ -57,6 +62,15 @@ $lap-track-color: lighten($lap-icon-color, 32%);
   }
 }
 
+.lap__play-pause {
+  &.lap--playing:before {
+    content: "\e601"; // - lap-icons/.lap-i-pause
+  }
+  &.lap--paused:before {
+    content: "\e600"; // - lap-icons/.lap-i-play
+  }
+}
+
 .lap__volume__container {
   display: inline-block;
   input[type=range] {
@@ -64,59 +78,80 @@ $lap-track-color: lighten($lap-icon-color, 32%);
   }
 }
 
-// --- keep speaker fixed size, waves change width
-// when the icons are switched
+// - keep speaker fixed size, waves change width
+// - when the icons are switched
 .lap__speaker__container {
   width: $lap-icon-size;
 }
 
-// --- used to center the slider track
+.lap__volume-range__container {
+  @include o-input-range($lap-track-color, $lap-icon-color);
+}
+
+// - used to center the slider track
 .lap__volume-range__container, .lap__seek-range__container {
   display: inline-block;
   height: $lap-icon-size;
-  @include o-input-range($lap-track-color, $lap-icon-color);
 }
 
 .lap__seek-range__container {
   width: $lap-progress-width;
   position: relative;
-  z-index: 26;
-  margin-right: $lap-margin;
+  // z-index: 26;
+  @include o-input-range(rgba(0,0,0,0), $lap-icon-color);
+  input[type=range].lap__seek-range {
+    // don't draw track; progress range doubles as track
+    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    // !!! margin 0 is needed on firefox it seems
+    // margin: 0;
+  }
 }
 
-// -- container (track)
-.lap progress[value]::-webkit-progress-bar {
-  background: lighten($lap-icon-color, 32%);
+.lap {
+  progress {
+
+    // - reset
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+    // - firefox specific reset
+    background: rgba(0, 0, 0, 0);
+    border: none;
+    background-size: auto;
+
+    position: relative;
+    left: 2px;
+    top: -1px;
+    width: $lap-progress-width;
+    height: 2px;
+    vertical-align: 2px;
+
+    margin: 0;
+    padding: 0;
+  }
+  // - track
+  progress::-webkit-progress-bar,
+  progress::-moz-progress-bar {
+    background: $lap-track-color;
+  }
+  // - value
+  progress::-webkit-progress-value {
+    background: $lap-icon-color;
+  }
 }
 
-// -- value
-.lap progress[value]::-webkit-progress-value {
-  background: $lap-icon-color;
-}
 
-.lap progress {
-  // -- autoprefixer does not work with appearence - not part of any spec
-  // @include appearence(none);
-  z-index: -26;
-  position: relative;
-  left: 2px;
-  top: -1px;
-  border: none;
-  // -- firefox
-  background: rgba(0, 0, 0, 0);
-  width: $lap-progress-width;
-  height: 2px;
-  vertical-align: 2px;
-}
-
-// -- lap-current-time, lap-duration
+// - lap-current-time, lap-duration
 .lap__read {
   display: inline;
   font-family: $lap-font-family;
   font-size: $lap-info-text-size;
   position: relative;
   top: -3px;
-  margin-right: $lap-margin;
 }
 
 .lap__duration {

@@ -231,7 +231,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-umd');
 
   grunt.registerTask('default', ['concurrent']);
-  grunt.registerTask('all', ['debug', 'build', 'raw']);4
+  grunt.registerTask('all', ['debug', 'build', 'raw']);
   grunt.registerTask('raw', [
     'copy:raw',
     'strip_code:raw',

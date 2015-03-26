@@ -1,9 +1,14 @@
 @import 'o-/o-';
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro|Source+Code+Pro|Source+Serif+Pro);
+// @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro|Source+Code+Pro|Source+Serif+Pro);
+@import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono);
 @import 'lap';
 
+// override
+$lap-font-family: 'Droid Sans Mono';
+
 body {
-  font-family: 'Source Sans Pro';
+  // font-family: 'Source Sans Pro';
+  font-family: 'Droid Sans';
   color: #444;
 }
 

@@ -42,12 +42,12 @@
   ];
 
   ExpandingVolumeRange.prototype.init = function() {
-    var lev = this,
-        lap = lev.lap,
+    var thiz = this,
+        lap = thiz.lap,
         $ = tooly.Frankie,
-        $speaker = $(lev.speakerClass, lap.container), 
+        $speaker = $(thiz.speakerClass, lap.container), 
         $volumeRange = lap.$els.volumeRange,
-        $opps = $(lev.nonVolumeControlsClass, lap.container),
+        $opps = $(thiz.nonVolumeControlsClass, lap.container),
         DOWN = ENTERED = false;
 
     if (!$volumeRange) {
@@ -61,19 +61,19 @@
         var v = this.value,
             classNum = 0;
         if (v > 0) {
-          var n = tooly.scale(v, 0, 100, 0, lev.levelClasses.length-1);
+          var n = tooly.scale(v, 0, 100, 0, thiz.levelClasses.length-1);
           classNum = Math.ceil(n); 
         }
-        $speaker.removeClass(lev.levelClasses.filter(function(c) {
-          return c !== lev.levelClasses[classNum];
-        }).join(' ')).addClass(lev.levelClasses[classNum]);
+        $speaker.removeClass(thiz.levelClasses.filter(function(c) {
+          return c !== thiz.levelClasses[classNum];
+        }).join(' ')).addClass(thiz.levelClasses[classNum]);
       })
       .on('mousedown', function() {
         DOWN = true;
       });
 
 
-    $(lev.container, lap.container)
+    $(thiz.container, lap.container)
       .on('mouseenter', function() {
         if (!ENTERED) {
           $volumeRange.removeClass(lap.selectors.state.hidden);

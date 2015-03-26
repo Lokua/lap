@@ -48,4 +48,13 @@ selectors: {
   volumeRange:         'lap__volume-range',
   volumeUp:            'lap__volume-up'
 }
-```  
+```
+
+# Development
+
+`npm install` and run `grunt` (default task), which will start a connect
+server for `localhost:3000/test` and `localhost:3000/demo` locations, 
+compile sass for the demo, and build `dist/lap-debug.js` whenever changes
+are made to `src/lap.js`.
+
+Final production build is done with `grunt all`.

@@ -16,23 +16,32 @@
       useNativeSeekRange: true,
       useNativeProgress: true,
       callbacks: {
-        play : function() { 
-          player.$els.playPause
-            .removeClass('lap-i-play')
-            .addClass('lap-i-pause');
-        },
-        pause: function() { 
-          player.$els.playPause
-            .removeClass('lap-i-pause')
-            .addClass('lap-i-play'); 
-        },
         load: function() {
+
           new player.ExpandingVolumeRange(
             player, 
             '.lap__volume__container',
             '.lap__speaker',
             '.lap__controls--non-volume'
           ).init();
+
+          new player.Progress(player, '#canvas', {
+            height: 18,
+            playhead: {
+              height: 12,
+              width: 6
+            },
+            progress: {
+              height: 2
+            },
+            track: {
+              height: 2
+            }
+          }).init();
+
+          // possible cross-browser range hacks...
+          // set margin 0 on input range for mozilla
+
         }
       }
     });
