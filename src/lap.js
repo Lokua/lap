@@ -557,9 +557,6 @@ _.inherit(_.Handler, Lap, (function() {
     pause: function() {
       this.audio.pause();
       this.trigger('pause');
-      /*>>*/
-      logger.debug('pause handler was just triggered...?');
-      /*<<*/
       return this;
     },
 

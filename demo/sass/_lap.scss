@@ -194,3 +194,21 @@ $lap-track-color: lighten($lap-icon-color, 32%);
 .lap__album {
   font-style: italic;
 }
+
+.lap__prog-seek__container, .lap__canvas-volume-range__container {
+  display: inline-block;
+  width: $lap-progress-width;
+  height: 18px;
+  padding-top: 6px;
+}
+
+.lap__prog-seek, .lap__canvas-volume-range {
+  cursor: pointer;
+  position: relative;
+  height: 18px;
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}

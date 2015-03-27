@@ -1,12 +1,12 @@
 !function(undefined) {
 
   /*>>*/
-  var logger = tooly.Logger('EXPVOL', { level: 0 });
+  var logger = tooly.Logger('VOLUME_RANGE_REVEALER', { level: 0 });
   /*<<*/
 
   var _id = _id || 0;
 
-  Lap.prototype.ExpandingVolumeRange = ExpandingVolumeRange;  
+  Lap.prototype.VolumeRangeRevealer = VolumeRangeRevealer;  
 
   /**
    * Lap plugin providing support for hiding and showing
@@ -21,7 +21,7 @@
    * @param {Array} levelClasses classes to add the speaker element whenever the volume changes (used
    *                             to show differentvolume icons depending on the volume level)
    */
-  function ExpandingVolumeRange(lap, container, speaker, nonVolumeControlsClass, levelClasses) {
+  function VolumeRangeRevealer(lap, container, speaker, nonVolumeControlsClass, levelClasses) {
     var plug = this;
     plug.lap = lap;
     plug.id = ++_id;
@@ -33,7 +33,7 @@
     return plug;
   }
 
-  ExpandingVolumeRange.prototype.levelClasses = [
+  VolumeRangeRevealer.prototype.levelClasses = [
     'lap-i-volume-off',
     'lap-i-volume-low',
     'lap-i-volume-mid',
@@ -41,7 +41,7 @@
     'lap-i-volume-max'
   ];
 
-  ExpandingVolumeRange.prototype.init = function() {
+  VolumeRangeRevealer.prototype.init = function() {
     var thiz = this,
         lap = thiz.lap,
         $ = tooly.Frankie,
@@ -52,7 +52,7 @@
 
     if (!$volumeRange) {
       console.error(
-        'Lap.ExpandingVolumeRange cannot init without Lap#$els.volumeRange element');
+        'Lap.VolumeRangeRevealer cannot init without Lap#$els.volumeRange element');
       return;
     }
 
@@ -100,4 +100,4 @@
       }
     });
   };
-}(window);
+}();

@@ -4,9 +4,9 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="lap-icons/style.css">
   <script src="../../dist/lap-debug.js"></script>
-  <script src="scripts/expanding-volume-range.js"></script>
-  <script src="scripts/discog-populator.js"></script>
-  <script src="scripts/canvas-progress.js"></script>
+  <script src="scripts/lap-volume-range-revealer.js"></script>
+  <script src="scripts/lap-canvas-prog-seek.js"></script>
+  <script src="scripts/lap-canvas-volume-range.js"></script>
   <script src="scripts/script.js"></script>
 </head>
 <body>
@@ -27,7 +27,9 @@
           </div>
         </div>
         <div class="lap__details"><span class="lap__artist"></span><span class="lap__album"></span><br><span class="lap__track-number"></span><span class="lap__track-title"></span></div>
-        <canvas id="canvas"></canvas>
+        <div class="lap__canvas-volume-range__container">
+          <div class="lap__canvas-volume-range"></div>
+        </div>
         <div class="lap__controls">
           <div class="lap__volume__container">
             <div class="lap__control lap__speaker__container"><i class="lap__speaker lap-i-volume-high"></i></div>
@@ -42,11 +44,8 @@
             <div class="lap__control"><i class="lap__prev lap-i-prev"></i></div>
             <div class="lap__control"><i class="lap__next lap-i-next"></i></div>
             <div class="lap__read lap__current-time">00:00</div>
-            <div class="lap__seek-range__container">
-              <div class="lap__cell--parent">
-                <progress min="0" max="100" class="lap__progress"></progress>
-                <input type="range" min="0" max="100" value="0" class="lap__seek-range">
-              </div>
+            <div class="lap__prog-seek__container">
+              <div class="lap__prog-seek"></div>
             </div>
             <div class="lap__read lap__duration">00:00</div>
             <div class="lap__control"><i class="lap__playlist lap-i-playlist"></i></div>

@@ -4,9 +4,9 @@ head
   link(rel='stylesheet', href='style.css')
   link(rel='stylesheet', href='lap-icons/style.css')
   script(src='../../dist/lap-debug.js')
-  script(src='scripts/expanding-volume-range.js')
-  script(src='scripts/discog-populator.js')
-  script(src='scripts/canvas-progress.js')
+  script(src='scripts/lap-volume-range-revealer.js')
+  script(src='scripts/lap-canvas-prog-seek.js')
+  script(src='scripts/lap-canvas-volume-range.js')
   script(src='scripts/script.js')
 body
 
@@ -37,7 +37,7 @@ body
           span.lap__track-number
           span.lap__track-title
 
-        canvas#canvas
+        .lap__canvas-volume-range__container: .lap__canvas-volume-range
 
         .lap__controls
           .lap__volume__container
@@ -49,9 +49,10 @@ body
             .lap__control: i.lap__prev.lap-i-prev
             .lap__control: i.lap__next.lap-i-next
             .lap__read.lap__current-time 00:00
-            .lap__seek-range__container: .lap__cell--parent
-              progress.lap__progress(min='0', max='100')
-              input.lap__seek-range(type='range', min='0', max='100', value='0')
+            .lap__prog-seek__container: .lap__prog-seek
+            //- .lap__seek-range__container: .lap__cell--parent
+            //-   progress.lap__progress(min='0', max='100')
+            //-   input.lap__seek-range(type='range', min='0', max='100', value='0')
             .lap__read.lap__duration 00:00
             .lap__control: i.lap__playlist.lap-i-playlist
             .lap__control: i.lap__discog.lap-i-discog

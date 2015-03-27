@@ -18,30 +18,37 @@
       callbacks: {
         load: function() {
 
-          new player.ExpandingVolumeRange(
+          new player.VolumeRangeRevealer(
             player, 
             '.lap__volume__container',
             '.lap__speaker',
             '.lap__controls--non-volume'
           ).init();
 
-          new player.Progress(player, '#canvas', {
+          var fillColor = '#555', trackColor = '#a7a7a7';
+
+          new player.CanvasProgSeek(player, '.lap__prog-seek', {
+            width: 76,
             height: 18,
-            playhead: {
+            track: {
+              fill: trackColor,
+              height: 2
+            },              
+            progress: {
+              fill: fillColor,
+              height: 2
+            },
+            knob: {
+              fill: fillColor,
               height: 12,
               width: 6
-            },
-            progress: {
-              height: 2
-            },
-            track: {
-              height: 2
             }
           }).init();
 
-          // possible cross-browser range hacks...
-          // set margin 0 on input range for mozilla
-
+          new player.CanvasVolumeRange(player, '.lap__canvas-volume-range', {
+            width: 76, 
+            height: 18,
+          }).init();
         }
       }
     });

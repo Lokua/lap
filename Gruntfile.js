@@ -73,6 +73,13 @@ module.exports = function(grunt) {
       }
     },
 
+    cssbeautifier : {
+      files: ['demo/style.css'],
+      options: {
+        indent: '  '
+      }
+    },
+
     jade: {
       demo: {
         options: {
@@ -88,7 +95,7 @@ module.exports = function(grunt) {
     sass: {
       test: {
         options: {
-          style: 'expanded',
+          outputStyle: 'expanded',
           noCache: true,
           sourcemap: 'none'
         },
@@ -98,7 +105,7 @@ module.exports = function(grunt) {
       },
       demo: {
         options: {
-          style: 'expanded',
+          outputStyle: 'expanded',
           cacheLocation: 'demo/.sass-cache',
           noCache: true,
           sourceMap: 'none'
@@ -202,11 +209,11 @@ module.exports = function(grunt) {
     watch: {
       debug: {
         files: src_lap,
-        tasks: ['debug'/*, 'build'*/]
+        tasks: ['debug']
       },
       demo: {
         files: 'demo/sass/*.scss',
-        tasks: ['sass:demo', 'autoprefixer:demo']
+        tasks: ['sass:demo', 'autoprefixer:demo', 'cssbeautifier']
       },
       demoJade: {
         files: 'demo/*.jade',
@@ -218,10 +225,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  // grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-cssbeautifier');
   grunt.loadNpmTasks('grunt-autoprefixer');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-concurrent');

@@ -1,5 +1,5 @@
 /*!
- * tooly - version 0.8.4 (built: 2015-03-09)
+ * tooly - version 0.8.5 (built: 2015-03-26)
  * js utility functions
  *
  * https://github.com/Lokua/tooly.git
@@ -1933,25 +1933,27 @@ tooly.tag = function(tag, attrs, asString) {
   if (classes.length) el.setAttribute('class', classes.join(' '));
   if (id !== '') el.setAttribute('id', id);
 
-  if (!attrs.nodeType && typeof attrs === 'object') {
+  if (attrs) {
+    if (!attrs.nodeType && typeof attrs === 'object') {
 
-    for (var p in attrs) {
-      if (attrs.hasOwnProperty(p) && p !== 'content') {
-        el.setAttribute(p, attrs[p]);
+      for (var p in attrs) {
+        if (attrs.hasOwnProperty(p) && p !== 'content') {
+          el.setAttribute(p, attrs[p]);
+        }
       }
-    }
-    if (attrs.hasOwnProperty('content')) {
-      if (attrs.content.nodeType === undefined) {
-        attrs.content = document.createTextNode(attrs.content);
+      if (attrs.hasOwnProperty('content')) {
+        if (attrs.content.nodeType === undefined) {
+          attrs.content = document.createTextNode(attrs.content);
+        }
+        el.appendChild(attrs.content);
       }
-      el.appendChild(attrs.content);
+
+    } else if (typeof attrs === 'string') {
+      el.appendChild(document.createTextNode(attrs));
+
+    } else if (attrs.nodeType && attrs.nodeType === 1 || attrs.nodeType === 9) {
+      el.appendChild(attrs);
     }
-
-  } else if (typeof attrs === 'string') {
-    el.appendChild(document.createTextNode(attrs));
-
-  } else if (attrs.nodeType && attrs.nodeType === 1 || attrs.nodeType === 9) {
-    el.appendChild(attrs);
   }
 
   return asString ? el.outerHTML : el;
@@ -2179,7 +2181,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.2.0 (built: 2015-03-23)
+ * lap - version 0.2.0 (built: 2015-03-27)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -2764,9 +2766,6 @@ _.inherit(_.Handler, Lap, (function() {
     pause: function() {
       this.audio.pause();
       this.trigger('pause');
-      /*>>*/
-      logger.debug('pause handler was just triggered...?');
-      /*<<*/
       return this;
     },
 

@@ -8,7 +8,9 @@
   var Lap = window.Lap;
   var $ = tooly.Frankie;
 
-  // constructor
+  /**
+   * @deprecated
+   */
   Lap.DiscogPopulator = function(lap) {
     this.lap = lap;
     this.id = ++__id;

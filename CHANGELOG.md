@@ -1,3 +1,9 @@
+# [0.2.2] 2015.03.
+
++ demo: added CanvasVolumeRange and CanvasProgSeek plug-ins
++ demo: added grunt-cssbeautifier (grunt-sass[node-sass]) doesn't 
+  support expanded output style.
+
 # [0.2.1] 2015.03.10
 
 + removed `initPlugins` - pointless, better to use `load` callback
