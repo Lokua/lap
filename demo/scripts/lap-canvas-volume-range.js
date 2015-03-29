@@ -39,7 +39,8 @@
   CanvasVolumeRange.prototype.init = function() {
     var thiz = this,
         settings = thiz.settings,
-        audio = thiz.lap.audio;
+        audio = thiz.lap.audio,
+        v;
 
     thiz.track.width = thiz.knob.width = settings.width;
     thiz.$container.attr('height', thiz.settings.height);
@@ -54,7 +55,9 @@
       .on('mousemove', function(e) {
         if (_mousedown) {
           thiz.drawKnob(e.offsetX);
-          audio.volume = _.scale(e.offsetX, 0, settings.width, 0, 1);
+          v = _.scale(e.offsetX, 0, settings.width - settings.knobWidth, 0, 1);
+          if (v >= 0.95) v = 1;
+          audio.volume = v;
         }
       });
 
@@ -79,11 +82,12 @@
         settings = thiz.settings,
         params = [],
         offset = 0;
-    ctx.clearRect(0, 0, settings.width, settings.width);
+    ctx.clearRect(0, 0, settings.width, settings.height);
     ctx.fillStyle = settings.trackColor;
     if (settings.trackHeight < settings.knobHeight) {
       offset = (settings.knobHeight - settings.trackHeight)/2; 
     }
+    // x, y, width, height
     params = [0, offset, canvas.width, settings.trackHeight];
     ctx.fillRect.apply(ctx, params);
     if (settings.trackStroke) {
@@ -101,12 +105,15 @@
         audio = thiz.lap.audio,
         params = [],
         offset,
-        x;
+        x = override !== undefined ? override : audio.volume;
     ctx.clearRect(0, 0, settings.width, settings.height);
-    x = override ? override : audio.volume;
     ctx.fillStyle = settings.knobColor;
+    if (override >= canvas.width - thiz.settings.knobWidth) {
+      override = canvas.width - thiz.settings.knobWidth;
+    }
+    // x, y, width, height
     params = [
-      override 
+      override !== undefined 
         ? override 
         : _.scale(x, 0, audio.volume, 0, canvas.width), 
       0, 
@@ -118,7 +125,6 @@
       ctx.strokeStyle = settings.knobStroke;
       ctx.strokeRect.apply(ctx, params);
     }
-
     return thiz;
   }
 

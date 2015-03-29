@@ -132,6 +132,7 @@
     if (settings.track.height < settings.knob.height) {
       offset = (settings.knob.height - settings.track.height)/2; 
     }
+    // x, y, width, height
     params = [0, offset, canvas.width, settings.track.height];
     ctx.fillRect.apply(ctx, params);
     if (settings.track.stroke) {
@@ -153,13 +154,13 @@
         canvas = thiz.progress,
         params = [],
         offset = 0,
-        x;
+        x = lap.bufferFormatted();
     ctx.clearRect(0, 0, settings.width, settings.height);
-    x = lap.bufferFormatted();
     ctx.fillStyle = settings.progress.fill;
     if (settings.progress.height < settings.knob.height) {
       offset = (settings.knob.height - settings.progress.height)/2;
     }
+    // x, y, width, height
     params = [
       0, 
       offset, 
@@ -191,13 +192,13 @@
         audio = thiz.lap.audio,
         params = [],
         offset,
-        x;
+        x = override !== undefined ? override : audio.currentTime;
     ctx.lineWidth = settings.lineWidth;        
     ctx.clearRect(0, 0, settings.width, settings.height);
-    x = override ? override : audio.currentTime;
     ctx.fillStyle = settings.knob.fill;
+    // x, y, width, height
     params = [
-      override 
+      override !== undefined
         ? override 
         : _.scale(x, 0, audio.duration, 0, canvas.width), 
       0, 

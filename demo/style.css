@@ -16,17 +16,8 @@
   clear: both;
 }
 
-.lap *, .lap *:before, .lap *:after {
+.lap *, .lap *:before:not(i), .lap *:after:not(i) {
   box-sizing: border-box;
-}
-
-@media only screen and (max-width: 720px) {
-  .lap {
-    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
-  }
-}
-
-.lap * {
   cursor: normal;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -34,12 +25,14 @@
   user-select: none;
 }
 
-.lap *:focus {
+.lap *:focus, .lap *:before:not(i):focus, .lap *:after:not(i):focus {
   outline: 0;
 }
 
-.lap *:before:not(i), .lap *:after:not(i) {
-  box-sizing: border-box;
+@media only screen and (max-width: 720px) {
+  .lap {
+    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
+  }
 }
 
 .lap i {

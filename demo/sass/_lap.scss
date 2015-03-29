@@ -11,8 +11,13 @@ $lap-track-color: lighten($lap-icon-color, 32%);
 
 .lap {
 
-  *, *:before, *:after {
+  *, *:before:not(i), *:after:not(i) {
     box-sizing: border-box;
+    cursor: normal;
+    user-select: none;
+    &:focus {
+      outline: 0;
+    }
   }
 
   padding: 16px;
@@ -23,17 +28,6 @@ $lap-track-color: lighten($lap-icon-color, 32%);
     box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
   }
 
-  * {
-    cursor: normal;
-    user-select: none;
-    &:focus {
-      outline: 0;
-    }
-    // - not(i) -> don't fuck with icon boxes
-    &:before:not(i), &:after:not(i) {
-      box-sizing: border-box;
-    }
-  }
   i {
     font-size: $lap-icon-size;
     cursor: pointer;
