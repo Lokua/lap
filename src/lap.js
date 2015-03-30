@@ -103,6 +103,7 @@ _.inherit(_.Handler, Lap, (function() {
       startingTrackIndex: 0,
       seekInterval: 5, 
       seekTime: 250,
+      selectors: {}, // see #initElements
       selectorPrefix: 'lap',
       trackNumberPostfix: ' - ',
       useNativeProgress: false,
@@ -223,6 +224,7 @@ _.inherit(_.Handler, Lap, (function() {
     initElements: function() {
       var lap = this;
       lap.$els = {};
+      lap.selectors = _.extend({}, lap.selectors, lap.settings.selectors);
       _.each(lap.selectors, function(el, key) {
         // do not add selectors.state classes
         if (_.type(el, 'object')) return;

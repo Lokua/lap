@@ -77,7 +77,8 @@
   CanvasProgSeek.prototype.init = function() {
     var thiz = this,
         settings = thiz.settings,
-        audio = thiz.lap.audio;
+        audio = thiz.lap.audio,
+        x;
 
     thiz.track.width  = thiz.progress.width  = thiz.knob.width  = settings.width;
     thiz.track.height = thiz.progress.height = thiz.knob.height = settings.height;
@@ -101,7 +102,12 @@
         _mousedown = true; 
       })
       .on('mousemove', function(e) {
-        if (_mousedown) thiz.drawKnob(e.offsetX);
+        if (_mousedown) {
+          thiz.drawKnob(e.offsetX);
+          x = _.scale(e.offsetX, 0, settings.width - settings.knob.width, 0, 1);
+          if (x >= audio.duration) x = audio.duration;
+          audio.currentTime = x;
+        }
       });
 
     $('body').on('mouseup', function(e) {
@@ -196,6 +202,16 @@
     ctx.lineWidth = settings.lineWidth;        
     ctx.clearRect(0, 0, settings.width, settings.height);
     ctx.fillStyle = settings.knob.fill;
+
+    if (override !== undefined) {
+      if (override >= canvas.width - thiz.settings.knob.width) {
+        override = canvas.width - thiz.settings.knob.width;
+      }
+      x = override;
+    } else {
+      x = audio.currentTime;
+    }
+
     // x, y, width, height
     params = [
       override !== undefined

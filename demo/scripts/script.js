@@ -12,9 +12,12 @@
   function run(data) {
 
     var player = new Lap('#full-discography-player', data, { 
-      useNativeVolumeRange: true,
-      useNativeSeekRange: true,
-      useNativeProgress: true,
+      useNativeVolumeRange: false, 
+      useNativeSeekRange: false, 
+      useNativeProgress: false,
+      selectors: {
+        volumeRange: 'lap__canvas-volume-range'
+      },
       callbacks: {
         load: function() {
 

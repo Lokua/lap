@@ -105,16 +105,22 @@
         audio = thiz.lap.audio,
         params = [],
         offset,
-        x = override !== undefined ? override : audio.volume;
+        x;
     ctx.clearRect(0, 0, settings.width, settings.height);
     ctx.fillStyle = settings.knobColor;
-    if (override >= canvas.width - thiz.settings.knobWidth) {
-      override = canvas.width - thiz.settings.knobWidth;
+
+    if (override !== undefined) {
+      if (override >= canvas.width - thiz.settings.knobWidth) {
+        override = canvas.width - thiz.settings.knobWidth;
+      }
+      x = override;
+    } else {
+      x = audio.volume;
     }
-    // x, y, width, height
     params = [
       override !== undefined 
         ? override 
+        // shouldn't audio.volume be replaced with 1?
         : _.scale(x, 0, audio.volume, 0, canvas.width), 
       0, 
       settings.knobWidth, 
