@@ -13,12 +13,29 @@
     thiz.lap = lap;
     thiz.$container = $(container, lap.container);
 
+    if (!thiz.$container.length()) {
+      console.error('unable to create CanvasVolumeRange container');
+      thiz.constructorErrorThrown = true;
+      return;
+    }
+
     thiz.$container
       .append(_.tag('canvas.lap__canvas-volume-range__track'))
       .append(_.tag('canvas.lap__canvas-volume-range__knob'));
 
     thiz.track = $('.lap__canvas-volume-range__track').get(0);
     thiz.knob  = $('.lap__canvas-volume-range__knob').get(0);
+
+    if (!thiz.track) {
+      console.error('unable to find track element');
+      thiz.constructorErrorThrown = true;
+      return;
+    }
+    if (!thiz.knob) {
+      console.error('unable to find knob element');
+      thiz.constructorErrorThrown = true;
+      return;
+    }  
 
     thiz.trackCtx = thiz.track.getContext('2d');
     thiz.knobCtx  = thiz.knob.getContext('2d');    
@@ -36,13 +53,18 @@
     return thiz;
   }
 
+  CanvasVolumeRange.prototype.constructorErrorThrown = false;
+
   CanvasVolumeRange.prototype.init = function() {
+    if (this.constructorErrorThrown) return;
+    
     var thiz = this,
         settings = thiz.settings,
         audio = thiz.lap.audio,
         v;
 
     thiz.track.width = thiz.knob.width = settings.width;
+    thiz.track.height = thiz.knob.height = settings.height;
     thiz.$container.attr('height', thiz.settings.height);
 
     thiz.drawTrack();
@@ -58,6 +80,7 @@
           v = _.scale(e.offsetX, 0, settings.width - settings.knobWidth, 0, 1);
           if (v >= 0.95) v = 1;
           audio.volume = v;
+          thiz.lap.trigger('volumeChange');
         }
       });
 

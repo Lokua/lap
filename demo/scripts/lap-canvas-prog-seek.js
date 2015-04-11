@@ -7,7 +7,7 @@
       _defaultHeight = 16;
 
   /*>>*/
-  var logger = _.Logger('EXPVOL', { level: 0 });
+  var logger = _.Logger('PROGRESS_SEEK', { level: 0 });
   /*<<*/
 
   /**
@@ -24,6 +24,12 @@
     thiz.lap = lap;
     thiz.$container = $(container, lap.container);
 
+    if (!thiz.$container.length()) {
+      console.error('unable to create CanvasProgSeek container');
+      thiz.constructorErrorThrown = true;
+      return;
+    }
+
     // appended in intended stacking order
     thiz.$container
       .append(_.tag('canvas.lap__prog-seek__track'))
@@ -33,6 +39,18 @@
     thiz.track    = $('.lap__prog-seek__track').get(0);
     thiz.progress = $('.lap__prog-seek__progress').get(0);
     thiz.knob     = $('.lap__prog-seek__knob').get(0);
+
+    // helper
+    function errCheck(el) {
+      if (!thiz[el]) {
+        console.error('unable to find ' + el + ' element');
+        thiz.constructorErrorThrown = true;
+      }
+    }
+    errCheck('track');
+    errCheck('progress');
+    errCheck('knob');
+    if (thiz.constructorErrorThrown) return;
 
     thiz.trackCtx    = thiz.track.getContext('2d');
     thiz.progressCtx = thiz.progress.getContext('2d');
@@ -61,12 +79,10 @@
       padding: 0
     }, options);
 
-    /*>>*/
-    logger.debug(thiz);
-    /*<<*/
-
     return thiz;
   }
+
+  CanvasProgSeek.prototype.constructorErrorThrown = false;
 
   /**
    * Initialize this CanvasProgSeek. Draws the track, knob, and progress value; 
@@ -75,6 +91,8 @@
    * @return {CanvasProgSeek} this
    */
   CanvasProgSeek.prototype.init = function() {
+    if (this.constructorErrorThrown) return;
+
     var thiz = this,
         settings = thiz.settings,
         audio = thiz.lap.audio,

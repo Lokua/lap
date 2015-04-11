@@ -50,6 +50,7 @@
   width: 296px;
   height: 16px;
   min-height: 16px;
+  border: 1px dotted red;
 }
 
 .lap__control {
@@ -82,6 +83,7 @@
 
 .lap__speaker__container {
   width: 16px;
+  margin-right: 0;
 }
 
 .lap__volume-range__container input[type=range] {
@@ -316,6 +318,7 @@
 
 .lap--hidden {
   display: none !important;
+  pointer-events: none;
 }
 
 .lap__controls--non-volume {
@@ -344,7 +347,12 @@
   display: inline-block;
   width: 76px;
   height: 18px;
-  padding-top: 6px;
+  padding-top: 2px;
+}
+
+.lap__canvas-volume-range__container {
+  position: absolute;
+  margin-right: 4px;
 }
 
 .lap__prog-seek, .lap__canvas-volume-range {

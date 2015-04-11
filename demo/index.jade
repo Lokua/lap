@@ -37,23 +37,15 @@ body
           span.lap__track-number
           span.lap__track-title
 
-        .lap__canvas-volume-range__container: .lap__canvas-volume-range
-
         .lap__controls
-          .lap__volume__container
-            .lap__control.lap__speaker__container: i.lap__speaker.lap-i-volume-high
-            .lap__canvas-volume-range__container: .lap__canvas-volume-range
-            //- .lap__volume-range__container: .lap__cell--parent
-            //-   input.lap__volume-range.lap--hidden(type='range', min='0', max='100', value='80')
+          .lap__control.lap__speaker__container: i.lap__speaker.lap-i-volume-high
+          .lap__canvas-volume-range__container.lap--hidden: .lap__canvas-volume-range
           .lap__controls--non-volume
             .lap__control: i.lap__play-pause.lap-i-play
             .lap__control: i.lap__prev.lap-i-prev
             .lap__control: i.lap__next.lap-i-next
             .lap__read.lap__current-time 00:00
             .lap__prog-seek__container: .lap__prog-seek
-            //- .lap__seek-range__container: .lap__cell--parent
-            //-   progress.lap__progress(min='0', max='100')
-            //-   input.lap__seek-range(type='range', min='0', max='100', value='0')
             .lap__read.lap__duration 00:00
             .lap__control: i.lap__playlist.lap-i-playlist
             .lap__control: i.lap__discog.lap-i-discog

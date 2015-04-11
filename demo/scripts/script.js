@@ -21,13 +21,6 @@
       callbacks: {
         load: function() {
 
-          new player.VolumeRangeRevealer(
-            player, 
-            '.lap__volume__container',
-            '.lap__speaker',
-            '.lap__controls--non-volume'
-          ).init();
-
           var fillColor = '#555', trackColor = '#a7a7a7';
 
           new player.CanvasProgSeek(player, '.lap__prog-seek', {
@@ -52,6 +45,13 @@
             width: 76, 
             height: 18,
           }).init();
+
+          new player.VolumeRangeRevealer(
+            player, 
+            '.lap__canvas-volume-range__container',
+            '.lap__speaker',
+            '.lap__controls--non-volume'
+          ).init();          
         }
       }
     });

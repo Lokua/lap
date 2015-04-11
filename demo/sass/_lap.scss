@@ -9,6 +9,8 @@ $lap-info-text-size: 10px;
 $lap-font-family: 'Source Code Pro';
 $lap-track-color: lighten($lap-icon-color, 32%);
 
+$lap-DEBUG: true;
+
 .lap {
 
   *, *:before:not(i), *:after:not(i) {
@@ -43,6 +45,10 @@ $lap-track-color: lighten($lap-icon-color, 32%);
   width: 296px;
   height: $lap-icon-size;
   min-height: $lap-icon-size;
+
+  @if $lap-DEBUG == true {
+    border: 1px dotted red;
+  }
 }
 
 .lap__control {
@@ -76,6 +82,7 @@ $lap-track-color: lighten($lap-icon-color, 32%);
 // - when the icons are switched
 .lap__speaker__container {
   width: $lap-icon-size;
+  margin-right: 0;
 }
 
 .lap__volume-range__container {
@@ -162,6 +169,7 @@ $lap-track-color: lighten($lap-icon-color, 32%);
 
 .lap--hidden {
   display: none !important;
+  pointer-events: none;
 }
 
 .lap__controls--non-volume {
@@ -193,7 +201,14 @@ $lap-track-color: lighten($lap-icon-color, 32%);
   display: inline-block;
   width: $lap-progress-width;
   height: 18px;
-  padding-top: 6px;
+  // padding-top: 6px;
+  padding-top: 2px;
+}
+
+.lap__canvas-volume-range__container {
+  position: absolute;
+  margin-right: 4px;
+  // padding-top: 2px;
 }
 
 .lap__prog-seek, .lap__canvas-volume-range {

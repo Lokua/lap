@@ -35,7 +35,7 @@ function Lap(container, lib, options, init) {
   /*>>*/
   logger = new _.Logger('Lap#' + lap.id, {
     level: 0,
-    bypassTimestamp: false,
+    bypassTimestamp: true,
     bypassLine: false
   });
   /*<<*/

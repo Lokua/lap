@@ -25,7 +25,7 @@
     var plug = this;
     plug.lap = lap;
     plug.id = ++_id;
-    plug.name = 'EXPNDVOLRNG_' + plug.id;
+    plug.name = 'VOLUME_RANGE_REVEALER' + plug.id;
     plug.container = container || '.lap__volume__container';
     plug.speaker = speaker || '.lap__speaker';
     plug.nonVolumeControlsClass = nonVolumeControlsClass || '.lap__controls--non-volume';
@@ -45,10 +45,12 @@
     var thiz = this,
         lap = thiz.lap,
         $ = tooly.Frankie,
-        $speaker = $(thiz.speakerClass, lap.container), 
+        $container = $(thiz.container, lap.container),
+        $speaker = $(thiz.speaker, lap.container),
+        $speakerContainer = $('.lap__speaker__container', lap.container), 
         $volumeRange = lap.$els.volumeRange,
         $opps = $(thiz.nonVolumeControlsClass, lap.container),
-        DOWN = ENTERED = false;
+        MOUSEDOWN = SPEAKER_ENTERED = RANGE_ENTERED = false;
 
     if (!$volumeRange) {
       console.error(
@@ -68,36 +70,49 @@
           return c !== thiz.levelClasses[classNum];
         }).join(' ')).addClass(thiz.levelClasses[classNum]);
       })
+      .on('mouseenter', function() {
+        RANGE_ENTERED = true;
+      })
       .on('mousedown', function() {
-        DOWN = true;
+        MOUSEDOWN = true;
+      })
+      .on('mouseleave', function() {
+        RANGE_ENTERED = false;
+        if (!MOUSEDOWN) release();
       });
 
 
-    $(thiz.container, lap.container)
+    // $(thiz.container, lap.container)
+    $speaker
       .on('mouseenter', function() {
-        if (!ENTERED) {
-          $volumeRange.removeClass(lap.selectors.state.hidden);
+        if (!SPEAKER_ENTERED && !RANGE_ENTERED) {
+          // $volumeRange.removeClass(lap.selectors.state.hidden);
+          $container.removeClass(lap.selectors.state.hidden);
           $opps.addClass(lap.selectors.state.hidden);
-          ENTERED = true;
+          SPEAKER_ENTERED = /*RANGE_ENTERED =*/ true;
         }
       })
       .on('mouseleave', function(e) {
-        ENTERED = false;
-        if (!DOWN) {
-          $volumeRange.addClass(lap.selectors.state.hidden);
-          $opps.removeClass(lap.selectors.state.hidden);
-        };
+        SPEAKER_ENTERED = false;
+        // allow time to move mouse into the range element
+        setTimeout(function() {
+          if (!SPEAKER_ENTERED && !RANGE_ENTERED) release();
+        }, 250 /*500*/);
       });
+
 
     // add the mouseup to the body so we can inc/dec volume by dragging
     // left or right regardless if we're in the same horizontal span as the slider
     // or not
     $('body').on('mouseup', function() {
-      DOWN = false;
-      if (!ENTERED) {
-        $volumeRange.addClass(lap.selectors.state.hidden);
-        $opps.removeClass(lap.selectors.state.hidden);
-      }
+      MOUSEDOWN = false;
+      if (!RANGE_ENTERED && !SPEAKER_ENTERED) release();
     });
+
+    function release() {
+      logger.debug('release called');
+      $container.addClass(lap.selectors.state.hidden);
+      $opps.removeClass(lap.selectors.state.hidden);
+    }
   };
 }();

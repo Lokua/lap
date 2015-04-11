@@ -2181,7 +2181,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.2.0 (built: 2015-03-30)
+ * lap - version 0.2.0 (built: 2015-04-11)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -2244,7 +2244,7 @@ function Lap(container, lib, options, init) {
   /*>>*/
   logger = new _.Logger('Lap#' + lap.id, {
     level: 0,
-    bypassTimestamp: false,
+    bypassTimestamp: true,
     bypassLine: false
   });
   /*<<*/
