@@ -8,10 +8,13 @@ $lap-margin: 4px;
 $lap-info-text-size: 10px;
 $lap-font-family: 'Source Code Pro';
 $lap-track-color: lighten($lap-icon-color, 32%);
+$lap-controls-width: 232px;
 
-$lap-DEBUG: true;
+$lap-DEBUG: false;
 
 .lap {
+
+  @extend %o-clearfix;
 
   *, *:before:not(i), *:after:not(i) {
     box-sizing: border-box;
@@ -23,7 +26,7 @@ $lap-DEBUG: true;
   }
 
   padding: 16px;
-  background: darken($lap-background-color, 1%);
+  // background: darken($lap-background-color, 1%);
   color: $lap-text-color;
   clear: both;
   @include o-media(small) {
@@ -40,15 +43,36 @@ $lap-DEBUG: true;
   }
 }
 
-.lap__controls {
+.lap__controls, .lap__details {
   margin: 0 auto;
-  width: 296px;
+  width: $lap-controls-width;
   height: $lap-icon-size;
   min-height: $lap-icon-size;
-
   @if $lap-DEBUG == true {
     border: 1px dotted red;
   }
+}
+
+.lap__details {
+  @include o-ellipsis();
+  text-align: center;
+  padding: 0 0 4px;
+  height: $lap-icon-size + 4px;
+  min-height: $lap-icon-size + 4px;
+  span {
+    font-size: $lap-info-text-size;
+  }
+}
+.lap__track-number, .lap__artist, .lap__album {
+  &:after {
+    content: ' - ';
+  }
+}
+.lap__album {
+  font-style: italic;
+}
+.lap__track-title {
+  font-weight: bold;
 }
 
 .lap__control {
@@ -145,7 +169,6 @@ $lap-DEBUG: true;
   }
 }
 
-
 // - lap-current-time, lap-duration
 .lap__read {
   display: inline;
@@ -159,14 +182,6 @@ $lap-DEBUG: true;
   margin-left: $lap-margin;
 }
 
-.lap__cell--parent {
-  @include o--(o-v-center-parent);
-}
-
-.lap__cell--child {
-  @include o--(o-v-center-child);
-}
-
 .lap--hidden {
   display: none !important;
   pointer-events: none;
@@ -178,43 +193,23 @@ $lap-DEBUG: true;
   padding: 0;
 }
 
-.lap__info-panel {
-  display: block;
-  margin: 0 auto;
-  // 2px offset + 3 top from .lap__read + font size
-  height: 5 + $lap-info-text-size;
-  min-height: 5 + $lap-info-text-size;
-  text-align: center;
-}
-
-.lap__artist {
-  &:after {
-    content: " - ";
-  }
-}
-
-.lap__album {
-  font-style: italic;
-}
-
 .lap__prog-seek__container, .lap__canvas-volume-range__container {
   display: inline-block;
   width: $lap-progress-width;
-  height: 18px;
-  // padding-top: 6px;
-  padding-top: 2px;
+  height: 16px;
+  padding-top: 4px;
 }
 
 .lap__canvas-volume-range__container {
   position: absolute;
   margin-right: 4px;
-  // padding-top: 2px;
 }
 
 .lap__prog-seek, .lap__canvas-volume-range {
   cursor: pointer;
   position: relative;
   height: 18px;
+  padding-top: 2px;
   canvas {
     position: absolute;
     top: 0;

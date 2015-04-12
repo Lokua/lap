@@ -6,12 +6,76 @@
 // override
 $lap-font-family: 'Droid Sans Mono';
 
+$img-size: 256px;
+
 body {
   // font-family: 'Source Sans Pro';
   font-family: 'Droid Sans';
   color: #444;
 }
 
-img {
-  @include o-size(256px);
+#main {
+  // @include o-span(6);
+  section {
+    @extend %o-clearfix;
+    padding: 8px;
+  }
+  .lap {
+    border: 1px solid #ddd;
+  }
 }
+
+#full-discography-player {
+  .lap__case {
+    @include o-span(9, none);
+    @include o-center();
+    padding-top: 16px;
+  }
+  .lap__cover__container, .lap__playlist__panel {
+    @include o-span(6);
+    img {
+      @include o-size($img-size);
+      box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.125);
+      float: right;
+      padding-right: 16px;
+    }  
+  }
+  .lap__playlist__panel {
+    @include o-size($img-size);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    ul {
+      @include o-list-unstyled();
+      font-size: 12px;
+      padding-left: 16px;
+    }
+    li {
+      &:hover {
+        color: red;
+      }
+    }
+  }
+  .lap__discog__container {
+    padding-top: 16px;
+  }
+  .lap__discog__panel {
+    @include o-span(9);
+    @include o-center();
+  }
+  .lap__discog__thumb {
+    @include o-span(4);
+    @include o-center();
+    img {
+      @include o-size(160px);
+      @include o-center();
+    }
+  }
+}
+
+#single-track-player {
+  .lap__controls {
+    margin: 0;
+  }
+}
+
+

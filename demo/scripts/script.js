@@ -1,17 +1,45 @@
 !function() {
 
-  var logger = tooly.Logger('CSS_DEMO'),
-      $ = tooly.Frankie;
+  var logger = tooly.Logger('CSS_DEMO');
+  var $ = tooly.Frankie;
+  var fillColor = '#555';
+  var trackColor = '#a7a7a7';
+  var progOpts = {
+    width: 76,
+    height: 18,
+    track: {
+      fill: trackColor,
+      height: 2
+    },
+    progress: {
+      fill: fillColor,
+      height: 2
+    },
+    knob: {
+      fill: fillColor,
+      height: 12,
+      width: 6
+    }
+  };
+  var volOpts = { width: 76, height: 18 };
+  var players = {};  
 
   tooly.ready(function() {
+
     tooly.getJSON('lib.json', function(data) {
-      run(data.data);
+      createPlayer(data.data, 'fullPlayer', '#full-discography-player');
+      createPlayer([{
+        files: [
+          "http://lokua.net/audio/13/Lokua_-_Midsummer_Nightmare.wav",
+        ]      
+      }], 'singlePlayer', '#single-track-player');
     }, true);
-  });
 
-  function run(data) {
 
-    var player = new Lap('#full-discography-player', data, { 
+  });  
+
+  function createPlayer(data, varname, container) {
+    players[varname] = new Lap(container, data, { 
       useNativeVolumeRange: false, 
       useNativeSeekRange: false, 
       useNativeProgress: false,
@@ -20,40 +48,21 @@
       },
       callbacks: {
         load: function() {
-
-          var fillColor = '#555', trackColor = '#a7a7a7';
-
-          new player.CanvasProgSeek(player, '.lap__prog-seek', {
-            width: 76,
-            height: 18,
-            track: {
-              fill: trackColor,
-              height: 2
-            },              
-            progress: {
-              fill: fillColor,
-              height: 2
-            },
-            knob: {
-              fill: fillColor,
-              height: 12,
-              width: 6
-            }
-          }).init();
-
-          new player.CanvasVolumeRange(player, '.lap__canvas-volume-range', {
-            width: 76, 
-            height: 18,
-          }).init();
-
-          new player.VolumeRangeRevealer(
-            player, 
+          var thiz = this;
+          new thiz.CanvasProgSeek(thiz, '.lap__prog-seek', progOpts).init();
+          new thiz.CanvasVolumeRange(thiz, '.lap__canvas-volume-range', volOpts).init();
+          new thiz.VolumeRangeRevealer(
+            thiz, 
             '.lap__canvas-volume-range__container',
             '.lap__speaker',
             '.lap__controls--non-volume'
-          ).init();          
+          ).init();
+          if (varname === 'fullPlayer') {
+            new thiz.DiscogPopulator(thiz, '.lap__discog__container').init();
+          }
         }
       }
     });
   }
+
 }();

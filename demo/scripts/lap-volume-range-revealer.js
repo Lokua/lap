@@ -1,4 +1,4 @@
-!function(undefined) {
+!function(undefined) { 'use strict';
 
   /*>>*/
   var logger = tooly.Logger('VOLUME_RANGE_REVEALER', { level: 0 });
@@ -49,8 +49,9 @@
         $speaker = $(thiz.speaker, lap.container),
         $speakerContainer = $('.lap__speaker__container', lap.container), 
         $volumeRange = lap.$els.volumeRange,
+        rangeWidth = $volumeRange.find('canvas').attr('width'),
         $opps = $(thiz.nonVolumeControlsClass, lap.container),
-        MOUSEDOWN = SPEAKER_ENTERED = RANGE_ENTERED = false;
+        MOUSEDOWN, SPEAKER_ENTERED, RANGE_ENTERED;
 
     if (!$volumeRange) {
       console.error(
@@ -58,9 +59,18 @@
       return;
     }
 
+
+    // TODO: these would be better as callback hooks on CanvasVolumeRange events
     $volumeRange
-      .on('change', function() {
-        var v = this.value,
+      .on('mouseenter', function() {
+        RANGE_ENTERED = true;
+      })
+      .on('mousedown', function() {
+        MOUSEDOWN = true;
+      })
+      .on('mousemove', function(e) {
+        if (!MOUSEDOWN) return;
+        var v = tooly.scale(e.offsetX, 0, rangeWidth, 0, 100),
             classNum = 0;
         if (v > 0) {
           var n = tooly.scale(v, 0, 100, 0, thiz.levelClasses.length-1);
@@ -69,12 +79,6 @@
         $speaker.removeClass(thiz.levelClasses.filter(function(c) {
           return c !== thiz.levelClasses[classNum];
         }).join(' ')).addClass(thiz.levelClasses[classNum]);
-      })
-      .on('mouseenter', function() {
-        RANGE_ENTERED = true;
-      })
-      .on('mousedown', function() {
-        MOUSEDOWN = true;
       })
       .on('mouseleave', function() {
         RANGE_ENTERED = false;
@@ -86,10 +90,9 @@
     $speaker
       .on('mouseenter', function() {
         if (!SPEAKER_ENTERED && !RANGE_ENTERED) {
-          // $volumeRange.removeClass(lap.selectors.state.hidden);
           $container.removeClass(lap.selectors.state.hidden);
           $opps.addClass(lap.selectors.state.hidden);
-          SPEAKER_ENTERED = /*RANGE_ENTERED =*/ true;
+          SPEAKER_ENTERED = true;
         }
       })
       .on('mouseleave', function(e) {
@@ -110,7 +113,6 @@
     });
 
     function release() {
-      logger.debug('release called');
       $container.addClass(lap.selectors.state.hidden);
       $opps.removeClass(lap.selectors.state.hidden);
     }

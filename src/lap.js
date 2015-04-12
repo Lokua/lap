@@ -1,9 +1,5 @@
 /** @namespace  Lap */
 
-/*>>*/
-var logger;
-/*<<*/
-
 var _ = tooly,
     $ = _.Frankie,
     _idGen = _idGen || 0,
@@ -33,7 +29,7 @@ function Lap(container, lib, options, init) {
   lap.id = ++_idGen;
 
   /*>>*/
-  logger = new _.Logger('Lap#' + lap.id, {
+  lap.logger = new _.Logger('Lap_#' + lap.id, {
     level: 0,
     bypassTimestamp: true,
     bypassLine: false
@@ -70,7 +66,7 @@ function Lap(container, lib, options, init) {
   /*>>*/
   function echo(event) { 
     lap.on(event, function() {
-      logger.info('%c%s handler called', 'color:#800080', event); 
+      lap.logger.info('%c%s handler called', 'color:#800080', event); 
     });
   }
   echo('load');
@@ -187,7 +183,7 @@ _.inherit(_.Handler, Lap, (function() {
       lap.trigger('load');
 
       /*>>*/
-      logger.info('post init: %o', lap);
+      lap.logger.info('post init: %o', lap);
       /*<<*/      
     },
 
@@ -434,7 +430,7 @@ _.inherit(_.Handler, Lap, (function() {
           _SEEKING = true;
         }).on('mouseup', function(e) {
           var el = seekRange.get(0);
-          if (!el.value) logger.debug('what the fuck! ' + el);
+          if (!el.value) lap.logger.debug('what the fuck! ' + el);
           audio.currentTime = _.scale(el.value, 0, el.max, 0, audio.duration);
           lap.trigger('seek');
           _SEEKING = false;
@@ -643,7 +639,7 @@ _.inherit(_.Handler, Lap, (function() {
     nextAlbum: function() {
       var wasPlaying= !this.audio.paused;
       /*>>*/
-      logger.debug('nextAlbum >> albumIndex/albumCount: %d/%d', 
+      lap.logger.debug('nextAlbum >> albumIndex/albumCount: %d/%d', 
         this.albumIndex, this.albumCount);
       /*<<*/
       this.albumIndex = (this.albumIndex+1 > this.albumCount-1) ? 0 : this.albumIndex+1;
@@ -812,7 +808,7 @@ _.inherit(_.Handler, Lap, (function() {
         }, true);
       }).join('');
 
-      $panel.html(tracklist);
+      $panel.html('<ul>' + tracklist + '</ul>');
 
       $panel.find('.'+lap.selectors.playlistItem).on('click', function(e) {
         lap.setTrack($(this).attr('data-lap-playlist-index'));
@@ -908,7 +904,7 @@ _.inherit(_.Handler, Lap, (function() {
         buffered = audio.buffered.end(audio.buffered.length-1);
       } catch(e) {
         return 0;
-        // this.logger.trace('bufferFormatted', e.name);
+        // this.lap.logger.trace('bufferFormatted', e.name);
       }
       var formatted = Math.round(_.scale(buffered, 0, audio.duration, 0, 100));
       // TODO: why are we returning 0?

@@ -1,6 +1,6 @@
 !function(undefined) { 'use strict';
   
-  var _ = tooly, $ = tooly.Frankie, _mousedown = false;
+  var _ = tooly, $ = tooly.Frankie, MOUSEDOWN = false;
   /*>>*/
   var logger = _.Logger('LAP_VOLUME_RANGE');
   /*<<*/
@@ -68,14 +68,14 @@
     thiz.$container.attr('height', thiz.settings.height);
 
     thiz.drawTrack();
-    thiz.drawKnob(0);
+    thiz.drawKnob(_.scale(audio.volume, 0, 1, 0, settings.width));
 
     thiz.$container
       .on('mousedown', function(e) {
-        _mousedown = true; 
+        MOUSEDOWN = true; 
       })
       .on('mousemove', function(e) {
-        if (_mousedown) {
+        if (MOUSEDOWN) {
           thiz.drawKnob(e.offsetX);
           v = _.scale(e.offsetX, 0, settings.width - settings.knobWidth, 0, 1);
           if (v >= 0.95) v = 1;
@@ -85,9 +85,7 @@
       });
 
     $('body').on('mouseup', function(e) {
-      if (_mousedown) {
-        _mousedown = false;
-      }
+      if (MOUSEDOWN) MOUSEDOWN = false;
     });
 
     return thiz;
@@ -131,7 +129,6 @@
         x;
     ctx.clearRect(0, 0, settings.width, settings.height);
     ctx.fillStyle = settings.knobColor;
-
     if (override !== undefined) {
       if (override >= canvas.width - thiz.settings.knobWidth) {
         override = canvas.width - thiz.settings.knobWidth;
@@ -141,10 +138,7 @@
       x = audio.volume;
     }
     params = [
-      override !== undefined 
-        ? override 
-        // shouldn't audio.volume be replaced with 1?
-        : _.scale(x, 0, audio.volume, 0, canvas.width), 
+      override !== undefined ? override : _.scale(x, 0, 1, 0, canvas.width), 
       0, 
       settings.knobWidth, 
       settings.knobHeight

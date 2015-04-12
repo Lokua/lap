@@ -100,7 +100,6 @@
 
     thiz.track.width  = thiz.progress.width  = thiz.knob.width  = settings.width;
     thiz.track.height = thiz.progress.height = thiz.knob.height = settings.height;
-
     thiz.$container.attr('height', thiz.settings.height);
 
     thiz.drawTrack();

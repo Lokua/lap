@@ -7,6 +7,7 @@
   <script src="scripts/lap-volume-range-revealer.js"></script>
   <script src="scripts/lap-canvas-prog-seek.js"></script>
   <script src="scripts/lap-canvas-volume-range.js"></script>
+  <script src="scripts/lap-discog-populator.js"></script>
   <script src="scripts/script.js"></script>
 </head>
 <body>
@@ -17,16 +18,7 @@
     <section>
       <h1>full discography player</h1>
       <div id="full-discography-player" class="lap">
-        <div class="lap__cover__container"><img class="lap__cover">
-          <div class="lap__playlist__panel lap--hidden"></div>
-          <div class="lap__discog__panel lap--hidden">
-            <h3>Albums</h3>
-            <div class="lap__discog__items">
-            </div>
-            <div class="lap__discog__nav"><span class="lap__control"><i class="lap__discog__thumb--prev lap-i-prev-album"></i></span><span class="lap__discog__nav-index"></span><span class="lap__control"><i class="lap__discog__thumb--next lap-i-next-album"></i></span></div>
-          </div>
-        </div>
-        <div class="lap__details"><span class="lap__artist"></span><span class="lap__album"></span><br><span class="lap__track-number"></span><span class="lap__track-title"></span></div>
+        <div class="lap__details"><span class="lap__artist"></span><span class="lap__album"></span><span class="lap__track-number"></span><span class="lap__track-title"></span></div>
         <div class="lap__controls">
           <div class="lap__control lap__speaker__container"><i class="lap__speaker lap-i-volume-high"></i></div>
           <div class="lap__canvas-volume-range__container lap--hidden">
@@ -41,8 +33,19 @@
               <div class="lap__prog-seek"></div>
             </div>
             <div class="lap__read lap__duration">00:00</div>
-            <div class="lap__control"><i class="lap__playlist lap-i-playlist"></i></div>
-            <div class="lap__control"><i class="lap__discog lap-i-discog"></i></div>
+          </div>
+        </div>
+        <div class="lap__case">
+          <div class="lap__cover__container"><img class="lap__cover"></div>
+          <div class="lap__playlist__panel"></div>
+        </div>
+        <div class="lap__discog__container">
+          <div class="lap__prev-album">
+            <div class="lap-i-prev-album"></div>
+          </div>
+          <div class="lap__discog__panel"></div>
+          <div class="lap__next-album">
+            <div class="lap-i-next-album"></div>
           </div>
         </div>
       </div>
@@ -52,34 +55,22 @@
       <div class="sub">
         <h1>single track player</h1>
         <div id="single-track-player" class="lap">
-          <div class="lap__details"><span class="lap__artist"></span><span class="lap__track-title"></span></div>
-          <div class="lap__volume__container">
+          <div class="lap__controls">
             <div class="lap__control lap__speaker__container"><i class="lap__speaker lap-i-volume-high"></i></div>
-            <div class="lap__volume-range__container">
-              <div class="lap__cell--parent">
-                <input type="range" min="0" max="100" value="80" class="lap__volume-range lap--hidden">
+            <div class="lap__canvas-volume-range__container lap--hidden">
+              <div class="lap__canvas-volume-range"></div>
+            </div>
+            <div class="lap__controls--non-volume">
+              <div class="lap__control"><i class="lap__play-pause lap-i-play"></i></div>
+              <div class="lap__control"><i class="lap__prev lap-i-prev"></i></div>
+              <div class="lap__control"><i class="lap__next lap-i-next"></i></div>
+              <div class="lap__read lap__current-time">00:00</div>
+              <div class="lap__prog-seek__container">
+                <div class="lap__prog-seek"></div>
               </div>
+              <div class="lap__read lap__duration">00:00</div>
             </div>
           </div>
-          <div class="lap__controls--non-volume">
-            <div class="lap__control"><i class="lap__play-pause lap-i-play"></i></div>
-            <div class="lap__read lap__current-time">00:00</div>
-            <div class="lap__seek-range__container">
-              <div class="lap__cell--parent">
-                <progress min="0" max="100" class="lap__progress"></progress>
-                <input type="range" min="0" max="100" value="0" class="lap__seek-range">
-              </div>
-            </div>
-            <div class="lap__read lap__duration">00:00</div>
-          </div>
-        </div>
-      </div>
-      <div class="sub">
-        <h1>mini player</h1>
-        <div id="mini-player" class="lap">
-          <div class="lap__control"><i class="lap__play-pause lap-i-play"></i></div>
-          <div class="lap__read lap__current-time">00:00</div><span>&nbsp;/</span>
-          <div class="lap__read lap__duration">00:00</div>
         </div>
       </div>
     </section>
