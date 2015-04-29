@@ -8,7 +8,7 @@ $lap-margin: 4px;
 $lap-info-text-size: 10px;
 $lap-font-family: 'Source Code Pro';
 $lap-track-color: lighten($lap-icon-color, 32%);
-$lap-controls-width: 232px;
+$lap-controls-width: 298px;
 
 $lap-DEBUG: false;
 
@@ -26,7 +26,6 @@ $lap-DEBUG: false;
   }
 
   padding: 16px;
-  // background: darken($lap-background-color, 1%);
   color: $lap-text-color;
   clear: both;
   @include o-media(small) {
@@ -193,7 +192,8 @@ $lap-DEBUG: false;
   padding: 0;
 }
 
-.lap__prog-seek__container, .lap__canvas-volume-range__container {
+.lap__prog-seek__container, 
+.lap__canvas-volume-range__container {
   display: inline-block;
   width: $lap-progress-width;
   height: 16px;

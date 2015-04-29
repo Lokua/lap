@@ -1,6 +1,6 @@
-@import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono);
+@import url(http://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700,400italic,700italic);
 
-.lap:after, #main section:after {
+.lap:after, #main section:after, #full-discography-player .lap__case-and-discog-container:after, #full-discography-player .lap__case:after, #full-discography-player .lap__discog__container:after {
   content: '';
   display: table;
   clear: both;
@@ -43,7 +43,7 @@
 
 .lap__controls, .lap__details {
   margin: 0 auto;
-  width: 232px;
+  width: 298px;
   height: 16px;
   min-height: 16px;
 }
@@ -374,7 +374,7 @@
 }
 
 body {
-  font-family: 'Droid Sans';
+  font-family: 'Quattrocento Sans', sans-serif;
   color: #444;
 }
 
@@ -384,6 +384,15 @@ body {
 
 #main .lap {
   border: 1px solid #ddd;
+}
+
+#full-discography-player .lap__cover__container img, #full-discography-player .lap__playlist__panel img, #full-discography-player .lap__playlist__panel {
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.125);
+}
+
+#full-discography-player {
+  position: relative;
+  background: #e6e6d8;
 }
 
 #full-discography-player .lap__case {
@@ -401,7 +410,6 @@ body {
 #full-discography-player .lap__cover__container img, #full-discography-player .lap__playlist__panel img {
   width: 256px;
   height: 256px;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.125);
   float: right;
   padding-right: 16px;
 }
@@ -409,8 +417,9 @@ body {
 #full-discography-player .lap__playlist__panel {
   width: 256px;
   height: 256px;
-  overflow-y: scroll;
+  background: #fff;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 #full-discography-player .lap__playlist__panel ul {
@@ -425,7 +434,8 @@ body {
 }
 
 #full-discography-player .lap__discog__container {
-  padding-top: 16px;
+  position: absolute;
+  left: 20%;
 }
 
 #full-discography-player .lap__discog__panel {
@@ -448,4 +458,37 @@ body {
 
 #single-track-player .lap__controls {
   margin: 0;
+}
+
+.tooltip {
+  display: inline;
+  position: relative;
+  font-size: 12px;
+  transition: opacity;
+}
+
+.tooltip:before, .tooltip:after {
+  opacity: 0;
+}
+
+.tooltip:hover:before, .tooltip:hover:after {
+  transition-delay: 1s;
+  opacity: 1;
+}
+
+.tooltip:hover {
+  text-decoration: none;
+}
+
+.tooltip:hover:after {
+  background: #000;
+  color: #fff;
+  bottom: 1.35em;
+  content: attr(data-tooltip);
+  display: block;
+  left: 1em;
+  padding: 3px 6px;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 98;
 }

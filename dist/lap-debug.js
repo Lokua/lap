@@ -2181,7 +2181,7 @@ return tooly;
 
 
 /*!
- * lap - version 0.2.0 (built: 2015-04-12)
+ * lap - version 0.2.0 (built: 2015-04-28)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -2581,6 +2581,7 @@ _.inherit(_.Handler, Lap, (function() {
               $els.playlistPanel.removeClass(lap.selectors.state.hidden);
             }
           }
+          lap.trigger('discogClick');
         });
       }
 
@@ -2848,7 +2849,7 @@ _.inherit(_.Handler, Lap, (function() {
     nextAlbum: function() {
       var wasPlaying= !this.audio.paused;
       /*>>*/
-      lap.logger.debug('nextAlbum >> albumIndex/albumCount: %d/%d', 
+      this.logger.debug('nextAlbum >> albumIndex/albumCount: %d/%d', 
         this.albumIndex, this.albumCount);
       /*<<*/
       this.albumIndex = (this.albumIndex+1 > this.albumCount-1) ? 0 : this.albumIndex+1;

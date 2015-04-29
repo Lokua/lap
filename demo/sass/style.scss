@@ -1,16 +1,19 @@
 @import 'o-/o-';
 // @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro|Source+Code+Pro|Source+Serif+Pro);
-@import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono);
+// @import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono);
+@import url(http://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700,400italic,700italic);
 @import 'lap';
 
 // override
-$lap-font-family: 'Droid Sans Mono';
-
+// $lap-font-family: 'Droid Sans Mono';
+$lap-font-family: 'Quattrocento Sans', sans-serif;
 $img-size: 256px;
+$off-white: #fafaf7;
 
 body {
   // font-family: 'Source Sans Pro';
-  font-family: 'Droid Sans';
+  // font-family: 'Droid Sans';
+  font-family: $lap-font-family;
   color: #444;
 }
 
@@ -25,25 +28,39 @@ body {
   }
 }
 
+%lap-box-shadow {
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.125);
+}
+
+
 #full-discography-player {
+  position: relative;
+  background: darken($off-white, 10%);
+  .lap__case-and-discog-container {
+    @extend %o-clearfix;
+  }
   .lap__case {
+    @extend %o-clearfix;
     @include o-span(9, none);
     @include o-center();
     padding-top: 16px;
   }
-  .lap__cover__container, .lap__playlist__panel {
+  .lap__cover__container, 
+  .lap__playlist__panel {
     @include o-span(6);
     img {
+      @extend %lap-box-shadow;
       @include o-size($img-size);
-      box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.125);
       float: right;
       padding-right: 16px;
     }  
   }
   .lap__playlist__panel {
     @include o-size($img-size);
-    overflow-y: scroll;
+    @extend %lap-box-shadow;
+    background: #fff;
     overflow-x: hidden;
+    overflow-y: auto;
     ul {
       @include o-list-unstyled();
       font-size: 12px;
@@ -55,9 +72,14 @@ body {
       }
     }
   }
+
   .lap__discog__container {
-    padding-top: 16px;
+    @extend %o-clearfix;
+    position: absolute;
+    left: 20%; // 3albums+(album-size-margin(*2))=100/5=20
+
   }
+
   .lap__discog__panel {
     @include o-span(9);
     @include o-center();
@@ -75,6 +97,49 @@ body {
 #single-track-player {
   .lap__controls {
     margin: 0;
+  }
+}
+
+.tooltip {
+  display: inline;
+  position: relative;
+  font-size: 12px;
+  transition: opacity;
+  &:before, &:after {
+    opacity: 0;
+  }
+  &:hover:before, &:hover:after {
+    transition-delay: 1s;
+    opacity: 1;
+  }
+  &:hover {
+    // color: blue;
+    text-decoration: none;
+    &:after {
+      // font-size: 10px;
+      background: #000;
+      color: #fff;
+      bottom: 1.35em;
+      content: attr(data-tooltip);
+      display: block;
+      left: 1em;
+      padding: 3px 6px;
+      position: absolute;
+      white-space: nowrap;
+      z-index: 98;
+    }
+    // &:before {
+    //   border: solid;
+    //   border-color: #000 transparent;
+    //   border-width: .4em 0 0 .6em;
+    //   bottom: 1em;
+    //   content: '';
+    //   display: block;
+    //   left: 1em;
+    //   position: absolute;
+    //   z-index: 99;
+    //   transform: scaleX(-1);
+    // }
   }
 }
 

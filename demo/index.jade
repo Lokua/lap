@@ -32,22 +32,23 @@ body
           .lap__canvas-volume-range__container.lap--hidden: .lap__canvas-volume-range
           .lap__controls--non-volume
             .lap__control: i.lap__play-pause.lap-i-play
-            .lap__control: i.lap__prev.lap-i-prev
-            .lap__control: i.lap__next.lap-i-next
+            .lap__control.tooltip(data-tooltip='previous track'): i.lap__prev.lap-i-prev
+            .lap__control.tooltip(data-tooltip='next track'): i.lap__next.lap-i-next
             .lap__read.lap__current-time 00:00
             .lap__prog-seek__container: .lap__prog-seek
             .lap__read.lap__duration 00:00
             //- .lap__control: i.lap__playlist.lap-i-playlist
-            //- .lap__control: i.lap__discog.lap-i-discog
+            .lap__control.tooltip(data-tooltip='previous album'): i.lap__prev-album.lap-i-prev-album
+            .lap__control.tooltip(data-tooltip='show albums'): i.lap__discog.lap-i-discog
+            .lap__control.tooltip(data-tooltip='next album'): i.lap__next-album.lap-i-next-album
         
-        .lap__case
-          .lap__cover__container: img.lap__cover
-          .lap__playlist__panel
+        .lap__case-and-discog-container
+          .lap__case
+            .lap__cover__container: img.lap__cover
+            .lap__playlist__panel
 
-        .lap__discog__container
-          .lap__prev-album: .lap-i-prev-album
-          .lap__discog__panel
-          .lap__next-album: .lap-i-next-album
+          .lap__discog__container
+            .lap__discog__panel.lap--hidden
 
           //- .lap__discog__panel.lap--hidden
           //-   h3 Albums

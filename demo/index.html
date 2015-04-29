@@ -26,26 +26,25 @@
           </div>
           <div class="lap__controls--non-volume">
             <div class="lap__control"><i class="lap__play-pause lap-i-play"></i></div>
-            <div class="lap__control"><i class="lap__prev lap-i-prev"></i></div>
-            <div class="lap__control"><i class="lap__next lap-i-next"></i></div>
+            <div data-tooltip="previous track" class="lap__control tooltip"><i class="lap__prev lap-i-prev"></i></div>
+            <div data-tooltip="next track" class="lap__control tooltip"><i class="lap__next lap-i-next"></i></div>
             <div class="lap__read lap__current-time">00:00</div>
             <div class="lap__prog-seek__container">
               <div class="lap__prog-seek"></div>
             </div>
             <div class="lap__read lap__duration">00:00</div>
+            <div data-tooltip="previous album" class="lap__control tooltip"><i class="lap__prev-album lap-i-prev-album"></i></div>
+            <div data-tooltip="show albums" class="lap__control tooltip"><i class="lap__discog lap-i-discog"></i></div>
+            <div data-tooltip="next album" class="lap__control tooltip"><i class="lap__next-album lap-i-next-album"></i></div>
           </div>
         </div>
-        <div class="lap__case">
-          <div class="lap__cover__container"><img class="lap__cover"></div>
-          <div class="lap__playlist__panel"></div>
-        </div>
-        <div class="lap__discog__container">
-          <div class="lap__prev-album">
-            <div class="lap-i-prev-album"></div>
+        <div class="lap__case-and-discog-container">
+          <div class="lap__case">
+            <div class="lap__cover__container"><img class="lap__cover"></div>
+            <div class="lap__playlist__panel"></div>
           </div>
-          <div class="lap__discog__panel"></div>
-          <div class="lap__next-album">
-            <div class="lap-i-next-album"></div>
+          <div class="lap__discog__container">
+            <div class="lap__discog__panel lap--hidden"></div>
           </div>
         </div>
       </div>

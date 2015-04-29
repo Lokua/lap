@@ -372,6 +372,7 @@ _.inherit(_.Handler, Lap, (function() {
               $els.playlistPanel.removeClass(lap.selectors.state.hidden);
             }
           }
+          lap.trigger('discogClick');
         });
       }
 
@@ -639,7 +640,7 @@ _.inherit(_.Handler, Lap, (function() {
     nextAlbum: function() {
       var wasPlaying= !this.audio.paused;
       /*>>*/
-      lap.logger.debug('nextAlbum >> albumIndex/albumCount: %d/%d', 
+      this.logger.debug('nextAlbum >> albumIndex/albumCount: %d/%d', 
         this.albumIndex, this.albumCount);
       /*<<*/
       this.albumIndex = (this.albumIndex+1 > this.albumCount-1) ? 0 : this.albumIndex+1;

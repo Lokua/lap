@@ -1,4 +1,4 @@
-!function() {
+(function() { 'use strict';
 
   var logger = tooly.Logger('CSS_DEMO');
   var $ = tooly.Frankie;
@@ -30,7 +30,7 @@
       createPlayer(data.data, 'fullPlayer', '#full-discography-player');
       createPlayer([{
         files: [
-          "http://lokua.net/audio/13/Lokua_-_Midsummer_Nightmare.wav",
+          'http://lokua.net/audio/13/Lokua_-_Midsummer_Nightmare.wav'
         ]      
       }], 'singlePlayer', '#single-track-player');
     }, true);
@@ -60,9 +60,13 @@
           if (varname === 'fullPlayer') {
             new thiz.DiscogPopulator(thiz, '.lap__discog__container').init();
           }
+        },
+        discogClick: function() {
+          logger.debug('toggling cover and playlist...');
+          $('.lap__cover__container, .lap__playlist__panel').toggleClass('lap--hidden');
         }
       }
     });
   }
 
-}();
+})();
