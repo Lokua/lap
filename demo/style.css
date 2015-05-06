@@ -400,6 +400,7 @@ body {
   float: none;
   margin: 0 auto;
   padding-top: 16px;
+  position: relative;
 }
 
 #full-discography-player .lap__cover__container, #full-discography-player .lap__playlist__panel {
@@ -417,6 +418,8 @@ body {
 #full-discography-player .lap__playlist__panel {
   width: 256px;
   height: 256px;
+  position: relative;
+  z-index: 22;
   background: #fff;
   overflow-x: hidden;
   overflow-y: auto;
@@ -427,6 +430,11 @@ body {
   padding-left: 0;
   font-size: 12px;
   padding-left: 16px;
+  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
+}
+
+#full-discography-player .lap__playlist__panel li {
+  cursor: pointer;
 }
 
 #full-discography-player .lap__playlist__panel li:hover {
@@ -434,13 +442,12 @@ body {
 }
 
 #full-discography-player .lap__discog__container {
-  position: absolute;
-  left: 20%;
+  position: relative;
 }
 
 #full-discography-player .lap__discog__panel {
   width: 75%;
-  float: left;
+  float: none;
   margin: 0 auto;
 }
 
@@ -448,12 +455,24 @@ body {
   width: 33.3333333333%;
   float: left;
   margin: 0 auto;
+  cursor: pointer;
 }
 
 #full-discography-player .lap__discog__thumb img {
   width: 160px;
   height: 160px;
   margin: 0 auto;
+  display: block;
+}
+
+#full-discography-player .lap__discog__thumb h4, #full-discography-player .lap__discog__thumb h5, #full-discography-player .lap__discog__thumb h6 {
+  text-align: center;
+  font-weight: normal;
+  margin: 4px 0;
+}
+
+#full-discography-player .lap__discog__thumb h5 {
+  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
 }
 
 #single-track-player .lap__controls {

@@ -17,17 +17,27 @@
   DiscogPopulator.prototype.init = function() {
 
     var lap = this.lap, 
-        lib = lap.lib, 
-        width = /*(100/lib.length) +*/ '20%';
+        lib = lap.lib;
 
     lap.$els.discogPanel.append(lib.map(function(item, i) {
 
-      return '<div class="lap__discog__thumb" data-lap-album-index="'+i+'" width="'+width+'">' +
-          '<img src="'+item.cover+'" title="'+_.sliceRel(item.cover)+'">' +
-          '<span class="lap--hidden">' + item.album + '</span>' +
+      logger.debug('item: %o', item);
+
+      return '<div class="lap__discog__thumb" data-lap-album-index="'+i+'">' +
+          _.tag('img', { 
+            src: item.cover, title: 'click to play this album'/*_.sliceRel(item.cover)*/ }, true) +
+          _.tag('h4', item.album, true) +
+          _.tag('h5', item.date, true) +
+          _.tag('h6', item.label, true) +
         '</div>';
 
     }).join(''));
+
+    $('.lap__discog__thumb', lap.container).on('click', function(e) {
+      lap.setAlbum($(this).attr('data-lap-album-index'));
+      $('.lap__cover__container, .lap__playlist__panel, .lap__discog__container')
+        .toggleClass(lap.selectors.state.hidden);
+    });
 
   };
 

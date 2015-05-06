@@ -62,8 +62,12 @@
           }
         },
         discogClick: function() {
+          var thiz = this,
+              MOUSEENTER = false,
+              hidden = thiz.selectors.state.hidden;
+
           logger.debug('toggling cover and playlist...');
-          $('.lap__cover__container, .lap__playlist__panel').toggleClass('lap--hidden');
+          $('.lap__cover__container, .lap__playlist__panel').toggleClass(hidden);
         }
       }
     });

@@ -44,6 +44,7 @@ body {
     @include o-span(9, none);
     @include o-center();
     padding-top: 16px;
+    position: relative;
   }
   .lap__cover__container, 
   .lap__playlist__panel {
@@ -58,6 +59,11 @@ body {
   .lap__playlist__panel {
     @include o-size($img-size);
     @extend %lap-box-shadow;
+
+    // --- pos and z needed for pointer-events to work
+    position: relative;
+    z-index: 22;
+
     background: #fff;
     overflow-x: hidden;
     overflow-y: auto;
@@ -65,8 +71,10 @@ body {
       @include o-list-unstyled();
       font-size: 12px;
       padding-left: 16px;
+      font-family: $lap-monospace;
     }
     li {
+      cursor: pointer;
       &:hover {
         color: red;
       }
@@ -75,21 +83,30 @@ body {
 
   .lap__discog__container {
     @extend %o-clearfix;
-    position: absolute;
-    left: 20%; // 3albums+(album-size-margin(*2))=100/5=20
-
+    position: relative;
+    // left: 20%; // 3albums+(album-size-margin(*2))=100/5=20
   }
 
   .lap__discog__panel {
-    @include o-span(9);
+    @include o-span(9, none);
     @include o-center();
   }
   .lap__discog__thumb {
     @include o-span(4);
     @include o-center();
+    cursor: pointer;
     img {
       @include o-size(160px);
       @include o-center();
+      display: block;
+    }
+    h4, h5, h6 {
+      text-align: center;
+      font-weight: normal;
+      margin: 4px 0;
+    }
+    h5 {
+      font-family: $lap-monospace;
     }
   }
 }

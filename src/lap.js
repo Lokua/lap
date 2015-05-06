@@ -1,3 +1,6 @@
+/*global tooly*/
+'use strict';
+
 /** @namespace  Lap */
 
 var _ = tooly,
@@ -83,9 +86,8 @@ function Lap(container, lib, options, init) {
 
 _.inherit(_.Handler, Lap, (function() {
 
-  // shouldn't these be instance?
-  var _SEEKING = _VOLUME_CHANGING = _PLAYLIST_OPEN = _DISCOG_OPEN = false, 
-      _MOUSEDOWN_TIMER;
+  
+  var _SEEKING, _VOLUME_CHANGING, _PLAYLIST_OPEN, _DISCOG_OPEN, _MOUSEDOWN_TIMER;
 
   return {
 
@@ -165,7 +167,7 @@ _.inherit(_.Handler, Lap, (function() {
       lap.audio = {};
       lap.trackIndex = lap.settings.startingTrackIndex;
       lap.albumIndex = lap.settings.startingAlbumIndex;
-      lap.trackCount;
+      lap.trackCount = null;
       lap.album       = '';
       lap.trackTitle  = '';
       lap.artist      = '';
@@ -328,7 +330,6 @@ _.inherit(_.Handler, Lap, (function() {
         if (lap.audio.paused) lap.audio.play();
       });
 
-      // clicks ->
       if ($els.playPause)  $els.playPause .on('click', function() { lap.togglePlay(); });
       if ($els.prev)       $els.prev      .on('click', function() { lap.prev(); });
       if ($els.next)       $els.next      .on('click', function() { lap.next(); });
@@ -533,7 +534,7 @@ _.inherit(_.Handler, Lap, (function() {
      * @return {this}
      */
     togglePlay: function() {
-      this.audio.paused ? this.play() : this.pause();
+      this.audio.paused ? this.play() : this.pause(); /*jshint ignore:line*/
       this.trigger('togglePlay');
       return this;
     },
@@ -763,6 +764,7 @@ _.inherit(_.Handler, Lap, (function() {
      * @memberOf  Lap
      */
     seek: function(forward) {
+      var applied;
       if (forward) {
         applied = this.audio.currentTime + this.settings.seekInterval;
         this.audio.currentTime = (applied >= this.audio.duration) ? this.audio.duration : applied;
@@ -804,7 +806,7 @@ _.inherit(_.Handler, Lap, (function() {
 
       var tracklist = lap.tracklist.map(function(track, i) {
         return _.tag('li.'+lap.selectors.playlistItem, { 
-          content: track,
+          content: prepend ? _.leftPad(i, 2, '0') + ' - ' + track : track,
           'data-lap-playlist-index': i 
         }, true);
       }).join('');
