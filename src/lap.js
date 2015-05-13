@@ -360,19 +360,19 @@ _.inherit(_.Handler, Lap, (function() {
       }
       if (hasDiscog) {
         $els.discog.on('click', function() {
-          if ($els.discogPanel.hasClass(lap.selectors.state.hidden)) {
-            $els.discogPanel.removeClass(lap.selectors.state.hidden);
-            _DISCOG_OPEN = true;
-            if (hasPlaylist && lap.settings.discogPlaylistExclusive) {
-              $els.playlistPanel.addClass(lap.selectors.state.hidden);
-            }
-          } else {
-            $els.discogPanel.addClass(lap.selectors.state.hidden);
-            _DISCOG_OPEN = false;
-            if (hasPlaylist && lap.settings.discogPlaylistExclusive && _PLAYLIST_OPEN) {
-              $els.playlistPanel.removeClass(lap.selectors.state.hidden);
-            }
-          }
+          // if ($els.discogPanel.hasClass(lap.selectors.state.hidden)) {
+          //   $els.discogPanel.removeClass(lap.selectors.state.hidden);
+          //   _DISCOG_OPEN = true;
+          //   if (hasPlaylist && lap.settings.discogPlaylistExclusive) {
+          //     $els.playlistPanel.addClass(lap.selectors.state.hidden);
+          //   }
+          // } else {
+          //   $els.discogPanel.addClass(lap.selectors.state.hidden);
+          //   _DISCOG_OPEN = false;
+          //   if (hasPlaylist && lap.settings.discogPlaylistExclusive && _PLAYLIST_OPEN) {
+          //     $els.playlistPanel.removeClass(lap.selectors.state.hidden);
+          //   }
+          // }
           lap.trigger('discogClick');
         });
       }

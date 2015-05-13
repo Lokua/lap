@@ -1,0 +1,20 @@
+mixin item(key, value, skip)
+.item
+  label #{key}:
+  - if skip
+    p= typeof value === 'array' ?
+  - else
+    code `#{value}`
+
+.item
+  item('element', 'playPause') 
+  item('selector', '.lap__play-pause')
+  item('event', ['play', 'pause'])
+  item('descripton', 'plays the next track in the currently cued album's files array.')    
+
+
+.item
+  item('element', 'next') 
+  item('selector', '.lap__next')
+  item('event', 'trackChanged')
+  item('descripton', 'plays the next track in the currently cued album's files array.')

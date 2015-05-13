@@ -37,6 +37,7 @@
     "grunt-shell": "~0.7.0",
     "grunt-strip-code": "^0.1.2",
     "grunt-umd": "~2.0.0",
+    "lo66er": "^0.9.6",
     "nodedump": "0.0.8"
   },
   "dependencies": {

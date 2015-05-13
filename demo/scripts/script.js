@@ -1,6 +1,11 @@
 (function() { 'use strict';
 
-  var logger = tooly.Logger('CSS_DEMO');
+  var logger = new Lo66er('CSS_DEMO', {
+    outputSource: true,
+    useAbsoluteSource: true,
+    newLine: true
+  });
+
   var $ = tooly.Frankie;
   var fillColor = '#555';
   var trackColor = '#a7a7a7';
@@ -43,6 +48,7 @@
       useNativeVolumeRange: false, 
       useNativeSeekRange: false, 
       useNativeProgress: false,
+      discogPlaylistExclusive: true,
       selectors: {
         volumeRange: 'lap__canvas-volume-range'
       },
@@ -67,7 +73,9 @@
               hidden = thiz.selectors.state.hidden;
 
           logger.debug('toggling cover and playlist...');
-          $('.lap__cover__container, .lap__playlist__panel').toggleClass(hidden);
+          $('.lap__cover__container').toggleClass(hidden);
+          $('.lap__playlist__panel').toggleClass(hidden);
+          $('.lap__discog__panel').toggleClass(hidden);
         }
       }
     });
