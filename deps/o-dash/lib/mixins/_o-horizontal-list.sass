@@ -1,0 +1,15 @@
+// ---
+// <a id="o-horizontal-list"></a>
+// # =o-horizontal-list($margin: 0, $padding: 0)
+// see related pen at [http://codepen.io/Lokua/pen/JoRWRz/?editors=110](http://codepen.io/Lokua/pen/JoRWRz/?editors=110)
+// ---
+=o-horizontal-list($margin: 0, $padding: 0)
+  list-style-type: none
+  overflow: hidden
+  > ul > li
+    display: block
+    float: left
+    margin: $margin
+    padding: $padding
+    &:last-child
+      margin-right: 0px

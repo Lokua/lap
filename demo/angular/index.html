@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+  <title>Lap | Angular Demo</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../lap-icons/style.css">
+  <script src="../../deps/lo66er/dist/lo66er.js"></script>
+  <script src="../../deps/angular/angular.js"></script>
+  <script src="../../src/lap-svc.js"></script>
+  <script src="../../src/lap-container-directive.js"></script>
+  <script src="../../src/lap-prog-seek-directive.js"></script>
+</head>
+<body ng-app="demo" ng-controller="DemoCtrl" style="margin-top:32px">
+  <lap-container src="{{src}}"></lap-container>
+  <script>
+    var logger = new Lo66er('DemoCtrl', { level: 0 });
+    angular
+      .module('demo', ['lap'])
+      .controller('DemoCtrl', ['$scope', function($scope) {
+        //- $scope.src = '../lib.json';
+        //- $scope.src = '../sh.mp3';
+        $scope.src = [{files:'wahtever'}];
+      }]);
+  </script>
+</body>

@@ -46,6 +46,9 @@ module.exports = function(grunt) {
       },
       debug: {
         tasks: ['connect', 'watch']
+      },
+      angular: {
+        tasks: ['connect', 'watch:angular']
       }
     },
 
@@ -81,13 +84,18 @@ module.exports = function(grunt) {
     },
 
     jade: {
+      options: {
+        pretty: true,
+        timestamp: '<%= grunt.template.today("yyyy-mm-dd") %> <%= new Date().getTime() %>'
+      },
       demo: {
-        options: {
-          pretty: true,
-          timestamp: '<%= grunt.template.today("yyyy-mm-dd") %> <%= new Date().getTime() %>'
-        },
         files: {
           'demo/index.html': ['demo/index.jade']
+        }
+      },
+      angular: {
+        files: {
+          'demo/angular/index.html': ['demo/angular/index.jade']
         }
       }
     },
@@ -218,6 +226,10 @@ module.exports = function(grunt) {
       demoJade: {
         files: 'demo/*.jade',
         tasks: ['jade']
+      },
+      angular: {
+        files: 'demo/angular/*.jade',
+        tasks: ['jade:angular']
       }
     }
   });
@@ -262,4 +274,5 @@ module.exports = function(grunt) {
     'uglify:build', 
     'usebanner:post'
   ]);
+  grunt.registerTask('angular', ['concurrent:angular']);
 };

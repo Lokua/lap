@@ -1,0 +1,164 @@
+<div class='doc'>
+<p><a id="o-clearfix"></a></p>
+<h1>%o-clearfix</h1>
+<p>yes, <strong>o-</strong> has a clearfix too!</p>
+</div><div class='doc'>
+<p><a id="o-nopaque"> </a></p>
+<h1>%o-nopaque</h1>
+<p><strong>nopaque</strong> as in &quot;no opacity&quot;</p>
+</div><div class='doc'>
+<p><a id="o-opaque"> </a></p>
+<h1>%o-opaque</h1>
+<p>maximum opacity</p>
+</div><div class='doc'>
+<p><a id="o-v-center-child"> </a></p>
+<h1>%o-v-center-child</h1>
+<p>Center an element that is a direct descendent of an element
+that extends <code>%o-v-center-parent</code>.</p>
+<p>see <a href="#%25o-v-center-parent">%o-v-center-parent</a> <br>
+see related pen at <a href="http://codepen.io/Lokua/pen/zxKQWG?editors=110">http://codepen.io/Lokua/pen/zxKQWG?editors=110</a></p>
+</div><div class='doc'>
+<p><a id="o-v-center-parent"> </a></p>
+<h1>%o-v-center-parent</h1>
+<p>Container for vertically centering child elements.
+To comply, child elements must have <code>vertical-align: middle;</code> or you
+can simply <code>@extend %o-v-center-child</code>.
+Note that %o-center-parent also has <code>vertical-align: middle</code>, so parents
+can be nested.</p>
+<p>see <a href="#%25o-v-center-child">%o-v-center-child</a> <br>
+see related pen at <a href="http://codepen.io/Lokua/pen/zxKQWG?editors=110">http://codepen.io/Lokua/pen/zxKQWG?editors=110</a></p>
+</div><div class='doc'>
+<p><a id="o-checkbox"></a></p>
+<h1>%o-checkbox</h1>
+<p>Creates a wrapper and uniform, no-frills checkbox.
+Note the jade example, this structure (including the label) is a must.</p>
+<h2>Example</h2>
+<h3>Sass</h3>
+<pre><code class="lang-sass"><span class="hljs-class">.checkbox</span>
+  +<span class="hljs-function"><span class="hljs-title">o--</span><span class="hljs-params">(o-checkbox)</span></span> <span class="hljs-comment">// using o-'s silent @extend mixin</span>
+</code></pre>
+<h3>Jade</h3>
+<pre><code class="lang-jade"><span class="hljs-class">.checkbox</span>
+  input#<span class="hljs-function"><span class="hljs-title">my-checkbox</span><span class="hljs-params">(type=<span class="hljs-string">'checkbox'</span>)</span></span>  
+  <span class="hljs-function"><span class="hljs-title">label</span><span class="hljs-params">(for=<span class="hljs-string">'my-checkbox'</span>)</span></span> Check Me
+</code></pre>
+<p>based on <a href="http://codepen.io/CreativeJuiz/pen/zqKtp">this pen</a></p>
+</div><div class='doc'>
+<p><a id="o-grid"></a></p>
+<h1>%o-grid</h1>
+<p>Generic grid container with 100% width and clearfix extension
+<a id="o-span"></a></p>
+<h1>=o-span($number, $float: left)</h1>
+<p>Dynamically add <code>$number</code> of columns to an element.
+The o-grid is based on a 12 column grid with no gutters,
+By default, a media query is included to set width to 100%, or 12 columns
+on screens with 768px max which can be changed through the <code>$o-max-width-break</code> variable.
+To disable the break functionality entirely, set the global <code>$o-auto-break: false</code>.
+<a id="o-col"></a></p>
+<h1>%o-col-*</h1>
+<p>%o-col-* placeholders, where <code>*</code> is
+the number of columns from 1-12
+see also <a href="#o-span">=o-span</a>
+<a id="o-generate-grid-classes"></a></p>
+<h1>=o-generate-grid-classes</h1>
+<p>Use this mixin if you'd prefer to generate static bootstrap-style
+<code>.o-grid</code> and <code>o-col-*</code> (<code>.o-col-1</code> through <code>.o-col-12</code>)
+classes.</p>
+</div><div class='doc'>
+<p><a id="o-input-range"></a></p>
+<h1>=o-input-range($track-color: #aaa, $knob-color: #444, $rounded: false)</h1>
+<p>Cross-browser css input[type=range], implemented as a mixin to
+enable coloring of the track and thumb, as well as rounded or square thumb option.</p>
+<p>based on
+https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/</p>
+<p>see example on <a href="http://codepen.io/Lokua/pen/ogaaPd">codepen</a></p>
+</div><div class='doc'>
+<p><a id="o-loader"></a></p>
+<h1>=o-loader</h1>
+<p>a pure css (and atypical) animated loader; implemented
+as a mixin to keep keyframes out of the final output if the
+loader is not being used.</p>
+</div><div class='doc'>
+<p><a id="o-as-percent"></a></p>
+<h1>o-as-percent($number)</h1>
+<p>Simply add a <strong>%</strong> symbol to a unit (does not perform decimal conversion).</p>
+</div><div class='doc'>
+<p><a id="o-golden-ratio"></a></p>
+<h1>o-golden-ratio($number: 100, $scale: 1)</h1>
+<p>get the golden ratio of <code>$number</code> recursively scaled
+<code>$scale</code> times. A scale setting less then 1 will return the smaller portion.</p>
+<h3>Example</h3>
+<pre><code class="lang-sass"><span class="hljs-function"><span class="hljs-title">o-golden-ratio</span><span class="hljs-params">(<span class="hljs-number">30</span>,  <span class="hljs-number">1</span>)</span></span> <span class="hljs-comment">//=&gt; 48.54102</span>
+<span class="hljs-function"><span class="hljs-title">o-golden-ratio</span><span class="hljs-params">(<span class="hljs-number">30</span>,  <span class="hljs-number">2</span>)</span></span> <span class="hljs-comment">//=&gt; 78.54102</span>
+<span class="hljs-function"><span class="hljs-title">o-golden-ratio</span><span class="hljs-params">(<span class="hljs-number">30</span>, -<span class="hljs-number">1</span>)</span></span> <span class="hljs-comment">//=&gt; 18.54102</span>
+<span class="hljs-function"><span class="hljs-title">o-golden-ratio</span><span class="hljs-params">(<span class="hljs-number">30</span>, -<span class="hljs-number">2</span>)</span></span> <span class="hljs-comment">//=&gt; 11.45898</span>
+</code></pre>
+<p>see related pen at <a href="http://codepen.io/Lokua/pen/JoRWRz/?editors=110">http://codepen.io/Lokua/pen/JoRWRz/?editors=110</a></p>
+</div><div class='doc'>
+<p><a id="o-grayscale"></a></p>
+<h1>o-grayscale($value: 127, $alpha: 1)</h1>
+<p>Create a grayscale color range 0-127 with optional opacity
+see related pen at <a href="http://codepen.io/Lokua/pen/zxKQWG?editors=110">http://codepen.io/Lokua/pen/zxKQWG?editors=110</a></p>
+</div><div class='doc'>
+<p><a id="o-random-color"></a></p>
+<h1>o-random-color($random-alpha: false)</h1>
+</div><div class='doc'>
+<p><a id="o-strip-unit"></a></p>
+<h1>o-strip-unit($number)</h1>
+<p>see <a href="http://stackoverflow.com/a/12335841/2416000">http://stackoverflow.com/a/12335841/2416000</a></p>
+</div><div class='doc'>
+<p><a id="o--"></a></p>
+<h1>=o--($klass)</h1>
+<p>Shorthand for silent @extend (do not pass <code>%</code> with $klass).
+Only useful with <strong>.sass</strong> syntax, as a <strong>.scss</strong>
+<code>@include o--(.class-to-extend)</code> defeats the purpose</p>
+</div><div class='doc'>
+<p><a id="o-center"></a></p>
+<h1>=o-center</h1>
+<p>A symantic shorthand for <code>margin: 0 auto;</code></p>
+</div><div class='doc'>
+<p><a id="o-clearfix_mixin"></a></p>
+<h1>=o-clearfix</h1>
+<p>Not sure why I've included this mixin, it is better
+to extend <a href="#o-clearfix">%o-clearfix</a> to avoid redundancy.</p>
+</div><div class='doc'>
+<p><a id="o-ellipsis"></a></p>
+<h1>=o-ellipsis</h1>
+<p>Truncate text with an ellipsis. Works best on elements with a determined height
+(not <code>auto</code> or <code>100%</code>)</p>
+</div><div class='doc'>
+<p><a id="o-emboss"></a></p>
+<h1>=o-emboss($radius: 0, $top-opacity: 0.3, $bottom-opacity: 0.25, $bg-opacity: 0.2)</h1>
+<p>Under construction. This current version is only suitable for dark layouts.</p>
+</div><div class='doc'>
+<p><a id="o-horizontal-list"></a></p>
+<h1>=o-horizontal-list($margin: 0, $padding: 0)</h1>
+<p>see related pen at <a href="http://codepen.io/Lokua/pen/JoRWRz/?editors=110">http://codepen.io/Lokua/pen/JoRWRz/?editors=110</a></p>
+</div><div class='doc'>
+<p><a id="o-list-unstyled"></a></p>
+<h1>=o-list-unstyled</h1>
+</div><div class='doc'>
+<p><a id="o-media"></a></p>
+<h1>=o-media($media)</h1>
+<p>adapted from <a href="http://thesassway.com/intermediate/responsive-web-design-in-sass-using-media-queries-in-sass-32">http://thesassway.com/intermediate/responsive-web-design-in-sass-using-media-queries-in-sass-32</a></p>
+</div><div class='doc'>
+<p><a id="o-minimal-box-shadow"></a></p>
+<h1>=o-minimal-box-shadow($color: rgba(0, 0, 0, 0.25))</h1>
+</div><div class='doc'>
+<p><a id="o-size"></a></p>
+<h1>=o-size($width, $height: $width)</h1>
+<p>(hardly a) shorthand for width and height in one line.
+When used with only one arg, a square is produced.</p>
+</div><div class='doc'>
+<p><a id="o-underline-text-on-hover"></a></p>
+<h1>=o-underline-text-on-hover($color: #000, $speed: 0.3s)</h1>
+<p>Animated text underline.
+If using with an <code>a</code> element, be sure to set
+<code>text-decoration: none;</code> on the element and its <code>:hover</code></p>
+</div><div class='doc'>
+<p><a id="o-x"></a></p>
+<h1>=o-x($klass)</h1>
+<p>Shorthand for normal @extend (do not pass <code>.</code> with $klass)
+Only useful with <strong>.sass</strong> syntax, as a <strong>.scss</strong>
+<code>@include o--(.class-to-extend)</code> defeats the purpose</p>
+</div>

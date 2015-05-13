@@ -1,0 +1,42 @@
+{
+  "name": "lo66er",
+  "version": "0.9.6",
+  "homepage": "https://github.com/Lokua/lo66er",
+  "authors": [
+    "Lokua <dev@lokua.net>"
+  ],
+  "description": "Better console logging for node and the browser",
+  "main": "dist/lo66er.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "log",
+    "logger",
+    "logging",
+    "debug",
+    "console",
+    "node",
+    "browser"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.9.6",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.9.6",
+    "commit": "9d1e3b6b6a7fb87667e315abb6da0055ca68e65b"
+  },
+  "_source": "git://github.com/lokua/lo66er.git",
+  "_target": "~0.9.6",
+  "_originalSource": "lo66er",
+  "_direct": true
+}

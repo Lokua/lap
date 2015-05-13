@@ -1,0 +1,53 @@
+// doc 4;
+$o-auto-break: true
+$o-max-width-break: 768px
+
+// ---
+// <a id="o-grid"></a>
+// # %o-grid
+// Generic grid container with 100% width and clearfix extension
+// ---
+%o-grid
+  +o--(o-clearfix)
+  width: 100%
+
+// ---
+// <a id="o-span"></a>
+// # =o-span($number, $float: left)
+// Dynamically add `$number` of columns to an element.
+// The o-grid is based on a 12 column grid with no gutters,
+// By default, a media query is included to set width to 100%, or 12 columns
+// on screens with 768px max which can be changed through the `$o-max-width-break` variable.
+// To disable the break functionality entirely, set the global `$o-auto-break: false`.
+// ---
+=o-span($number, $float: left)
+  width: 100% * ($number/12)
+  float: $float
+
+// ---
+// <a id="o-col"></a>
+// # %o-col-*
+// %o-col-* placeholders, where `*` is
+// the number of columns from 1-12
+// see also [=o-span](#o-span)
+// ---
+@for $i from 1 through 12
+  %o-col-#{$i}
+    +o-span($i)
+    @if $o-auto-break
+      @media (max-width: $o-max-width-break)
+        +o-span(12)
+
+// ---
+// <a id="o-generate-grid-classes"></a>
+// # =o-generate-grid-classes
+// Use this mixin if you'd prefer to generate static bootstrap-style
+// `.o-grid` and `o-col-*` (`.o-col-1` through `.o-col-12`)
+// classes.
+// ---
+=o-generate-grid-classes
+  .o-grid
+    +o--(o-grid)
+  @for $i from 1 through 12
+    .o-col-#{$i}
+      +o--(o-col-#{$i})

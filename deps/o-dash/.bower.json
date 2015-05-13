@@ -1,0 +1,33 @@
+{
+  "name": "o-",
+  "version": "0.4.3",
+  "homepage": "https://github.com/Lokua/o-",
+  "authors": [
+    "Lokua <dev@lokua.net>"
+  ],
+  "description": "minimal sass lib",
+  "main": "o-.sass",
+  "keywords": [
+    "sass",
+    "scss",
+    "css"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.4.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.4.3",
+    "commit": "cc2873858e1b246fd6097ae6e2c9923c7ad7447c"
+  },
+  "_source": "git://github.com/Lokua/o-.git",
+  "_target": "~0.4.3",
+  "_originalSource": "o-dash",
+  "_direct": true
+}

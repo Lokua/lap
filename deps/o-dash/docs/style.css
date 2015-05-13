@@ -1,0 +1,160 @@
+#main-container:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#main-container {
+  width: 100%;
+}
+
+#sidebar {
+  width: 25%;
+  float: left;
+}
+@media (max-width: 768px) {
+  #sidebar {
+    width: 100%;
+    float: left;
+  }
+}
+
+#content {
+  width: 75%;
+  float: left;
+}
+@media (max-width: 768px) {
+  #content {
+    width: 100%;
+    float: left;
+  }
+}
+
+#main-header {
+  width: 100%;
+  float: left;
+}
+@media (max-width: 768px) {
+  #main-header {
+    width: 100%;
+    float: left;
+  }
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.z {
+  position: absolute;
+  top: 0;
+}
+
+body {
+  background: #fff;
+  font-family: "Times New Roman", serif;
+  font-size: 16px;
+  color: #444;
+}
+
+h1#banner {
+  font-size: 156px;
+  font-family: Georgia;
+}
+
+.inner {
+  padding: 16px;
+}
+
+#main-header h1 {
+  text-align: center;
+}
+
+#sidebar {
+  border-right: rgba(127, 127, 127, 0.25);
+}
+#sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+#sidebar a {
+  margin: 4px;
+}
+
+.doc {
+  background: rgba(0, 0, 0, 0.025);
+  padding: 16px;
+  margin-bottom: 32px;
+}
+.doc > p:first-child {
+  height: 0px;
+  width: 0px;
+  display: inline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 16px 0;
+}
+
+.doc h1 {
+  color: #468C39;
+  font-size: 20px;
+}
+
+p {
+  margin: 8px 0;
+}
+
+blockquote {
+  color: #888;
+  margin-left: 16px;
+}
+
+a {
+  position: relative;
+  text-decoration: none;
+  color: #468C39;
+}
+a:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: #444;
+  visibility: hidden;
+  transform: scaleX(0);
+  transition: all 0.3s ease-in-out 0s;
+}
+a:hover:before {
+  visibility: visible;
+  transform: scaleX(1);
+}
+a:link, a:hover, a:active {
+  color: #468C39;
+  text-decoration: none;
+}
+a:before {
+  content: " ";
+}
+
+code {
+  padding: 0 3px;
+  color: #888;
+  background: rgba(0, 0, 0, 0.025);
+}
+
+pre {
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.025);
+}
+
+pre code {
+  background: transparent;
+}
+
+/*# sourceMappingURL=style.css.map */

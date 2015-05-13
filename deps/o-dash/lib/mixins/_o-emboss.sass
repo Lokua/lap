@@ -1,0 +1,10 @@
+// ---
+// <a id="o-emboss"></a>
+// # =o-emboss($radius: 0, $top-opacity: 0.3, $bottom-opacity: 0.25, $bg-opacity: 0.2)
+// Under construction. This current version is only suitable for dark layouts.
+// ---
+=o-emboss($radius: 0, $top-opacity: 0.3, $bottom-opacity: 0.25, $bg-opacity: 0.2)
+  background: rgba(0, 0, 0, 0.2)
+  border-bottom: 1px solid rgba(255, 255, 255, $bottom-opacity)
+  box-shadow: inset 0 3px 3px rgba(0, 0, 0, $top-opacity)
+  border-radius: $radius

@@ -1,0 +1,25 @@
+// ---
+// <a id="o-loader"></a>
+// # =o-loader
+// a pure css (and atypical) animated loader; implemented
+// as a mixin to keep keyframes out of the final output if the
+// loader is not being used.
+// ---
+=o-loader($color: #666, $size: 64px, $border-size: 16px)
+  animation: o-loader-anim 0.75s infinite
+  width: $size
+  height: $size
+  border-style: dashed
+  border-color: $color
+  border-radius: 50%
+
+  @keyframes o-loader-anim
+    0%, 
+    100% 
+      border-top: $border-size
+    25% 
+      border-right: $border-size
+    50% 
+      border-bottom: $border-size
+    75% 
+      border-left: $border-size
