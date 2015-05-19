@@ -1,20 +1,55 @@
+<div class="lap__details">
+  <span class="lap__artist"></span>
+  <span class="lap__album"></span>
+  <span class="lap__track-number"></span>
+  <span class="lap__track-title"></span>
+</div>
+
 <div class="lap__controls">
-  <div class="lap__control lap__speaker__container"><i class="lap__speaker lap-i-volume-high"></i></div>
+
+  <div class="lap__control lap__speaker__container">
+    <i class="lap__speaker lap-i-volume-high"></i>
+  </div>
+
   <div class="lap__canvas-volume-range__container lap--hidden">
     <div class="lap__canvas-volume-range"></div>
   </div>
+
   <div class="lap__controls--non-volume">
-    <div class="lap__control"><i class="lap__play-pause lap-i-play"></i></div>
-    <div data-tooltip="previous track" class="lap__control tooltip"><i class="lap__prev lap-i-prev"></i></div>
-    <div data-tooltip="next track" class="lap__control tooltip"><i class="lap__next lap-i-next"></i></div>
+
+    <div class="lap__control">
+      <i class="lap__play-pause lap-i-play"></i>
+    </div>
+
+    <div data-tooltip="previous track" class="lap__control tooltip">
+      <i class="lap__prev lap-i-prev"></i>
+    </div>
+
+    <div data-tooltip="next track" class="lap__control tooltip">
+      <i class="lap__next lap-i-next"></i>
+    </div>
+
     <div class="lap__read lap__current-time">00:00</div>
-    <lap-prog-seek player="player"></lap-prog-seek>
+
+    <lap-prog-seek ready="ready"></lap-prog-seek>
+
 <!--     <div class="lap__prog-seek__container">
       <div class="lap__prog-seek"></div>
     </div> -->
+
     <div class="lap__read lap__duration">00:00</div>
-    <div data-tooltip="previous album" class="lap__control tooltip"><i class="lap__prev-album lap-i-prev-album"></i></div>
-    <div data-tooltip="show albums" class="lap__control tooltip"><i class="lap__discog lap-i-discog"></i></div>
-    <div data-tooltip="next album" class="lap__control tooltip"><i class="lap__next-album lap-i-next-album"></i></div>
+
+    <div data-tooltip="previous album" class="lap__control tooltip">
+      <i class="lap__prev-album lap-i-prev-album"></i>
+    </div>
+
+    <div data-tooltip="show albums" class="lap__control tooltip">
+      <i class="lap__discog lap-i-discog"></i>
+    </div>
+
+    <div data-tooltip="next album" class="lap__control tooltip">
+      <i class="lap__next-album lap-i-next-album"></i>
+    </div>
+
   </div>
 </div>

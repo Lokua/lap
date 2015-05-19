@@ -1,10 +1,11 @@
+/*jshint camelcase:false*/
 'use strict';
 
 module.exports = function(grunt) {
 
-  var dist_lap_debug = 'dist/lap-debug.js';
-  var dist_lap = 'dist/lap.js';
-  var src_lap = 'src/lap.js';
+  var distLapDebug = 'dist/lap-debug.js';
+  var distLap = 'dist/lap.js';
+  var srcLap = 'src/lap.js';
 
   grunt.initConfig({
 
@@ -27,16 +28,16 @@ module.exports = function(grunt) {
       debug: {
         src: [
           'node_modules/tooly/dist/tooly.js',
-          dist_lap_debug
+          distLapDebug
         ],
-        dest: dist_lap_debug
+        dest: distLapDebug
       },
       build: {
         src: [
           'node_modules/tooly/dist/tooly-slim.js',
-          dist_lap
+          distLap
         ],
-        dest: dist_lap
+        dest: distLap
       }
     },
 
@@ -56,22 +57,23 @@ module.exports = function(grunt) {
       main: { 
         options: { 
           port: 3000, 
-          keepalive: true 
+          keepalive: true,
+          livereload: true 
         } 
       } 
     },
 
     copy: {
       debug: {
-        src: src_lap,
-        dest: dist_lap_debug
+        src: srcLap,
+        dest: distLapDebug
       },
       build: {
-        src: src_lap,
-        dest: dist_lap
+        src: srcLap,
+        dest: distLap
       },
       raw: {
-        src: src_lap,
+        src: srcLap,
         dest: 'dist/lap-raw.js'
       }
     },
@@ -136,7 +138,7 @@ module.exports = function(grunt) {
         end_comment: '<<'
       },
       build: {
-        src: dist_lap
+        src: distLap
       },
       raw: {
         src: 'dist/lap-raw.js'
@@ -145,7 +147,7 @@ module.exports = function(grunt) {
 
     uglify: {
       build: {
-        src: dist_lap,
+        src: distLap,
         dest: 'dist/lap.min.js'
       },
       raw: {
@@ -156,7 +158,7 @@ module.exports = function(grunt) {
 
     umd: {
       build: {
-        src: dist_lap,
+        src: distLap,
         objectToExport: 'Lap',
         amdModuleId: 'Lap',
         template: 'src/umd-template.hbs'
@@ -168,7 +170,7 @@ module.exports = function(grunt) {
         template: 'src/umd-template.hbs'
       },      
       debug: {
-        src: dist_lap_debug,
+        src: distLapDebug,
         objectToExport: 'Lap',
         amdModuleId: 'Lap',
         template: 'src/umd-template.hbs'
@@ -183,12 +185,12 @@ module.exports = function(grunt) {
       },
       build: {
         files: {
-          src: [dist_lap]
+          src: [distLap]
         }
       },
       debug: {
         files: { 
-          src: [dist_lap_debug] 
+          src: [distLapDebug] 
         }
       },
       post: {
@@ -216,7 +218,7 @@ module.exports = function(grunt) {
 
     watch: {
       debug: {
-        files: src_lap,
+        files: srcLap,
         tasks: ['debug']
       },
       demo: {
@@ -228,8 +230,11 @@ module.exports = function(grunt) {
         tasks: ['jade']
       },
       angular: {
-        files: 'demo/angular/*.jade',
-        tasks: ['jade:angular']
+        options: {
+          livereload: true
+        },
+        files: ['**/*.js', 'demo/angular/**/*'],
+        tasks: []
       }
     }
   });

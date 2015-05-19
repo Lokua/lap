@@ -1,50 +1,50 @@
 (function() { 'use strict';
 
-  var logger = new Lo66er('lapContainer', { level: 0 });
+  var logger = new Lo66er('lapContainer', { 
+    outputTimestamp: false,
+    level: 0,
+    nameStyle: 'color:purple' 
+  });
   
-  angular.module('lap').directive('lapContainer', lapContainer);
-  lapContainer.$inject = ['$parse', 'lapSvc'];
+  angular.module('lnet.lap').directive('lapContainer', lapContainer);
+  lapContainer.$inject = ['$parse', 'Lap'];
 
-  function lapContainer($parse, lapSvc) {
+  function lapContainer($parse, Lap) {
     return {
       restrict: 'E',
       scope: {
         src: '@'
       },
       templateUrl: '../../src/lap-controls.html',
-      compile: function(tElement, tAttrs, transclude) {
-        return {
-          pre: function(scope, element, attrs) {
+      link: function(scope, element, attrs) {
 
-            logger.debug('pre');
+        scope.ready = false;
+        scope.player = scope;
 
-            scope.ready = false;
-            scope.player = scope;
+        if (!attrs.hasOwnProperty('src')) {
+          return console.warn('lap-container needs a src attribute. Exiting.');
+        }
 
-            if (!attrs.hasOwnProperty('src')) {
-              return console.warn('lap-container needs a src attribute. Exiting.');
-            }
+        scope.$watch('src', function(src) {
+          var ch = src.charAt(0);
 
-            scope.$watch('src', function(src) {
-              var ch = src.charAt(0);
+          if (ch === '[' || ch === '{') {
+            logger.debug('src.charAt(0) === `[` or `}`. Evaluating...');
+            src = scope.$eval(src);
+          }
 
-              if (ch === '[' || ch === '{') {
-                src = scope.$eval(src);
-
-              } else {
-                lapSvc.getLib(src).then(function(lib) {
-                  logger.debug('lib: %o', lib);
-                });
+          Lap.getLib(src).then(function(lib) {
+            scope.lap = new Lap(element, lib, {
+              callbacks: {
+                load: function() {
+                  scope.ready = true;
+                }
               }
+            }, false, true); // ,,postpone,debug
+            logger.debug('scope.lap: %o', scope.lap);
+          }); 
 
-            });
-          },
-          post: angular.noop
-        };
-      },
-      controller: function($scope, $element) {
-        // logger.debug($element.children());
-        // logger.debug($scope);
+        });
       }
     };
   }

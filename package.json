@@ -22,6 +22,7 @@
     "url": "http://lokua.net/license-mit.html"
   },
   "devDependencies": {
+    "connect-livereload": "^0.5.3",
     "grunt": "~0.4.5",
     "grunt-autoprefixer": "^1.0.1",
     "grunt-banner": "~0.2.3",
