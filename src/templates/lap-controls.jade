@@ -1,0 +1,40 @@
+.lap__details
+  span.lap__detail.lap__artist
+  span.lap__detail.lap__album
+  span.lap__detail.lap__track-number
+  span.lap__detail.lap__track-title
+
+br
+
+.lap__controls
+
+  .lap__control.lap__speaker__container
+    i.lap__speaker.lap-i-volume-high
+
+  .lap__control.lap__canvas-volume-range__container.lap--hidden
+    lap-canvas-volume-range.lap__canvas-volume-range.lap--hidden(
+      lap-volume-range-revealer='ready')
+
+  .lap__control.lap__control--non-volume
+    i.lap__play-pause.lap-i-play
+
+  .lap__control.lap__control--non-volume.tooltip(data-tooltip='previous track')
+    i.lap__prev.lap-i-prev
+
+  .lap__control.lap__control--non-volume.tooltip(data-tooltip='next track')
+    i.lap__next.lap-i-next
+
+  .lap__read.lap__control--non-volume.lap__current-time 00:00
+
+  lap-canvas-prog-seek.lap__control.lap__prog-seek.lap__control--non-volume(ready='ready')
+
+  .lap__read.lap__duration.lap__control--non-volume 00:00
+
+  .lap__control.tooltip.lap__control--non-volume(data-tooltip='previous album')
+    i.lap__prev-album.lap-i-prev-album
+
+  .lap__control.tooltip.lap__control--non-volume(data-tooltip='show albums')
+    i.lap__discog.lap-i-discog
+
+  .lap__control.tooltip.lap__control--non-volume(data-tooltip='next album')
+    i.lap__next-album.lap-i-next-album

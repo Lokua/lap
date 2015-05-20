@@ -6,10 +6,15 @@
   clear: both;
 }
 
+.lap__container {
+  display: inline-block;
+  padding: 8px;
+  box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
+}
+
 .lap {
-  padding: 16px;
+  width: 298px;
   color: #555;
-  clear: both;
 }
 
 .lap *, .lap *:before:not(i), .lap *:after:not(i) {
@@ -25,12 +30,6 @@
   outline: 0;
 }
 
-@media only screen and (max-width: 720px) {
-  .lap {
-    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
-  }
-}
-
 .lap i {
   font-size: 16px;
   cursor: pointer;
@@ -41,336 +40,89 @@
   color: #888888;
 }
 
-.lap__controls, .lap__details {
-  margin: 0 auto;
+.lap .lap__controls, .lap .lap__details {
   width: 298px;
-  height: 16px;
-  min-height: 16px;
+  height: 18px;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-flex-flow: row nowrap;
+  -ms-flex-flow: row nowrap;
+  flex-flow: row nowrap;
 }
 
-.lap__details {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: center;
-  padding: 0 0 4px;
-  height: 20px;
-  min-height: 20px;
+.lap .lap__detail, .lap .lap__control {
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
 }
 
-.lap__details span {
+.lap .lap__canvas-volume-range__container {
+  -webkit-flex-grow: 3;
+  -ms-flex-positive: 3;
+  flex-grow: 3;
+}
+
+.lap .lap__read {
   font-size: 10px;
+  font-family: 'Source Code Pro';
+  -webkit-flex-grow: 2;
+  -ms-flex-positive: 2;
+  flex-grow: 2;
 }
 
-.lap__track-number:after, .lap__artist:after, .lap__album:after {
-  content: ' - ';
-}
-
-.lap__album {
-  font-style: italic;
-}
-
-.lap__track-title {
-  font-weight: bold;
-}
-
-.lap__control {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  margin-right: 4px;
-}
-
-.lap__control:hover .lap-i {
-  color: #7b7b7b;
-}
-
-.lap__play-pause.lap--playing:before {
-  content: "\e601";
-}
-
-.lap__play-pause.lap--paused:before {
-  content: "\e600";
-}
-
-.lap__volume__container {
-  display: inline-block;
-}
-
-.lap__volume__container input[type=range] {
-  width: 216px;
-}
-
-.lap__speaker__container {
-  width: 16px;
-  margin-right: 0;
-}
-
-.lap__volume-range__container input[type=range] {
-  -webkit-appearance: none;
-  margin: 10px 0;
-  width: 100%;
-}
-
-.lap__volume-range__container input[type=range]:focus {
-  outline: none;
-}
-
-.lap__volume-range__container input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 2px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: #a7a7a7;
-}
-
-.lap__volume-range__container input[type=range]::-webkit-slider-thumb {
-  background: #555;
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -6px;
-  height: 14px;
-  width: 8px;
-}
-
-.lap__volume-range__container input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #a7a7a7;
-}
-
-.lap__volume-range__container input[type=range]::-moz-range-track {
-  width: 100%;
-  height: 2px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: #a7a7a7;
-}
-
-.lap__volume-range__container input[type=range]::-moz-range-thumb {
-  border: none;
-  background: #555;
-  cursor: pointer;
-  border-radius: 0%;
-  height: 14px;
-  width: 8px;
-}
-
-.lap__volume-range__container input[type=range]::-ms-track {
-  width: 100%;
-  height: 2px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: transparent;
-  border-color: transparent;
-  border-width: 8px 0;
-  color: transparent;
-}
-
-.lap__volume-range__container input[type=range]::-ms-fill-lower {
-  background: #a7a7a7;
-  border: 0px solid #000101;
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-}
-
-.lap__volume-range__container input[type=range]::-ms-fill-upper {
-  background: #a7a7a7;
-  border: 0px solid #000101;
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-}
-
-.lap__volume-range__container input[type=range]::-ms-thumb {
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-  border: 0px solid #000000;
-  height: 20px;
-  width: 8px;
-  background: #555;
-  cursor: pointer;
-}
-
-.lap__volume-range__container input[type=range]:focus::-ms-fill-lower {
-  background: #a7a7a7;
-}
-
-.lap__volume-range__container input[type=range]:focus::-ms-fill-upper {
-  background: #a7a7a7;
-}
-
-.lap__volume-range__container, .lap__seek-range__container {
-  display: inline-block;
-  height: 16px;
-}
-
-.lap__seek-range__container {
+.lap .lap__canvas-volume-range__container {
   width: 76px;
   position: relative;
+  -webkit-flex-grow: 4;
+  -ms-flex-positive: 4;
+  flex-grow: 4;
 }
 
-.lap__seek-range__container input[type=range] {
-  -webkit-appearance: none;
-  margin: 10px 0;
-  width: 100%;
-}
-
-.lap__seek-range__container input[type=range]:focus {
-  outline: none;
-}
-
-.lap__seek-range__container input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 2px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: transparent;
-}
-
-.lap__seek-range__container input[type=range]::-webkit-slider-thumb {
-  background: #555;
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -6px;
-  height: 14px;
-  width: 8px;
-}
-
-.lap__seek-range__container input[type=range]:focus::-webkit-slider-runnable-track {
-  background: transparent;
-}
-
-.lap__seek-range__container input[type=range]::-moz-range-track {
-  width: 100%;
-  height: 2px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: transparent;
-}
-
-.lap__seek-range__container input[type=range]::-moz-range-thumb {
-  border: none;
-  background: #555;
-  cursor: pointer;
-  border-radius: 0%;
-  height: 14px;
-  width: 8px;
-}
-
-.lap__seek-range__container input[type=range]::-ms-track {
-  width: 100%;
-  height: 2px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: transparent;
-  border-color: transparent;
-  border-width: 8px 0;
-  color: transparent;
-}
-
-.lap__seek-range__container input[type=range]::-ms-fill-lower {
-  background: transparent;
-  border: 0px solid #000101;
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-}
-
-.lap__seek-range__container input[type=range]::-ms-fill-upper {
-  background: transparent;
-  border: 0px solid #000101;
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-}
-
-.lap__seek-range__container input[type=range]::-ms-thumb {
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-  border: 0px solid #000000;
-  height: 20px;
-  width: 8px;
-  background: #555;
-  cursor: pointer;
-}
-
-.lap__seek-range__container input[type=range]:focus::-ms-fill-lower {
-  background: transparent;
-}
-
-.lap__seek-range__container input[type=range]:focus::-ms-fill-upper {
-  background: transparent;
-}
-
-.lap__seek-range__container input[type=range].lap__seek-range {
-  background: transparent;
+.lap .lap__canvas-volume-range__container canvas {
   position: absolute;
   top: 0;
   left: 0;
 }
 
-.lap progress {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background: transparent;
-  border: none;
-  background-size: auto;
-  position: relative;
-  left: 2px;
-  top: -1px;
+.lap .lap__prog-seek {
   width: 76px;
-  height: 2px;
-  vertical-align: 2px;
-  margin: 0;
-  padding: 0;
-}
-
-.lap progress::-webkit-progress-bar, .lap progress::-moz-progress-bar {
-  background: #a7a7a7;
-}
-
-.lap progress::-webkit-progress-value {
-  background: #555;
-}
-
-.lap__read {
-  display: inline;
-  font-family: 'Source Code Pro';
-  font-size: 10px;
   position: relative;
-  top: -3px;
+  -webkit-flex-grow: 4;
+  -ms-flex-positive: 4;
+  flex-grow: 4;
 }
 
-.lap__duration {
-  margin-left: 4px;
+.lap .lap__prog-seek canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.test {
+  margin-top: 32px;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  width: 200px;
+  border: 1px solid #000;
+}
+
+.test .item {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  border: 1px solid red;
+}
+
+.test .a {
+  -webkit-flex-grow: 3;
+  -ms-flex-positive: 3;
+  flex-grow: 3;
 }
 
 .lap--hidden {
-  display: none !important;
-  pointer-events: none;
-}
-
-.lap__controls--non-volume {
-  display: inline-block;
-  margin: 0;
-  padding: 0;
-}
-
-.lap__prog-seek__container, .lap__canvas-volume-range__container {
-  display: inline-block;
-  width: 76px;
-  height: 16px;
-  padding-top: 4px;
-}
-
-.lap__canvas-volume-range__container {
-  position: absolute;
-  margin-right: 4px;
-}
-
-.lap__prog-seek, .lap__canvas-volume-range {
-  cursor: pointer;
-  position: relative;
-  height: 18px;
-  padding-top: 2px;
-}
-
-.lap__prog-seek canvas, .lap__canvas-volume-range canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: none;
 }
 
 body {

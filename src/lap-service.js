@@ -1,27 +1,19 @@
 (function() { 'use strict';
 
+  /*>>*/
   Lo66er.setDefaults({
     outputTimestamp: false,
     outputSource: true,
     useAbsoluteSource: true,
     nameStyle: 'color:darkblue'
   });
+  /*<<*/
 
+  /*>>*/
   var logger = new Lo66er('Lap', { level: 0 });
+  /*<<*/
 
-  angular.module('lnet.lap', ['tooly'])
-    .constant('lnetQuery', {
-      selector: function(element, selector) {
-        if (!element && selector) {
-          return angular.element(document.querySelector(selector));
-        } else if (typeof element === 'string' && arguments.length === 1) {
-          return angular.element(document.querySelector(element));
-        }
-        return angular.element(element[0].querySelector(selector));
-      }
-    })
-    .factory('Lap', factory);
-
+  angular.module('lnet.lap').factory('Lap', factory);
   factory.$inject = ['$http', '$q', 'tooly', 'lnetQuery'];
 
   function factory($http, $q, tooly, lnetQuery) {
@@ -36,9 +28,8 @@
      * @param {Object}  options  hash of options to merge with Lap.prototype.defaultOptions
      * @param {Boolean} postpone if true, Lap will not call its initialize function 
      *                           when instantiated
-     * @param {Boolean} debug    If true, all non-audio event listeners will be logged
      */
-    function Lap(element, lib, options, postpone, debug) {
+    function Lap(element, lib, options, postpone) {
       tooly.Handler.call(this);
       this.id = ++_id;
       this.element = element;
@@ -46,21 +37,21 @@
       this.settings = angular.extend({}, this.defaultSettings, options);
       this.lib = lib;
       if (!postpone) this.initialize();
-      if (debug) {
-        var lap = this;
-        var echo = function(event) { 
-          lap.on(event, function() {
-            logger.info('%c%s handler called', 'color:#800080', event); 
-          });
-        };
-        echo('load');
-        echo('play');
-        echo('pause');
-        echo('seek');
-        echo('trackChange');
-        echo('albumChange');
-        echo('volumeChange');
-      }
+      /*>>*/
+      var lap = this;
+      var echo = function(event) { 
+        lap.on(event, function() {
+          logger.info('%c%s handler called', 'color:#800080', event); 
+        });
+      };
+      echo('load');
+      echo('play');
+      echo('pause');
+      echo('seek');
+      echo('trackChange');
+      echo('albumChange');
+      echo('volumeChange');
+      /*<<*/
       return this;
     }
 
@@ -100,7 +91,12 @@
       }, function(err) {
         return deferred.reject(err);
       });
-    };    
+    };
+
+    Lap.PluginConstructorError = function(msg) {
+      Error.call(this);
+    };
+    Lap.PluginConstructorError.prototype = Error;
 
     Lap.prototype = new tooly.Handler();
 
@@ -180,6 +176,10 @@
 
       this.register(this.settings.callbacks);
 
+      /*>>*/
+      logger.debug('post initialize >> Lap instance #%d: %o', this.id, this);
+      /*<<*/
+
       this.trigger('load');
     };
 
@@ -218,18 +218,15 @@
       var fileType = this.getFileType(),
           canPlay = this.audio.canPlayType('audio/' + fileType);
       if (canPlay === 'probably' || canPlay === 'maybe') {
-        logger.debug('setting audio src...');
         this.setSource();
         this.audio.volume = 0.80;
       } else {
         console.warn('This browser does not support ' + fileType + ' playback.');
       }
-      logger.debug('audio: %o', this.audio);
     };
 
     Lap.prototype.setSource = function() {
       this.audio.src = this.files[this.trackIndex];
-      logger.debug('audio.src: %o', this.audio.src);
     };
 
     Lap.prototype.getFileType = function() {
@@ -245,7 +242,6 @@
         var el = angular.element(lap.element[0].querySelector('.' + sel));
         if (el.length) lap.els[key] = el;
       });
-      logger.debug('lap.els: %o', lap.els);
     };
 
     Lap.prototype.addAudioListeners = function() {

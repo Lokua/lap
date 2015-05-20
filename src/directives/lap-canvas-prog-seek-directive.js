@@ -1,17 +1,17 @@
 (function() { 'use strict';
 
-  var logger = new Lo66er('lapProgSeek', { 
-    nameStyle: 'color:darkturquoise',
+  /*>>*/
+  var logger = new Lo66er('lapCanvasProgSeek', { 
+    nameStyle: 'color:brown',
     level: 0 
   });
+  /*<<*/
+
   
-  angular.module('lnet.lap').directive('lapProgSeek', lapProgSeek);
-  lapProgSeek.$inject = ['tooly', 'Lap', 'lnetQuery'];
+  angular.module('lnet.lap').directive('lapCanvasProgSeek', lapCanvasProgSeek);
+  lapCanvasProgSeek.$inject = ['tooly', 'Lap', 'lnetQuery'];
 
-  function lapProgSeek(tooly, Lap, lnetQuery) {
-
-    var _mousedown = false,
-        _defaultHeight = 16;
+  function lapCanvasProgSeek(tooly, Lap, lnetQuery) {
 
     /**
      * Combination of seekbar + progress range for the Lokua Audio Player
@@ -27,12 +27,8 @@
       thiz.element = angular.element(element.children()[0]);
 
       if (!thiz.element.length) {
-        console.error('unable to find Lap.CanvasProgSeek element');
-        thiz.constructorErrorThrown = true;
-        return;
+        throw new Lap.PluginConstructorError('unable to find Lap.CanvasProgSeek element');
       }
-
-      logger.debug(thiz);
 
       // appended in intended stacking order
       thiz.element
@@ -47,7 +43,7 @@
       // helper
       var errCheck = function(el) {
         if (!thiz[el]) {
-          throw new Lap.CanvasProgSeek.ConstructorError('unable to find ' + el + ' element');
+          throw new Lap.PluginConstructorError('unable to find ' + el + ' element');
         }
       };
       errCheck('track');
@@ -58,21 +54,22 @@
       thiz.progressCtx = thiz.progress.getContext('2d');
       thiz.knobCtx     = thiz.knob.getContext('2d');
 
+      var defaultHeight = 16;
       thiz.settings = angular.extend({}, {
         track: {
           fill: '#bbb',
           stroke: null,
-          height: _defaultHeight
+          height: defaultHeight
         },
         progress: {
           fill: '#999',
           stroke: null,
-          height: _defaultHeight
+          height: defaultHeight
         },    
         knob: {
           fill: '#000',
           stroke: null,
-          height: _defaultHeight,
+          height: defaultHeight,
           width: 4
         },
         lineWidth: 2,
@@ -84,11 +81,6 @@
       return thiz;
     };
 
-    Lap.CanvasProgSeek.ConstructorError = function(msg) {
-      Error.call(this);
-    };
-    Lap.CanvasProgSeek.ConstructorError.prototype = Error;
-
     /**
      * Initialize this CanvasProgSeek. Draws the track, knob, and progress value; 
      * sets up audio and mouse event listeners.
@@ -99,6 +91,7 @@
       var thiz = this,
           settings = thiz.settings,
           audio = thiz.lap.audio,
+          MOUSEDOWN = false,
           x;
 
       thiz.track.width  = thiz.progress.width  = thiz.knob.width  = settings.width;
@@ -110,19 +103,19 @@
       thiz.drawKnob(0);
 
       audio.addEventListener('progress', function() { 
-        if (!_mousedown) thiz.drawProgress(); 
+        if (!MOUSEDOWN) thiz.drawProgress(); 
       });
 
       audio.addEventListener('timeupdate', function() { 
-        if (!_mousedown) thiz.drawKnob(); 
+        if (!MOUSEDOWN) thiz.drawKnob(); 
       });
 
       thiz.element
         .on('mousedown', function(e) {
-          _mousedown = true; 
+          MOUSEDOWN = true; 
         })
         .on('mousemove', function(e) {
-          if (_mousedown) {
+          if (MOUSEDOWN) {
             thiz.drawKnob(e.offsetX);
             x = tooly.scale(e.offsetX, 0, settings.width - settings.knob.width, 0, 1);
             if (x >= audio.duration) x = audio.duration;
@@ -131,12 +124,16 @@
         });
 
       lnetQuery.selector('body').on('mouseup', function(e) {
-        if (_mousedown) {
+        if (MOUSEDOWN) {
           audio.currentTime = tooly.scale(
             e.offsetX, 0, settings.width, 0, audio.duration);
-          _mousedown = false;
+          MOUSEDOWN = false;
         }
       });
+
+      /*>>*/
+      logger.debug('post init >> this: %o', thiz);
+      /*<<*/
 
       return thiz;
     };
@@ -250,7 +247,7 @@
 
     return {
       restrict: 'E',
-      require: '^lapContainer',
+      // require: '^lapContainer',
       template: '<div class="lap__prog-seek"></div>',
       link: function(scope, element, attrs) {
 

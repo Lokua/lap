@@ -13,24 +13,38 @@ $lap-monospace: 'Ubuntu Mono', Consolas, Menlo, monospace;
 
 $lap-DEBUG: false;
 
-.lap {
+.lap__container {
+  display: inline-block;
+  padding: 8px;
+  box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
+}
 
+.lap {
   @extend %o-clearfix;
 
-  *, *:before:not(i), *:after:not(i) {
+  width: $lap-controls-width;
+
+  @if ($lap-DEBUG) {
+    border: 1px dotted rgba(255,0,0,0.5);
+  }
+
+  // padding: 16px;
+  color: $lap-text-color;
+  // clear: both;
+
+  // @include o-media(small) {
+  //   box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
+  // }
+
+  *, 
+  *:before:not(i), 
+  *:after:not(i) {
     box-sizing: border-box;
     cursor: normal;
     user-select: none;
     &:focus {
       outline: 0;
     }
-  }
-
-  padding: 16px;
-  color: $lap-text-color;
-  clear: both;
-  @include o-media(small) {
-    box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
   }
 
   i {
@@ -41,179 +55,319 @@ $lap-DEBUG: false;
       color: lighten($lap-icon-color, 20%);
     }
   }
-}
 
-.lap__controls, .lap__details {
-  margin: 0 auto;
-  width: $lap-controls-width;
-  height: $lap-icon-size;
-  min-height: $lap-icon-size;
-  @if $lap-DEBUG == true {
-    border: 1px dotted red;
-  }
-}
-
-.lap__details {
-  @include o-ellipsis();
-  text-align: center;
-  padding: 0 0 4px;
-  height: $lap-icon-size + 4px;
-  min-height: $lap-icon-size + 4px;
-  span {
-    font-size: $lap-info-text-size;
-  }
-}
-.lap__track-number, .lap__artist, .lap__album {
-  &:after {
-    content: ' - ';
-  }
-}
-.lap__album {
-  font-style: italic;
-}
-.lap__track-title {
-  font-weight: bold;
-}
-
-.lap__control {
-  display: inline-block;
-  width: $lap-icon-size;
-  height: $lap-icon-size;
-  margin: 0;
-  margin-right: $lap-margin;
-  &:hover .lap-i {
-    color: lighten($lap-icon-color, 15%);
-  }
-}
-
-.lap__play-pause {
-  &.lap--playing:before {
-    content: "\e601"; // - lap-icons/.lap-i-pause
-  }
-  &.lap--paused:before {
-    content: "\e600"; // - lap-icons/.lap-i-play
-  }
-}
-
-.lap__volume__container {
-  display: inline-block;
-  input[type=range] {
-    width: 216px;
-  }
-}
-
-// - keep speaker fixed size, waves change width
-// - when the icons are switched
-.lap__speaker__container {
-  width: $lap-icon-size;
-  margin-right: 0;
-}
-
-.lap__volume-range__container {
-  @include o-input-range($lap-track-color, $lap-icon-color);
-}
-
-// - used to center the slider track
-.lap__volume-range__container, .lap__seek-range__container {
-  display: inline-block;
-  height: $lap-icon-size;
-}
-
-.lap__seek-range__container {
-  width: $lap-progress-width;
-  position: relative;
-  // z-index: 26;
-  @include o-input-range(rgba(0,0,0,0), $lap-icon-color);
-  input[type=range].lap__seek-range {
-    // don't draw track; progress range doubles as track
-    background: transparent;
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    // !!! margin 0 is needed on firefox it seems
-    // margin: 0;
-  }
 }
 
 .lap {
-  progress {
 
-    // - reset
-    -webkit-appearance: none;
-       -moz-appearance: none;
-            appearance: none;
-    // - firefox specific reset
-    background: rgba(0, 0, 0, 0);
-    border: none;
-    background-size: auto;
+  .lap__controls, .lap__details {
+    @if ($lap-DEBUG) {
+      border: 1px dotted rgba(0,0,255,0.5);
+    }
+    width: $lap-controls-width;
+    height: 18px;
 
-    position: relative;
-    left: 2px;
-    top: -1px;
+    display: inline-flex;
+    flex-flow: row nowrap;
+    // justify-content: center;
+    // align-items: center;
+
+  }
+
+  .lap__detail, .lap__control {
+    flex-grow: 1;
+  }
+
+  .lap__control {
+    @if ($lap-DEBUG) {
+      border: 1px dotted rgba(0,255,0,0.5);
+    }    
+  }
+  .lap__canvas-volume-range__container {
+    flex-grow: 3;
+  }
+  .lap__read {
+    @if ($lap-DEBUG) {
+      border: 1px dotted rgba(0,255,0,0.5);
+    }      
+    font-size: $lap-info-text-size;
+    font-family: $lap-font-family;
+    flex-grow: 2;
+  }
+  // .lap__controls--non-volume {
+  //   flex-grow: 6;
+  // }
+}
+
+.lap {
+  .lap__canvas-volume-range__container {
     width: $lap-progress-width;
-    height: 2px;
-    vertical-align: 2px;
-
-    margin: 0;
-    padding: 0;
+    position: relative;
+    flex-grow: 4;
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }    
   }
-  // - track
-  progress::-webkit-progress-bar,
-  progress::-moz-progress-bar {
-    background: $lap-track-color;
-  }
-  // - value
-  progress::-webkit-progress-value {
-    background: $lap-icon-color;
+  .lap__prog-seek {
+    width: $lap-progress-width;
+    position: relative;
+    flex-grow: 4;
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
   }
 }
 
-// - lap-current-time, lap-duration
-.lap__read {
-  display: inline;
-  font-family: $lap-font-family;
-  font-size: $lap-info-text-size;
-  position: relative;
-  top: -3px;
+.test {
+
+  margin-top: 32px;
+
+  display: inline-flex;
+  // justify-content: center;
+  // align-items: center;  
+
+  width: 200px;
+  border: 1px solid #000;
+
+  .item {
+    flex: 1;
+    border: 1px solid red;
+  }
+  .a {
+    flex-grow: 3;
+  }
 }
 
-.lap__duration {
-  margin-left: $lap-margin;
-}
+// .lap {
+
+//   .lap__canvas-volume-range {
+//     position: absolute;
+//     margin-right: 4px;
+//   }
+
+//   .lap__prog-seek, .lap__volume-range {
+//     cursor: pointer;
+//     position: relative;
+//     height: 18px;
+//     padding-top: 2px;
+//     canvas {
+//       position: absolute;
+//       top: 0;
+//       left: 0;
+//     }
+//   }
+// }
+
+// .lap {
+
+//   @extend %o-clearfix;
+
+//   *, *:before:not(i), *:after:not(i) {
+//     box-sizing: border-box;
+//     cursor: normal;
+//     user-select: none;
+//     &:focus {
+//       outline: 0;
+//     }
+//   }
+
+//   padding: 16px;
+//   color: $lap-text-color;
+//   clear: both;
+//   @include o-media(small) {
+//     box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
+//   }
+
+//   i {
+//     font-size: $lap-icon-size;
+//     cursor: pointer;
+//     color: $lap-icon-color;
+//     &:hover {
+//       color: lighten($lap-icon-color, 20%);
+//     }
+//   }
+// }
+
+// .lap__controls, .lap__details {
+//   margin: 0 auto;
+//   width: $lap-controls-width;
+//   height: $lap-icon-size;
+//   min-height: $lap-icon-size;
+//   @if $lap-DEBUG == true {
+//     border: 1px dotted red;
+//   }
+// }
+
+// .lap__details {
+//   @include o-ellipsis();
+//   text-align: center;
+//   padding: 0 0 4px;
+//   height: $lap-icon-size + 4px;
+//   min-height: $lap-icon-size + 4px;
+//   span {
+//     font-size: $lap-info-text-size;
+//   }
+// }
+// .lap__track-number, .lap__artist, .lap__album {
+//   &:after {
+//     content: ' - ';
+//   }
+// }
+// .lap__album {
+//   font-style: italic;
+// }
+// .lap__track-title {
+//   font-weight: bold;
+// }
+
+// .lap__control {
+//   display: inline-block;
+//   width: $lap-icon-size;
+//   height: $lap-icon-size;
+//   margin: 0;
+//   margin-right: $lap-margin;
+//   &:hover .lap-i {
+//     color: lighten($lap-icon-color, 15%);
+//   }
+// }
+
+// .lap__play-pause {
+//   &.lap--playing:before {
+//     content: "\e601"; // - lap-icons/.lap-i-pause
+//   }
+//   &.lap--paused:before {
+//     content: "\e600"; // - lap-icons/.lap-i-play
+//   }
+// }
+
+// .lap__volume__container {
+//   display: inline-block;
+//   input[type=range] {
+//     width: 216px;
+//   }
+// }
+
+// // - keep speaker fixed size, waves change width
+// // - when the icons are switched
+// .lap__speaker__container {
+//   width: $lap-icon-size;
+//   margin-right: 0;
+// }
+
+// .lap__volume-range__container {
+//   @include o-input-range($lap-track-color, $lap-icon-color);
+// }
+
+// // - used to center the slider track
+// .lap__volume-range__container, .lap__seek-range__container {
+//   display: inline-block;
+//   height: $lap-icon-size;
+// }
+
+// .lap__seek-range__container {
+//   width: $lap-progress-width;
+//   position: relative;
+//   // z-index: 26;
+//   @include o-input-range(rgba(0,0,0,0), $lap-icon-color);
+//   input[type=range].lap__seek-range {
+//     // don't draw track; progress range doubles as track
+//     background: transparent;
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+
+//     // !!! margin 0 is needed on firefox it seems
+//     // margin: 0;
+//   }
+// }
+
+// .lap {
+//   progress {
+
+//     // - reset
+//     -webkit-appearance: none;
+//        -moz-appearance: none;
+//             appearance: none;
+//     // - firefox specific reset
+//     background: rgba(0, 0, 0, 0);
+//     border: none;
+//     background-size: auto;
+
+//     position: relative;
+//     left: 2px;
+//     top: -1px;
+//     width: $lap-progress-width;
+//     height: 2px;
+//     vertical-align: 2px;
+
+//     margin: 0;
+//     padding: 0;
+//   }
+//   // - track
+//   progress::-webkit-progress-bar,
+//   progress::-moz-progress-bar {
+//     background: $lap-track-color;
+//   }
+//   // - value
+//   progress::-webkit-progress-value {
+//     background: $lap-icon-color;
+//   }
+// }
+
+// // - lap-current-time, lap-duration
+// .lap__read {
+//   display: inline;
+//   font-family: $lap-font-family;
+//   font-size: $lap-info-text-size;
+//   position: relative;
+//   top: -3px;
+// }
+
+// .lap__duration {
+//   margin-left: $lap-margin;
+// }
+
+// .lap--hidden {
+//   display: none !important;
+//   pointer-events: none;
+// }
+
+// .lap__controls--non-volume {
+//   display: inline-block;
+//   margin: 0;
+//   padding: 0;
+// }
+
+// .lap__prog-seek__container, 
+// .lap__canvas-volume-range__container {
+//   display: inline-block;
+//   width: $lap-progress-width;
+//   height: 16px;
+//   padding-top: 4px;
+// }
+
+// .lap__canvas-volume-range__container {
+//   position: absolute;
+//   margin-right: 4px;
+// }
+
+// .lap__prog-seek, .lap__canvas-volume-range {
+//   cursor: pointer;
+//   position: relative;
+//   height: 18px;
+//   padding-top: 2px;
+//   canvas {
+//     position: absolute;
+//     top: 0;
+//     left: 0;
+//   }
+// }
 
 .lap--hidden {
-  display: none !important;
-  pointer-events: none;
-}
+  display: none;
+} 
 
-.lap__controls--non-volume {
-  display: inline-block;
-  margin: 0;
-  padding: 0;
-}
-
-.lap__prog-seek__container, 
-.lap__canvas-volume-range__container {
-  display: inline-block;
-  width: $lap-progress-width;
-  height: 16px;
-  padding-top: 4px;
-}
-
-.lap__canvas-volume-range__container {
-  position: absolute;
-  margin-right: 4px;
-}
-
-.lap__prog-seek, .lap__canvas-volume-range {
-  cursor: pointer;
-  position: relative;
-  height: 18px;
-  padding-top: 2px;
-  canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-}

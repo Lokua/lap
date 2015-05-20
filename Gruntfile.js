@@ -49,7 +49,7 @@ module.exports = function(grunt) {
         tasks: ['connect', 'watch']
       },
       angular: {
-        tasks: ['connect', 'watch:angular']
+        tasks: ['connect', 'watch']
       }
     },
 
@@ -90,14 +90,9 @@ module.exports = function(grunt) {
         pretty: true,
         timestamp: '<%= grunt.template.today("yyyy-mm-dd") %> <%= new Date().getTime() %>'
       },
-      demo: {
-        files: {
-          'demo/index.html': ['demo/index.jade']
-        }
-      },
       angular: {
         files: {
-          'demo/angular/index.html': ['demo/angular/index.jade']
+          'src/templates/lap-controls.html': ['src/templates/lap-controls.jade']
         }
       }
     },
@@ -156,31 +151,10 @@ module.exports = function(grunt) {
       }
     },
 
-    umd: {
-      build: {
-        src: distLap,
-        objectToExport: 'Lap',
-        amdModuleId: 'Lap',
-        template: 'src/umd-template.hbs'
-      },
-      raw: {
-        src: 'dist/lap-raw.js',
-        objectToExport: 'Lap',
-        amdModuleId: 'Lap',
-        template: 'src/umd-template.hbs'
-      },      
-      debug: {
-        src: distLapDebug,
-        objectToExport: 'Lap',
-        amdModuleId: 'Lap',
-        template: 'src/umd-template.hbs'
-      }
-    },
-
     usebanner: {
       options: {
         position: 'top',
-        banner: require('./src/banner'),
+        banner: require('./src/resources/banner'),
         linebreak: true
       },
       build: {
@@ -195,7 +169,7 @@ module.exports = function(grunt) {
       },
       post: {
         options: {
-          banner: require('./src/banner-min')
+          banner: require('./src/resources/banner-min')
         },
         files: {
           src: ['dist/lap.min.js']
@@ -203,7 +177,7 @@ module.exports = function(grunt) {
       },
       post_raw: {
         options: {
-          banner: require('./src/banner-min')
+          banner: require('./src/resources/banner-min')
         },
         files: {
           src: ['dist/lap-raw.min.js']
@@ -217,23 +191,19 @@ module.exports = function(grunt) {
     },
 
     watch: {
-      debug: {
-        files: srcLap,
-        tasks: ['debug']
+      options: {
+        livereload: true
       },
       demo: {
         files: 'demo/sass/*.scss',
         tasks: ['sass:demo', 'autoprefixer:demo', 'cssbeautifier']
       },
-      demoJade: {
-        files: 'demo/*.jade',
+      jade: {
+        files: 'src/templates/*.jade',
         tasks: ['jade']
       },
       angular: {
-        options: {
-          livereload: true
-        },
-        files: ['**/*.js', 'demo/angular/**/*'],
+        files: ['**/*.js', 'demo/**/*'],
         tasks: []
       }
     }

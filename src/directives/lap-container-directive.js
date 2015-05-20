@@ -15,11 +15,13 @@
       scope: {
         src: '@'
       },
-      templateUrl: '../../src/lap-controls.html',
+      templateUrl: '../src/templates/lap-controls.html',
       link: function(scope, element, attrs) {
 
         scope.ready = false;
         scope.player = scope;
+
+        element.addClass('lap');
 
         if (!attrs.hasOwnProperty('src')) {
           return console.warn('lap-container needs a src attribute. Exiting.');
