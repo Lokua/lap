@@ -117,47 +117,5 @@ body {
   }
 }
 
-.tooltip {
-  display: inline;
-  position: relative;
-  font-size: 12px;
-  transition: opacity;
-  &:before, &:after {
-    opacity: 0;
-  }
-  &:hover:before, &:hover:after {
-    transition-delay: 1s;
-    opacity: 1;
-  }
-  &:hover {
-    // color: blue;
-    text-decoration: none;
-    &:after {
-      // font-size: 10px;
-      background: #000;
-      color: #fff;
-      bottom: 1.35em;
-      content: attr(data-tooltip);
-      display: block;
-      left: 1em;
-      padding: 3px 6px;
-      position: absolute;
-      white-space: nowrap;
-      z-index: 98;
-    }
-    // &:before {
-    //   border: solid;
-    //   border-color: #000 transparent;
-    //   border-width: .4em 0 0 .6em;
-    //   bottom: 1em;
-    //   content: '';
-    //   display: block;
-    //   left: 1em;
-    //   position: absolute;
-    //   z-index: 99;
-    //   transform: scaleX(-1);
-    // }
-  }
-}
 
 

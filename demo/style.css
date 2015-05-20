@@ -64,6 +64,7 @@
 }
 
 .lap .lap__read {
+  padding-top: 3px;
   font-size: 10px;
   font-family: 'Source Code Pro';
   -webkit-flex-grow: 2;
@@ -71,15 +72,16 @@
   flex-grow: 2;
 }
 
-.lap .lap__canvas-volume-range__container {
+.lap .lap__canvas-volume-range {
   width: 76px;
   position: relative;
-  -webkit-flex-grow: 4;
-  -ms-flex-positive: 4;
-  flex-grow: 4;
+  -webkit-flex-grow: 8;
+  -ms-flex-positive: 8;
+  flex-grow: 8;
+  padding-top: 3px;
 }
 
-.lap .lap__canvas-volume-range__container canvas {
+.lap .lap__canvas-volume-range canvas {
   position: absolute;
   top: 0;
   left: 0;
@@ -91,6 +93,7 @@
   -webkit-flex-grow: 4;
   -ms-flex-positive: 4;
   flex-grow: 4;
+  padding-top: 3px;
 }
 
 .lap .lap__prog-seek canvas {
@@ -121,8 +124,41 @@
   flex-grow: 3;
 }
 
-.lap--hidden {
-  display: none;
+.lap .lap__tooltip {
+  display: inline;
+  position: relative;
+  font-size: 12px;
+  transition: opacity;
+}
+
+.lap .lap__tooltip:before, .lap .lap__tooltip:after {
+  opacity: 0;
+}
+
+.lap .lap__tooltip:hover:before, .lap .lap__tooltip:hover:after {
+  transition-delay: 1s;
+  opacity: 1;
+}
+
+.lap .lap__tooltip:hover {
+  text-decoration: none;
+}
+
+.lap .lap__tooltip:hover:after {
+  background: #000;
+  color: #fff;
+  bottom: 1.35em;
+  content: attr(data-tooltip);
+  display: block;
+  left: 1em;
+  padding: 3px 6px;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 98;
+}
+
+.lap .lap--hidden {
+  display: none !important;
 }
 
 body {
@@ -229,37 +265,4 @@ body {
 
 #single-track-player .lap__controls {
   margin: 0;
-}
-
-.tooltip {
-  display: inline;
-  position: relative;
-  font-size: 12px;
-  transition: opacity;
-}
-
-.tooltip:before, .tooltip:after {
-  opacity: 0;
-}
-
-.tooltip:hover:before, .tooltip:hover:after {
-  transition-delay: 1s;
-  opacity: 1;
-}
-
-.tooltip:hover {
-  text-decoration: none;
-}
-
-.tooltip:hover:after {
-  background: #000;
-  color: #fff;
-  bottom: 1.35em;
-  content: attr(data-tooltip);
-  display: block;
-  left: 1em;
-  padding: 3px 6px;
-  position: absolute;
-  white-space: nowrap;
-  z-index: 98;
 }

@@ -8,9 +8,9 @@
   /*<<*/
 
   angular.module('lnet.lap').directive('lapCanvasVolumeRange', lapCanvasVolumeRange);
-  lapCanvasVolumeRange.$inject = ['tooly', 'Lap', 'lnetQuery'];
+  lapCanvasVolumeRange.$inject = ['tooly', 'Lap', 'lapUtil'];
 
-  function lapCanvasVolumeRange(tooly, Lap, lnetQuery) {
+  function lapCanvasVolumeRange(tooly, Lap, lapUtil) {
 
     var _MOUSEDOWN = false;
 
@@ -27,8 +27,8 @@
         .append(tooly.tag('canvas.lap__canvas-volume-range__track'))
         .append(tooly.tag('canvas.lap__canvas-volume-range__knob'));
 
-      thiz.track = lnetQuery.selector(element, '.lap__canvas-volume-range__track')[0];
-      thiz.knob  = lnetQuery.selector(element, '.lap__canvas-volume-range__knob')[0];
+      thiz.track = thiz.element[0].querySelector('.lap__canvas-volume-range__track');
+      thiz.knob  = thiz.element[0].querySelector('.lap__canvas-volume-range__knob');
 
       if (!thiz.track) {
         throw new Lap.PluginConstructorError('unable to find track element');
@@ -80,7 +80,7 @@
           }
         });
 
-      lnetQuery.selector('body').on('mouseup', function(e) {
+      lapUtil.body().on('mouseup', function(e) {
         if (_MOUSEDOWN) _MOUSEDOWN = false;
       });
 
@@ -148,7 +148,7 @@
 
     return {
       restrict: 'E',
-      template: '<div class="lap__volume-range"></div>',
+      template: '<div class="lap__canvas-volume-range lap__volume-range"></div>',
       link: function(scope, element, attrs) {
 
         var volumeRange;       

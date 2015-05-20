@@ -14,9 +14,9 @@
   /*<<*/
 
   angular.module('lnet.lap').factory('Lap', factory);
-  factory.$inject = ['$http', '$q', 'tooly', 'lnetQuery'];
+  factory.$inject = ['$http', '$q', 'tooly', 'lapUtil'];
 
-  function factory($http, $q, tooly, lnetQuery) {
+  function factory($http, $q, tooly, lapUtil) {
 
     var _id = _id || 0,
         _audioExtensionRegExp = /mp3|wav|ogg|aiff/i;
@@ -239,7 +239,8 @@
       lap.selectors = angular.extend({}, lap.selectors, lap.settings.selectors);
       tooly.each(lap.selectors, function(sel, key) {
         if (tooly.type(sel) === 'object') return;
-        var el = angular.element(lap.element[0].querySelector('.' + sel));
+        var el = lapUtil.element('.' + sel, lap.element);
+        // var el = angular.element(lap.element[0].querySelector('.' + sel));
         if (el.length) lap.els[key] = el;
       });
     };

@@ -8,9 +8,9 @@
   /*<<*/
 
   angular.module('lnet.lap').directive('lapVolumeRangeRevealer', lapVolumeRangeRevealer);
-  lapVolumeRangeRevealer.$inject = ['tooly', 'Lap', 'lnetQuery'];
+  lapVolumeRangeRevealer.$inject = ['$document', 'tooly', 'Lap', 'lapUtil'];
 
-  function lapVolumeRangeRevealer(tooly, Lap, lnetQuery) {
+  function lapVolumeRangeRevealer($document, tooly, Lap, lapUtil) {
 
     /**
      * Lap plugin providing support for hiding and showing
@@ -40,14 +40,17 @@
     Lap.VolumeRangeRevealer.prototype.init = function() {
       var thiz = this,
           lap = thiz.lap,
-          container = angular.element(lap.container),
-          speaker = lnetQuery.selector(container, '.lap__speaker'),
-          speakerContainer =  lnetQuery.selector(container, '.lap__speaker__container'), 
+          lapContainer = angular.element(lap.container)[0],
+          speaker = lapUtil.element('.lap__speaker', lapContainer),
+          speakerContainer = lapUtil.element('.lap__speaker__container', lapContainer),
           volumeRange = lap.els.volumeRange,
           rangeWidth = volumeRange.find('canvas').attr('width'),
-          // opps = lnetQuery.selector(container, '.lap__control--non-volume'),
-          opps = angular.element(container[0].querySelectorAll('.lap__control--non-volume')),
+          nonVolumeControls = lapUtil.elementAll('.lap__non-v', lapContainer),
           MOUSEDOWN, SPEAKER_ENTERED, RANGE_ENTERED;
+
+      /*>>*/
+      logger.debug('nonVolumeControls: %o', nonVolumeControls);
+      /*<<*/
 
       if (!volumeRange) {
         throw new Lap.PluginContructorError(
@@ -84,8 +87,8 @@
       speaker
         .on('mouseenter', function() {
           if (!SPEAKER_ENTERED && !RANGE_ENTERED) {
-            container.removeClass(lap.selectors.state.hidden);
-            opps.addClass(lap.selectors.state.hidden);
+            thiz.element.removeClass(lap.selectors.state.hidden);
+            nonVolumeControls.addClass(lap.selectors.state.hidden);
             SPEAKER_ENTERED = true;
           }
         })
@@ -101,14 +104,14 @@
       // add the mouseup to the body so we can inc/dec volume by dragging
       // left or right regardless if we're in the same horizontal span as the slider
       // or not
-      lnetQuery.selector('body').on('mouseup', function() {
+      lapUtil.body().on('mouseup', function() {
         MOUSEDOWN = false;
         if (!RANGE_ENTERED && !SPEAKER_ENTERED) release();
       });
 
       function release() {
         thiz.element.addClass(lap.selectors.state.hidden);
-        opps.removeClass(lap.selectors.state.hidden);
+        nonVolumeControls.removeClass(lap.selectors.state.hidden);
       }
 
       /*>>*/

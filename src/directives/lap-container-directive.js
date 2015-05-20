@@ -31,7 +31,9 @@
           var ch = src.charAt(0);
 
           if (ch === '[' || ch === '{') {
+            /*>>*/
             logger.debug('src.charAt(0) === `[` or `}`. Evaluating...');
+            /*<<*/
             src = scope.$eval(src);
           }
 
@@ -43,7 +45,9 @@
                 }
               }
             }, false, true); // ,,postpone,debug
+            /*>>*/
             logger.debug('scope.lap: %o', scope.lap);
+            /*<<*/
           }); 
 
         });

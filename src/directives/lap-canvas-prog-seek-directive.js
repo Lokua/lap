@@ -9,9 +9,9 @@
 
   
   angular.module('lnet.lap').directive('lapCanvasProgSeek', lapCanvasProgSeek);
-  lapCanvasProgSeek.$inject = ['tooly', 'Lap', 'lnetQuery'];
+  lapCanvasProgSeek.$inject = ['tooly', 'Lap', 'lapUtil'];
 
-  function lapCanvasProgSeek(tooly, Lap, lnetQuery) {
+  function lapCanvasProgSeek(tooly, Lap, lapUtil) {
 
     /**
      * Combination of seekbar + progress range for the Lokua Audio Player
@@ -36,9 +36,9 @@
         .append(tooly.tag('canvas.lap__prog-seek__progress'))
         .append(tooly.tag('canvas.lap__prog-seek__knob'));
 
-      thiz.track    = lnetQuery.selector(element, '.lap__prog-seek__track')[0];
-      thiz.progress = lnetQuery.selector(element, '.lap__prog-seek__progress')[0];
-      thiz.knob     = lnetQuery.selector(element, '.lap__prog-seek__knob')[0];      
+      thiz.track    = thiz.element[0].querySelector('.lap__prog-seek__track');
+      thiz.progress = thiz.element[0].querySelector('.lap__prog-seek__progress');
+      thiz.knob     = thiz.element[0].querySelector('.lap__prog-seek__knob');
 
       // helper
       var errCheck = function(el) {
@@ -123,7 +123,7 @@
           }
         });
 
-      lnetQuery.selector('body').on('mouseup', function(e) {
+      lapUtil.element('body').on('mouseup', function(e) {
         if (MOUSEDOWN) {
           audio.currentTime = tooly.scale(
             e.offsetX, 0, settings.width, 0, audio.duration);

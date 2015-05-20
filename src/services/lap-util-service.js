@@ -1,0 +1,65 @@
+(function() { 'use strict';
+
+  /*>>*/
+  var logger = new Lo66er('lapUtil', {
+    level: 0,
+    nameStyle: 'color:brown'
+  });
+  /*<<*/
+
+  angular.module('lnet.lap').factory('lapUtil', lapUtil);
+  lapUtil.$inject = ['tooly'];
+
+  function lapUtil(tooly) {
+
+    var _body;
+
+    function _isNode(el) {
+      return el && (el.nodeType === 1 || el.nodeType === 9);
+    }
+
+    function _qs(which, selector, context) {
+      var node;
+      if (context) {
+        node = (_isNode(context) ? context : context[0])[which](selector);
+      } else {
+        node = document[which](selector);
+      }
+      return angular.element(node);
+
+    }
+
+    return {
+
+      /**
+       * Used to avoid duplicate selections of body element
+       * @return {jqLite}
+       */
+      body: function() {
+        if (!_body) {
+          _body = this.element('body');
+        }
+        return _body;
+      },
+
+      isNode: function(el) {
+        return _isNode(el);
+      },
+
+      /**
+       * angular's jqLite does not provide lookup by class,
+       * so here we have an abstraction that works exactly like HTMLElement.querySelector,
+       * only returning an angular.element instead. for querySelectorAll use #elementAll
+       */
+      element: function(selector, context) {
+        return _qs('querySelector', selector, context);
+      },
+
+      elementAll: function(selector, context) {
+        return _qs('querySelectorAll', selector, context);
+      }
+
+    };
+  }
+
+})();
