@@ -18,7 +18,7 @@
       return el && (el.nodeType === 1 || el.nodeType === 9);
     }
 
-    function _qs(which, selector, context) {
+    function _query(which, selector, context) {
       var node;
       if (context) {
         node = (_isNode(context) ? context : context[0])[which](selector);
@@ -42,6 +42,9 @@
         return _body;
       },
 
+      /**
+       * @return {Boolean}    true if el is an instance of Node
+       */
       isNode: function(el) {
         return _isNode(el);
       },
@@ -52,11 +55,11 @@
        * only returning an angular.element instead. for querySelectorAll use #elementAll
        */
       element: function(selector, context) {
-        return _qs('querySelector', selector, context);
+        return _query('querySelector', selector, context);
       },
 
       elementAll: function(selector, context) {
-        return _qs('querySelectorAll', selector, context);
+        return _query('querySelectorAll', selector, context);
       }
 
     };

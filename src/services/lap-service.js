@@ -39,7 +39,7 @@
       if (!postpone) this.initialize();
       /*>>*/
       var lap = this;
-      var echo = function(event) { 
+      var echo = function echo(event) { 
         lap.on(event, function() {
           logger.info('%c%s handler called', 'color:#800080', event); 
         });
@@ -162,7 +162,11 @@
 
     Lap.prototype.initialize = function() {
 
+      this.plugins = {};
       this.playlistPopulated = false;
+
+      this.albumIndex = this.settings.startingAlbumIndex;
+      this.albumCount = this.lib.length;
 
       this.update();
 
@@ -183,13 +187,17 @@
       this.trigger('load');
     };
 
+    /**
+     * Configures instance variables relative to the current album.
+     * Called on initialization and whenever an album is changed.
+     *     
+     * @return {Lap} this
+     */
     Lap.prototype.update = function() {
       var lap = this,
           lib = lap.lib,
-          currentLibItem = lib[lap.settings.startingAlbumIndex];
+          currentLibItem = lib[lap.albumIndex];
 
-      lap.albumCount = lib.length;
-      lap.albumIndex = lap.settings.startingAlbumIndex;
       lap.trackIndex = lap.settings.startingTrackIndex;
       lap.playlistPopulated = false;
 
@@ -210,6 +218,7 @@
         }
       }
       lap.formatTracklist();
+      return lap;
     };
 
     Lap.prototype.initAudio = function() {  
@@ -442,6 +451,16 @@
       }
     };
 
+    /**
+     * Add a plug-in instance to the plugins hash
+     * @param  {String} key    the plugin instance identifier
+     * @param  {Object} plugin the plugin instance (not the class)
+     * @return {Lap}           this
+     */ 
+    Lap.prototype.registerPlugin = function(key, plugin) {
+      this.plugins[key] = plugin;
+    };
+
     Lap.prototype.updateTrackTitleEl = function() {
       this.els.trackTitle.html(this.tracklist[this.trackIndex]);
       return this;
@@ -568,33 +587,33 @@
       return this;      
     };
 
+    function _seek(lap, forward) {
+      var applied;
+      if (forward) {
+        applied = lap.audio.currentTime + lap.settings.seekInterval;
+        lap.audio.currentTime = (applied >= lap.audio.duration) ? lap.audio.duration : applied;
+      } else {
+        applied = lap.audio.currentTime + (lap.settings.seekInterval * -1);
+        lap.audio.currentTime = (applied <= 0) ? 0 : applied;
+      }
+      lap.trigger('seek');
+      return lap;      
+    }    
     Lap.prototype.seekBackward = function() {
-      if (!_SEEKING) return;
+      if (!_SEEKING) return this;
       var lap = this;
       _MOUSEDOWN_TIMER = setInterval(function() {
-        lap.seek(false);
+        lap.seek(lap, false);
       }, lap.settings.seekTime);
       return lap;      
     };
     Lap.prototype.seekForward = function() {
-      if (!_SEEKING) return;
+      if (!_SEEKING) return this;
       var lap = this;
       _MOUSEDOWN_TIMER = setInterval(function() {
-        lap.seek(true);
+        lap.seek(lap, true);
       }, lap.settings.seekTime);
       return lap;      
-    };
-    Lap.prototype.seek = function(forward) {
-      var applied;
-      if (forward) {
-        applied = this.audio.currentTime + this.settings.seekInterval;
-        this.audio.currentTime = (applied >= this.audio.duration) ? this.audio.duration : applied;
-      } else {
-        applied = this.audio.currentTime + (this.settings.seekInterval * -1);
-        this.audio.currentTime = (applied <= 0) ? 0 : applied;
-      }
-      this.trigger('seek');
-      return this;      
     };
 
     Lap.prototype.populatePlaylist = function() {

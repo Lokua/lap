@@ -75,6 +75,7 @@
             thiz.drawKnob(e.offsetX);
             v = tooly.scale(e.offsetX, 0, settings.width - settings.knobWidth, 0, 1);
             if (v >= 0.95) v = 1;
+            if (v < 0) v = 0;
             audio.volume = v;
             thiz.lap.trigger('volumeChange');
           }
@@ -86,7 +87,9 @@
 
       /*>>*/
       logger.debug('post init >> this: %o', thiz);
-      /*<<*/      
+      /*<<*/
+
+      thiz.lap.registerPlugin('CanvasVolumeRange', thiz);
 
       return thiz;
     };
@@ -163,6 +166,7 @@
 
           volumeRange = new Lap.CanvasVolumeRange(scope.lap, element, options);
           volumeRange.init();
+          scope.vRangeReady = true;
 
           off();
         });

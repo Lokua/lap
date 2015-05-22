@@ -52,68 +52,64 @@ $lap-DEBUG: false;
 
 }
 
-.lap {
 
-  .lap__controls, .lap__details {
-    @if ($lap-DEBUG) {
-      border: 1px dotted rgba(0,0,255,0.5);
-    }
-    width: $lap-controls-width;
-    height: 18px;
+.lap__controls, .lap__details {
+  @if ($lap-DEBUG) {
+    border: 1px dotted rgba(0,0,255,0.5);
+  }
+  width: $lap-controls-width;
+  height: 18px;
 
-    display: inline-flex;
-    flex-flow: row nowrap;
-    // justify-content: center;
-    // align-items: center;
+  display: inline-flex;
+  flex-flow: row nowrap;
+  // justify-content: center;
+  // align-items: center;
 
-  }
-
-  .lap__detail, .lap__control {
-    flex-grow: 1;
-  }
-
-  .lap__control {
-    @if ($lap-DEBUG) {
-      border: 1px dotted rgba(0,255,0,0.5);
-    }    
-  }
-  .lap__canvas-volume-range__container {
-    flex-grow: 3;
-  }
-  .lap__read {
-    @if ($lap-DEBUG) {
-      border: 1px dotted rgba(0,255,0,0.5);
-    }      
-    padding-top: 3px;
-    font-size: $lap-info-text-size;
-    font-family: $lap-font-family;
-    flex-grow: 2;
-  }
 }
 
-.lap {
-  // .lap__canvas-volume-range__container {
-  .lap__canvas-volume-range {
-    width: $lap-progress-width;
-    position: relative;
-    flex-grow: 8;
-    padding-top: 3px;
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }    
-  }
-  .lap__prog-seek {
-    width: $lap-progress-width;
-    position: relative;
-    flex-grow: 4;
-    padding-top: 3px;
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+.lap__detail, .lap__control {
+  flex-grow: 1;
+}
+
+.lap__control {
+  @if ($lap-DEBUG) {
+    border: 1px dotted rgba(0,255,0,0.5);
+  }    
+}
+.lap__canvas-volume-range__container {
+  flex-grow: 3;
+}
+.lap__read {
+  @if ($lap-DEBUG) {
+    border: 1px dotted rgba(0,255,0,0.5);
+  }      
+  padding-top: 3px;
+  font-size: $lap-info-text-size;
+  font-family: $lap-font-family;
+  flex-grow: 2;
+}
+
+// .lap__canvas-volume-range__container {
+.lap__canvas-volume-range {
+  width: $lap-progress-width;
+  position: relative;
+  flex-grow: 8;
+  padding-top: 3px;
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }    
+}
+.lap__prog-seek {
+  width: $lap-progress-width;
+  position: relative;
+  flex-grow: 4;
+  padding-top: 3px;
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 }
 

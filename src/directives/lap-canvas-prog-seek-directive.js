@@ -135,6 +135,8 @@
       logger.debug('post init >> this: %o', thiz);
       /*<<*/
 
+      thiz.lap.registerPlugin('CanvasProgSeek', thiz);
+
       return thiz;
     };
 

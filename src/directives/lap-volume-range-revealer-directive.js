@@ -8,9 +8,9 @@
   /*<<*/
 
   angular.module('lnet.lap').directive('lapVolumeRangeRevealer', lapVolumeRangeRevealer);
-  lapVolumeRangeRevealer.$inject = ['$document', 'tooly', 'Lap', 'lapUtil'];
+  lapVolumeRangeRevealer.$inject = ['$document', '$timeout', '$interval', 'tooly', 'Lap', 'lapUtil'];
 
-  function lapVolumeRangeRevealer($document, tooly, Lap, lapUtil) {
+  function lapVolumeRangeRevealer($document, $timeout, $interval, tooly, Lap, lapUtil) {
 
     /**
      * Lap plugin providing support for hiding and showing
@@ -44,19 +44,14 @@
           speaker = lapUtil.element('.lap__speaker', lapContainer),
           speakerContainer = lapUtil.element('.lap__speaker__container', lapContainer),
           volumeRange = lap.els.volumeRange,
-          rangeWidth = volumeRange.find('canvas').attr('width'),
+          rangeWidth = thiz.element[0].querySelector('.lap__canvas-volume-range__track').width,
           nonVolumeControls = lapUtil.elementAll('.lap__non-v', lapContainer),
           MOUSEDOWN, SPEAKER_ENTERED, RANGE_ENTERED;
 
-      /*>>*/
-      logger.debug('nonVolumeControls: %o', nonVolumeControls);
-      /*<<*/
-
-      if (!volumeRange) {
+      if (!volumeRange || !volumeRange.length) {
         throw new Lap.PluginContructorError(
           'Lap.VolumeRangeRevealer cannot init without Lap#els.volumeRange element');
       }
-
 
       // TODO: these would be better as callback hooks on CanvasVolumeRange events
       volumeRange
@@ -74,6 +69,10 @@
             var n = tooly.scale(v, 0, 100, 0, thiz.levelClasses.length-1);
             classNum = Math.ceil(n); 
           }
+
+          logger.debug('rangeWidth: %o, e.offsetX: %o, v: %o, classNum: %o, thiz.levelClasses[classNum]: %o', 
+            rangeWidth, e.offsetX, v, classNum, thiz.levelClasses[classNum]);
+
           speaker.removeClass(thiz.levelClasses.filter(function(c) {
             return c !== thiz.levelClasses[classNum];
           }).join(' ')).addClass(thiz.levelClasses[classNum]);
@@ -95,9 +94,11 @@
         .on('mouseleave', function(e) {
           SPEAKER_ENTERED = false;
           // allow time to move mouse into the range element
-          setTimeout(function() {
-            if (!SPEAKER_ENTERED && !RANGE_ENTERED) release();
-          }, 250 /*500*/);
+          $timeout(function() {
+            if (!SPEAKER_ENTERED && !RANGE_ENTERED) {
+              release();
+            }
+          }, 500);
         });
 
 
@@ -114,6 +115,8 @@
         nonVolumeControls.removeClass(lap.selectors.state.hidden);
       }
 
+      lap.registerPlugin('VolumeRangeRevealer', thiz);
+
       /*>>*/
       logger.debug('post init >> this: %o', thiz);
       /*<<*/
@@ -125,13 +128,18 @@
 
         var revealer;
 
-        var off = scope.$watch('ready', function(newValue, oldValue) {
+        var unwatch = scope.$watch('ready', function(newValue, oldValue) {
           if (!newValue) return;
-          
-          revealer = new Lap.VolumeRangeRevealer(scope.lap, element);
-          revealer.init();
 
-          off();
+          revealer = new Lap.VolumeRangeRevealer(scope.lap, element);
+          unwatch();
+
+          unwatch = scope.$watch('vRangeReady', function(newValue, oldValue) {
+            if (!newValue) return;
+
+            revealer.init();
+            unwatch();
+          });
         });
       }
     };

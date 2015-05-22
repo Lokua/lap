@@ -1,16 +1,16 @@
 @font-face {
-	font-family: 'LapIcons';
-	src:url('fonts/LapIcons.eot?-ro0n91');
-	src:url('fonts/LapIcons.eot?#iefix-ro0n91') format('embedded-opentype'),
-		url('fonts/LapIcons.woff?-ro0n91') format('woff'),
-		url('fonts/LapIcons.ttf?-ro0n91') format('truetype'),
-		url('fonts/LapIcons.svg?-ro0n91#LapIcons') format('svg');
+	font-family: 'lap-icons-150521';
+	src:url('fonts/lap-icons-150521.eot?-gq1r1w');
+	src:url('fonts/lap-icons-150521.eot?#iefix-gq1r1w') format('embedded-opentype'),
+		url('fonts/lap-icons-150521.woff?-gq1r1w') format('woff'),
+		url('fonts/lap-icons-150521.ttf?-gq1r1w') format('truetype'),
+		url('fonts/lap-icons-150521.svg?-gq1r1w#lap-icons-150521') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
 i {
-	font-family: 'LapIcons';
+	font-family: 'lap-icons-150521';
 	speak: none;
 	font-style: normal;
 	font-weight: normal;

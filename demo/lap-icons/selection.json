@@ -40,6 +40,7 @@
 				"name": "volume-off"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 0
 		},
 		{
@@ -72,6 +73,7 @@
 				"name": "volume-low"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 1
 		},
 		{
@@ -113,6 +115,7 @@
 				"name": "volume-mid"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 2
 		},
 		{
@@ -163,15 +166,16 @@
 				"name": "volume-high"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 3
 		},
 		{
 			"icon": {
 				"paths": [
-					"M42.667 384v341.333h128l298.667 170.667v-682.667l-298.667 170.667z",
-					"M776.405 132.48l-38.4 76.203c6.912 3.584 168.661 89.984 168.661 345.984s-161.749 342.4-168.405 345.813l38.187 76.331c8.789-4.437 215.595-111.36 215.595-422.187s-206.848-417.749-215.637-422.144z",
-					"M685.739 303.147l-38.187 76.331c0.853 0.427 83.072 43.051 83.072 175.147 0 129.621-80.128 173.568-83.072 175.147l38.187 76.331c5.333-2.688 130.261-67.243 130.261-251.52s-124.928-248.747-130.261-251.435z",
-					"M579.072 409.813l-38.187 76.331c0.299 0.128 29.739 17.152 29.739 68.48 0 50.048-27.563 67.2-29.739 68.48l38.187 76.331c28.587-14.293 76.928-60.885 76.928-144.853s-48.341-130.475-76.928-144.768z"
+					"M42.667 341.334v341.333h128l298.667 170.667v-682.667l-298.667 170.667z",
+					"M776.405 89.814l-38.4 76.203c6.912 3.584 168.661 89.984 168.661 345.984s-161.749 342.4-168.405 345.813l38.187 76.331c8.789-4.437 215.595-111.36 215.595-422.187s-206.848-417.749-215.637-422.144z",
+					"M685.739 260.481l-38.187 76.331c0.853 0.427 83.072 43.051 83.072 175.147 0 129.621-80.128 173.568-83.072 175.147l38.187 76.331c5.333-2.688 130.261-67.243 130.261-251.52s-124.928-248.747-130.261-251.435z",
+					"M579.072 367.147l-38.187 76.331c0.299 0.128 29.739 17.152 29.739 68.48 0 50.048-27.563 67.2-29.739 68.48l38.187 76.331c28.587-14.293 76.928-60.885 76.928-144.853s-48.341-130.475-76.928-144.768z"
 				],
 				"attrs": [
 					{
@@ -215,13 +219,14 @@
 				}
 			],
 			"properties": {
-				"order": 20,
+				"order": 25,
 				"id": 19,
 				"prevSize": 16,
 				"code": 58896,
 				"name": "volume-max"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 4
 		},
 		{
@@ -254,6 +259,7 @@
 				"name": "play"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 5
 		},
 		{
@@ -295,6 +301,7 @@
 				"name": "pause"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 6
 		},
 		{
@@ -336,6 +343,7 @@
 				"name": "backward"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 7
 		},
 		{
@@ -377,6 +385,7 @@
 				"name": "forward"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 8
 		},
 		{
@@ -409,6 +418,7 @@
 				"name": "prev"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 9
 		},
 		{
@@ -441,6 +451,7 @@
 				"name": "next"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 10
 		},
 		{
@@ -500,6 +511,7 @@
 				"name": "playlist"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 11
 		},
 		{
@@ -604,6 +616,7 @@
 				"name": "discog"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 12
 		},
 		{
@@ -636,6 +649,7 @@
 				"name": "prev-album"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 13
 		},
 		{
@@ -668,6 +682,7 @@
 				"name": "next-album"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 14
 		},
 		{
@@ -700,6 +715,7 @@
 				"name": "sm-arrow-down"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 15
 		},
 		{
@@ -732,12 +748,17 @@
 				"name": "sm-arrow-up"
 			},
 			"setIdx": 0,
+			"setId": 1,
 			"iconIdx": 16
 		}
 	],
 	"height": 1024,
 	"metadata": {
-		"name": "LapIcons"
+		"name": "lap-icons-150521",
+		"url": "https://guthub.com/Lokua/lap",
+		"designerURL": "http://lokua.net",
+		"license": "MIT",
+		"licenseURL": "http://opensource.org/licenses/MIT"
 	},
 	"preferences": {
 		"showGlyphs": true,
@@ -747,9 +768,15 @@
 		"fontPref": {
 			"prefix": "lap-i-",
 			"metadata": {
-				"fontFamily": "LapIcons",
-				"majorVersion": 1,
-				"minorVersion": 3
+				"fontFamily": "lap-icons-150521",
+				"majorVersion": 2,
+				"minorVersion": 0,
+				"designerURL": "http://lokua.net",
+				"license": "MIT",
+				"licenseURL": "http://opensource.org/licenses/MIT",
+				"copyright": "2015 Joshua Kleckner",
+				"description": "Lap (Lokua Audio Player) icon set",
+				"fontURL": "https://guthub.com/Lokua/lap"
 			},
 			"metrics": {
 				"emSize": 1024,
@@ -759,7 +786,8 @@
 			"showSelector": true,
 			"selector": "i",
 			"classSelector": ".icon",
-			"showVersion": true
+			"showVersion": true,
+			"showMetadata": true
 		},
 		"imagePref": {
 			"prefix": "icon-",
