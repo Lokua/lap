@@ -155,12 +155,26 @@ lap-container {
 }
 
 .lap__current-time {
-  // padding-left: 4px;
   text-align: right;
+  font-family: $lap-monospace;
 }
 .lap__duration {
   text-align: left;
-  // padding-right: 4px;
+  font-family: $lap-monospace;
+}
+
+.lap__playlist__track-number {
+  font-family: $lap-monospace;
+  color: lighten($lap-text-color, 25%);
+  font-size: $lap-font-size - 2;
+}
+.lap__playlist__item {
+  cursor: pointer;
+  &:hover {
+    // .lap__playlist__track-title {
+      color: darken($lap-text-color, 55%);
+    // }
+  }
 }
 
 .lap__tooltip {

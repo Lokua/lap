@@ -92,7 +92,8 @@ module.exports = function(grunt) {
       },
       angular: {
         files: {
-          'src/templates/lap-controls.html': ['src/templates/lap-controls.jade']
+          'src/templates/lap-controls.html': ['src/templates/lap-controls.jade'],
+          'src/templates/lap-playlist.html': ['src/templates/lap-playlist.jade'],
         }
       }
     },

@@ -103,7 +103,8 @@
     Lap.prototype.defaultSettings = {
       callbacks: {},
       discogPlaylistExclusive: true,
-      plugins: null,
+      plugins: [],
+
       prependTrackNumbers: true,
       replacementText: void 0,
       startingAlbumIndex: 0,
@@ -354,7 +355,7 @@
           if (els.artist) lap.updateArtistEl();
           if (els.album) lap.updateAlbumEl();
           if (els.cover) lap.updateCover();
-          if (els.playlistPanel) lap.populatePlaylist();
+          // if (els.playlistPanel) lap.populatePlaylist();
           if (els.playPause) {
             els.playPause.addClass(lap.selectors.state.paused);
             lap
@@ -383,7 +384,7 @@
           if (els.artist) lap.updateArtistEl();
           if (els.album) lap.updateAlbumEl();
           if (els.cover) lap.updateCover();
-          if (els.playlistPanel) lap.populatePlaylist();
+          // if (els.playlistPanel) lap.populatePlaylist();
         });      
     };
 
@@ -510,7 +511,7 @@
       return this;
     };
 
-    Lap.prototype.setTrack = function() {
+    Lap.prototype.setTrack = function(index) {
       if (index <= 0) {
         this.trackIndex = 0;
       } else if (index >= this.trackCount) {

@@ -137,10 +137,26 @@ lap-container {
 
 .lap__current-time {
   text-align: right;
+  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
 }
 
 .lap__duration {
   text-align: left;
+  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
+}
+
+.lap__playlist__track-number {
+  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
+  color: #959595;
+  font-size: 10px;
+}
+
+.lap__playlist__item {
+  cursor: pointer;
+}
+
+.lap__playlist__item:hover {
+  color: black;
 }
 
 .lap__tooltip {

@@ -1,0 +1,5 @@
+
+<div ng-show="showPlayist" class="lap__playlist__panel">
+  <div ng-repeat="track in tracklist" ng-class="{ &quot;lap__playlist__item--current&quot;: $index === lap.trackIndex }" ng-click="lap.setTrack($index)" class="lap__playlist__item"><span class="lap__playlist__track-number">{{trackNumbers[$index]}} &nbsp;</span><span class="lap__playlist__track-title">{{track}}</span>
+  </div>
+</div>

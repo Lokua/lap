@@ -39,6 +39,21 @@
 
           Lap.getLib(src).then(function(lib) {
             scope.lap = new Lap(element, lib, {
+              discogPlaylistExclusive: true,
+              plugins: [],
+              prependTrackNumbers: true,
+              replacementText: void 0,
+              startingAlbumIndex: 0,
+              startingTrackIndex: 0,
+              seekInterval: 5, 
+              seekTime: 250,
+              selectors: {},
+              selectorPrefix: 'lap',
+              trackNumberPostfix: ' - ',
+              useNativeProgress: false,
+              useNativeSeekRange: false,
+              useNativeVolumeRange: false,
+              volumeInterval: 0.05,              
               callbacks: {
                 load: function() {
                   scope.ready = true;
