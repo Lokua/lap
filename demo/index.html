@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="lap-icons/style.css">
   <script src="../deps/lo66er/dist/lo66er.js"></script>
   <script src="../deps/angular/angular.js"></script>
-  <script src="../deps/angular-tooly.js"></script>
+  <script src="../deps/tooly/dist/ng-tooly.js"></script>
   <script src="../src/lap-module-definition.js"></script>
   <script src="../src/services/lap-service.js"></script>
   <script src="../src/services/lap-util-service.js"></script>
@@ -16,29 +16,8 @@
 </head>
 <body ng-app="demo" ng-controller="DemoCtrl" style="margin-top:32px">
 
-  <div class="lap__container">
+  <div class="demo__container">
     <lap-container src="{{src}}"></lap-container>
-  </div>
-
-  <br>
-  <div class="test">
-
-    <div class="item">
-      <i class="lap-i-play"></i>
-    </div>
-
-    <div class="item a">
-      <i class="lap-i-pause"></i>
-    </div>
-
-    <div class="item">
-      <i class="lap-i-prev"></i>
-    </div>
-
-    <div class="item">
-      <i class="lap-i-next"></i>
-    </div>
-
   </div>
 
   <script>'use strict';/*global Lo66er*/

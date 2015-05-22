@@ -1,12 +1,12 @@
 @import url(http://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700,400italic,700italic);
 
-.lap:after, #main section:after, #full-discography-player .lap__case-and-discog-container:after, #full-discography-player .lap__case:after, #full-discography-player .lap__discog__container:after {
+.lap:after {
   content: '';
   display: table;
   clear: both;
 }
 
-.lap__container {
+lap-container {
   display: inline-block;
   padding: 8px;
   box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
@@ -40,9 +40,16 @@
   color: #888888;
 }
 
+.lap i.active {
+  color: cornflowerblue;
+}
+
 .lap__controls, .lap__details {
   width: 298px;
   height: 18px;
+}
+
+.lap__controls {
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
@@ -51,25 +58,41 @@
   flex-flow: row nowrap;
 }
 
-.lap__detail, .lap__control {
+.lap__details {
+  text-align: center;
+}
+
+.lap__control {
   -webkit-flex-grow: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;
+}
+
+.lap__detail.lap__artist:after, .lap__detail.lap__track-number:after {
+  content: ' -\00a0';
+}
+
+.lap__detail.lap__album {
+  font-style: italic;
+}
+
+.lap__detail.lap__track-number:before {
+  font-size: 10px;
+  content: 'trk\00a0';
+}
+
+.lap__play-pause.lap--playing:before {
+  content: "\e601";
+}
+
+.lap__play-pause.lap--paused:before {
+  content: "\e600";
 }
 
 .lap__canvas-volume-range__container {
   -webkit-flex-grow: 3;
   -ms-flex-positive: 3;
   flex-grow: 3;
-}
-
-.lap__read {
-  padding-top: 3px;
-  font-size: 10px;
-  font-family: 'Source Code Pro';
-  -webkit-flex-grow: 2;
-  -ms-flex-positive: 2;
-  flex-grow: 2;
 }
 
 .lap__canvas-volume-range {
@@ -88,6 +111,7 @@
 }
 
 .lap__prog-seek {
+  margin: 0 auto;
   width: 76px;
   position: relative;
   -webkit-flex-grow: 4;
@@ -102,53 +126,48 @@
   left: 0;
 }
 
-.test {
-  margin-top: 32px;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  width: 200px;
-  border: 1px solid #000;
+.lap__read {
+  padding-top: 3px;
+  font-size: 10px;
+  font-family: 'Source Code Pro';
+  -webkit-flex-grow: 2;
+  -ms-flex-positive: 2;
+  flex-grow: 2;
 }
 
-.test .item {
-  -webkit-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
-  border: 1px solid red;
+.lap__current-time {
+  text-align: right;
 }
 
-.test .a {
-  -webkit-flex-grow: 3;
-  -ms-flex-positive: 3;
-  flex-grow: 3;
+.lap__duration {
+  text-align: left;
 }
 
-.lap .lap__tooltip {
+.lap__tooltip {
   display: inline;
   position: relative;
   font-size: 12px;
   transition: opacity;
 }
 
-.lap .lap__tooltip:before, .lap .lap__tooltip:after {
+.lap__tooltip:before, .lap__tooltip:after {
   opacity: 0;
 }
 
-.lap .lap__tooltip:hover:before, .lap .lap__tooltip:hover:after {
+.lap__tooltip:hover:before, .lap__tooltip:hover:after {
   transition-delay: 1s;
   opacity: 1;
 }
 
-.lap .lap__tooltip:hover {
+.lap__tooltip:hover {
   text-decoration: none;
 }
 
-.lap .lap__tooltip:hover:after {
+.lap__tooltip:hover:after {
   background: #000;
   color: #fff;
   bottom: 1.35em;
-  content: attr(data-tooltip);
+  content: attr(data-lap-tooltip);
   display: block;
   left: 1em;
   padding: 3px 6px;
@@ -157,112 +176,29 @@
   z-index: 98;
 }
 
-.lap .lap--hidden {
+.lap--hidden {
   display: none !important;
 }
 
+@font-face {
+  font-family: 'balhamregular';
+  src: url('fonts/balham/fontsquirrel-webfontkit/balham-webfont.eot');
+  src: url('fonts/balham/fontsquirrel-webfontkit/balham-webfont.eot?#iefix') format('embedded-opentype'), url('fonts/balham/fontsquirrel-webfontkit/balham-webfont.woff2') format('woff2'), url('fonts/balham/fontsquirrel-webfontkit/balham-webfont.woff') format('woff'), url('fonts/balham/fontsquirrel-webfontkit/balham-webfont.ttf') format('truetype'), url('fonts/balham/fontsquirrel-webfontkit/balham-webfont.svg#balhamregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
-  font-family: 'Quattrocento Sans', sans-serif;
+  font-family: balhamregular;
+  font-size: 12px;
   color: #444;
 }
 
-#main section {
-  padding: 8px;
-}
-
-#main .lap {
-  border: 1px solid #ddd;
-}
-
-#full-discography-player .lap__cover__container img, #full-discography-player .lap__playlist__panel img, #full-discography-player .lap__playlist__panel {
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.125);
-}
-
-#full-discography-player {
-  position: relative;
-  background: #e6e6d8;
-}
-
-#full-discography-player .lap__case {
-  width: 75%;
-  float: none;
-  margin: 0 auto;
-  padding-top: 16px;
-  position: relative;
-}
-
-#full-discography-player .lap__cover__container, #full-discography-player .lap__playlist__panel {
-  width: 50%;
-  float: left;
-}
-
-#full-discography-player .lap__cover__container img, #full-discography-player .lap__playlist__panel img {
-  width: 256px;
-  height: 256px;
-  float: right;
-  padding-right: 16px;
-}
-
-#full-discography-player .lap__playlist__panel {
-  width: 256px;
-  height: 256px;
-  position: relative;
-  z-index: 22;
-  background: #fff;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-#full-discography-player .lap__playlist__panel ul {
-  list-style: none;
-  padding-left: 0;
-  font-size: 12px;
-  padding-left: 16px;
-  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
-}
-
-#full-discography-player .lap__playlist__panel li {
-  cursor: pointer;
-}
-
-#full-discography-player .lap__playlist__panel li:hover {
-  color: red;
-}
-
-#full-discography-player .lap__discog__container {
-  position: relative;
-}
-
-#full-discography-player .lap__discog__panel {
-  width: 75%;
-  float: none;
-  margin: 0 auto;
-}
-
-#full-discography-player .lap__discog__thumb {
-  width: 33.3333333333%;
-  float: left;
-  margin: 0 auto;
-  cursor: pointer;
-}
-
-#full-discography-player .lap__discog__thumb img {
-  width: 160px;
-  height: 160px;
-  margin: 0 auto;
-  display: block;
-}
-
-#full-discography-player .lap__discog__thumb h4, #full-discography-player .lap__discog__thumb h5, #full-discography-player .lap__discog__thumb h6 {
-  text-align: center;
-  font-weight: normal;
-  margin: 4px 0;
-}
-
-#full-discography-player .lap__discog__thumb h5 {
-  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
-}
-
-#single-track-player .lap__controls {
-  margin: 0;
+.demo__container {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
 }

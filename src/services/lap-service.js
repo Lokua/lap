@@ -293,7 +293,14 @@
       var lap = this,
           els = lap.els;
 
-      if (els.playPause) els.playPause.on('click', function() { lap.togglePlay(); });
+      if (els.playPause) {
+        els.playPause.on('click', function() { 
+          /*>>*/
+          logger.debug('hello');
+          /*<<*/
+          lap.togglePlay(); 
+        });
+      }
       if (els.prev) els.prev.on('click', function() { lap.prev(); });
       if (els.next) els.next.on('click', function() { lap.next(); });
       if (els.volumeUp) els.volumeUp.on('click', function() { lap.incVolume(); });
@@ -487,6 +494,7 @@
     };
 
     Lap.prototype.togglePlay = function() {
+      logger.debug('toggle play called...');
       this.audio.paused ? this.play() : this.pause();
       this.trigger('togglePlay');
       return this;

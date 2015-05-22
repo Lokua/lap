@@ -1,8 +1,10 @@
 .lap__details
-  span.lap__detail.lap__artist
-  span.lap__detail.lap__album
-  span.lap__detail.lap__track-number
-  span.lap__detail.lap__track-title
+  div
+    span.lap__detail.lap__artist
+    span.lap__detail.lap__album
+  div
+    span.lap__detail.lap__track-number
+    span.lap__detail.lap__track-title
 
 br
 
@@ -17,10 +19,10 @@ br
   .lap__control.lap__non-v
     i.lap__play-pause.lap-i-play
 
-  .lap__control.lap__tooltip.lap__non-v(data-tooltip='previous track')
+  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='previous track')
     i.lap__prev.lap-i-prev
 
-  .lap__control.lap__tooltip.lap__non-v(data-tooltip='next track')
+  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next track')
     i.lap__next.lap-i-next
 
   .lap__read.lap__non-v.lap__current-time 00:00
@@ -29,11 +31,11 @@ br
 
   .lap__read.lap__duration.lap__non-v 00:00
 
-  .lap__control.lap__tooltip.lap__non-v(data-tooltip='previous album')
+  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='previous album')
     i.lap__prev-album.lap-i-prev-album
 
-  .lap__control.lap__tooltip.lap__non-v(data-tooltip='show albums')
+  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='show albums')
     i.lap__discog.lap-i-discog
 
-  .lap__control.lap__tooltip.lap__non-v(data-tooltip='next album')
+  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next album')
     i.lap__next-album.lap-i-next-album
