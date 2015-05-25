@@ -123,10 +123,9 @@
           }
         });
 
-      lapUtil.element('body').on('mouseup', function(e) {
+      lapUtil.body().on('mouseup', function(e) {
         if (MOUSEDOWN) {
-          audio.currentTime = tooly.scale(
-            e.offsetX, 0, settings.width, 0, audio.duration);
+          audio.currentTime = tooly.scale(e.offsetX, 0, settings.width, 0, audio.duration);
           MOUSEDOWN = false;
         }
       });
@@ -249,7 +248,6 @@
 
     return {
       restrict: 'E',
-      // require: '^lapContainer',
       template: '<div class="lap__prog-seek"></div>',
       link: function(scope, element, attrs) {
 

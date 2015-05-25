@@ -1,43 +1,45 @@
-.lap__details
-  div
-    span.lap__detail.lap__artist
-    span.lap__detail.lap__album
-  div
-    span.lap__detail.lap__track-number
-    span.lap__detail.lap__track-title
+.lap.lap__player
 
-br
+  .lap__details
+    div
+      span.lap__detail.lap__artist
+      span.lap__detail.lap__album
+    div
+      span.lap__detail.lap__track-number
+      span.lap__detail.lap__track-title
 
-.lap__controls
+  br
 
-  .lap__control.lap__speaker__container
-    i.lap__speaker.lap-i-volume-high
+  .lap__controls
 
-  //- .lap__control.lap__canvas-volume-range__container
-  lap-canvas-volume-range.lap__canvas-volume-range.lap--hidden(lap-volume-range-revealer='vRangeReady')
+    .lap__control.lap__speaker__container
+      i.lap__speaker.lap-i-volume-high
 
-  .lap__control.lap__non-v
-    i.lap__play-pause.lap-i-play
+    //- .lap__control.lap__canvas-volume-range__container
+    lap-canvas-volume-range.lap__canvas-volume-range.lap--hidden(lap-volume-range-revealer='vRangeReady')
 
-  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='previous track')
-    i.lap__prev.lap-i-prev
+    .lap__control.lap__non-v
+      i.lap__play-pause.lap-i-play
 
-  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next track')
-    i.lap__next.lap-i-next
+    .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='previous track')
+      i.lap__prev.lap-i-prev
 
-  .lap__read.lap__non-v.lap__current-time 00:00
+    .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next track')
+      i.lap__next.lap-i-next
 
-  lap-canvas-prog-seek.lap__control.lap__prog-seek.lap__non-v(ready='ready')
+    .lap__read.lap__non-v.lap__current-time 00:00
 
-  .lap__read.lap__duration.lap__non-v 00:00
+    lap-canvas-prog-seek.lap__control.lap__prog-seek.lap__non-v(ready='ready')
 
-  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='previous album')
-    i.lap__prev-album.lap-i-prev-album
+    .lap__read.lap__duration.lap__non-v 00:00
 
-  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='show albums')
-    i.lap__discog.lap-i-discog
+    .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='previous album')
+      i.lap__prev-album.lap-i-prev-album
 
-  .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next album')
-    i.lap__next-album.lap-i-next-album
+    .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='show albums')
+      i.lap__discog.lap-i-discog
 
-lap-playlist
+    .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next album')
+      i.lap__next-album.lap-i-next-album
+
+//- lap-playlist

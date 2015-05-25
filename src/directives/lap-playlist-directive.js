@@ -9,41 +9,51 @@
   /*<<*/
   
   angular.module('lnet.lap').directive('lapPlaylist', lapPlaylist);
-  lapPlaylist.$inject = ['tooly'];
+  lapPlaylist.$inject = ['$templateCache', 'tooly', 'lapUtil'];
 
-  function lapPlaylist(tooly) {
+  function lapPlaylist($templateCache, tooly, lapUtil) {
     return {
       restrict: 'E',
-      templateUrl: '../src/templates/lap-playlist.html',
+      template: $templateCache.get('lap-playlist.html'),
+      scope: true,
       link: function(scope, element, attrs) {
 
         var lap;
 
-        var off = scope.$watch('ready', function(newValue, oldValue) {
+        var off = scope.$watch('lap', function(newValue, oldValue) {
           if (!newValue) return;
-          lap = scope.lap;
+          lap = newValue;
+          logger.debug('watch >> lap: %o', lap);
           init();
           off();
-        });
+        });        
 
         function init() {
 
-          format();
+          update();
           scope.showPlayist = true;
           
-          lap.on('albumChange', function() {
-            format();
-            scope.$apply();
-          });
+          lap
+            .on('albumChange', function() {
+              update();
+              lapUtil.safeApply(scope);
+            })
+            .on('trackChange', function() {
+              lapUtil.safeApply(scope);
+            });
         }
 
-        function format() {
-          var len = String(lap.tracklist.length-1).length;
-          var trackNumbers = lap.tracklist.map(function(track, i) {
-            return tooly.lpad( String( (i+1) ), len, '0');
+        scope.setTrack = function(index) {
+          lap.setTrack(index);
+        };
+
+        function update() {
+          var len = String(lap.trackCount).length;
+          scope.trackNumbers = lap.tracklist.map(function(track, i) {
+            return tooly.lpad(String(i+1), len, '0');
           });
           scope.tracklist = lap.tracklist;
-          scope.trackNumbers = trackNumbers;
+          scope.cover = lap.cover;
         }
       }
     };

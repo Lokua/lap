@@ -1,6 +1,6 @@
 @import url(http://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700,400italic,700italic);
 
-.lap:after {
+.lap__player:after {
   content: '';
   display: table;
   clear: both;
@@ -8,16 +8,22 @@
 
 lap-container {
   display: inline-block;
-  padding: 8px;
-  box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
 }
 
-.lap {
+.lap__player {
   width: 298px;
+  padding: 8px;
+  box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.125);
   color: #555;
 }
 
-.lap *, .lap *:before:not(i), .lap *:after:not(i) {
+.lap__player *, .lap__player *:before:not(i), .lap__player *:after:not(i) {
   box-sizing: border-box;
   cursor: normal;
   -webkit-user-select: none;
@@ -26,21 +32,21 @@ lap-container {
   user-select: none;
 }
 
-.lap *:focus, .lap *:before:not(i):focus, .lap *:after:not(i):focus {
+.lap__player *:focus, .lap__player *:before:not(i):focus, .lap__player *:after:not(i):focus {
   outline: 0;
 }
 
-.lap i {
+.lap__player i {
   font-size: 16px;
   cursor: pointer;
   color: #555;
 }
 
-.lap i:hover {
+.lap__player i:hover {
   color: #888888;
 }
 
-.lap i.active {
+.lap__player i.active {
   color: cornflowerblue;
 }
 
@@ -145,20 +151,6 @@ lap-container {
   font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
 }
 
-.lap__playlist__track-number {
-  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
-  color: #959595;
-  font-size: 10px;
-}
-
-.lap__playlist__item {
-  cursor: pointer;
-}
-
-.lap__playlist__item:hover {
-  color: black;
-}
-
 .lap__tooltip {
   display: inline;
   position: relative;
@@ -196,6 +188,125 @@ lap-container {
   display: none !important;
 }
 
+.lap__case {
+  width: 66.6666666667%;
+  float: none;
+  margin: 0 auto;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.lap__case *, .lap__case *:before:not(i), .lap__case *:after:not(i) {
+  box-sizing: border-box;
+  cursor: normal;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.lap__case *:focus, .lap__case *:before:not(i):focus, .lap__case *:after:not(i):focus {
+  outline: 0;
+}
+
+lap-playlist {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.lap__cover__container, .lap__playlist__panel {
+  width: 300px;
+  height: 280px;
+  -webkit-flex-basis: 300px;
+  -ms-flex-preferred-size: 300px;
+  flex-basis: 300px;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+}
+
+.lap__cover__container {
+  overflow: hidden;
+}
+
+img.lap__cover {
+  display: block;
+  margin: 0 auto;
+  width: 280px;
+  height: 280px;
+  border: 1px dotted rgba(0, 0, 0, 0.125);
+}
+
+.lap__playlist__panel__inner {
+  margin: 0 auto;
+  width: 280px;
+  height: 280px;
+  display: block;
+  overflow: auto;
+  border: 1px dotted rgba(0, 0, 0, 0.125);
+}
+
+.lap__playlist__item {
+  cursor: pointer;
+}
+
+.lap__playlist__item:hover {
+  color: black;
+}
+
+.lap__playlist__item--current {
+  color: blue;
+}
+
+.lap__playlist__track-number {
+  font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
+  color: #959595;
+  font-size: 10px;
+}
+
+.lap__discog__panel {
+  width: 600px;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.lap__discog__item {
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+}
+
+.lap__discog__item img {
+  display: block;
+  margin: 0 auto;
+  width: 200px;
+  height: 200px;
+  border: 1px dotted rgba(0, 0, 0, 0.125);
+}
+
+.lap__discog__item aside {
+  text-align: center;
+}
+
 @font-face {
   font-family: 'balhamregular';
   src: url('fonts/balham/fontsquirrel-webfontkit/balham-webfont.eot');
@@ -210,11 +321,3 @@ body {
   color: #444;
 }
 
-.demo__container {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-}

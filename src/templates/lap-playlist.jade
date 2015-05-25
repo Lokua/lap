@@ -1,11 +1,15 @@
+.lap__cover__container
+  img.lap__cover(ng-src='{{cover}}')
+
 .lap__playlist__panel(ng-show='showPlayist')
+  .lap__playlist__panel__inner
 
-  .lap__playlist__item(ng-repeat='track in tracklist'
-    ng-class='{ "lap__playlist__item--current": $index === lap.trackIndex }'
-    ng-click='lap.setTrack($index)')
+    .lap__playlist__item(ng-repeat='track in tracklist'
+      ng-class='{ "lap__playlist__item--current": $index === lap.trackIndex }'
+      ng-click='setTrack($index)')
 
-    //- span.lap__playlist__track-number {{trackNumbers[$index]}} -&nbsp;
-    span.lap__playlist__track-number {{trackNumbers[$index]}} &nbsp;
-    span.lap__playlist__track-title {{track}}
+      //- span.lap__playlist__track-number {{trackNumbers[$index]}} -&nbsp;
+      span.lap__playlist__track-number {{trackNumbers[$index]}} &nbsp;
+      span.lap__playlist__track-title {{track}}
 
 

@@ -1,27 +1,29 @@
 (function() { 'use strict';
 
+  /*>>*/
   var logger = new Lo66er('lapContainer', { 
     outputTimestamp: false,
     level: 0,
     nameStyle: 'color:purple' 
   });
+  /*<<*/
   
   angular.module('lnet.lap').directive('lapContainer', lapContainer);
-  lapContainer.$inject = ['$parse', 'Lap'];
+  lapContainer.$inject = ['$templateCache', '$parse', 'Lap'];
 
-  function lapContainer($parse, Lap) {
+  function lapContainer($templateCache, $parse, Lap) {
     return {
       restrict: 'E',
       scope: {
         src: '@'
       },
-      templateUrl: '../src/templates/lap-controls.html',
+      template: $templateCache.get('lap-controls.html'),
       link: function(scope, element, attrs) {
 
         scope.ready = false;
         scope.player = scope;
 
-        element.addClass('lap');
+        // element.addClass('lap');
 
         if (!attrs.hasOwnProperty('src')) {
           return console.warn('lap-container needs a src attribute. Exiting.');

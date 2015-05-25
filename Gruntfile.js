@@ -11,6 +11,27 @@ module.exports = function(grunt) {
 
     pkg: grunt.file.readJSON('package.json'),
 
+    ngtemplates: {
+      build: {
+        options: {
+          module: 'lnet.lap'/*,
+          htmlmin: {
+            collapseBooleanAttributes:      true,
+            collapseWhitespace:             true,
+            removeAttributeQuotes:          true,
+            removeComments:                 true, // Only if you don't use comment directives! 
+            removeEmptyAttributes:          true,
+            removeRedundantAttributes:      true,
+            removeScriptTypeAttributes:     true,
+            removeStyleLinkTypeAttributes:  true          
+          }*/
+        },
+        cwd: 'src/templates',
+        src: '*.html',
+        dest: 'src/lap-templates.js'
+      }
+    },
+
     autoprefixer: {
       options: {
         browsers: ['> 1%'],
@@ -25,19 +46,21 @@ module.exports = function(grunt) {
       options: {
         separator: '\n\n'
       },
-      debug: {
+      dev: {
         src: [
-          'node_modules/tooly/dist/tooly.js',
-          distLapDebug
+          'src/lap-module-definition.js',
+          'src/services/*.js',
+          'src/directives/*.js'
         ],
-        dest: distLapDebug
+        dest: 'dist/lap-debug.js'
       },
-      build: {
+      dist: {
         src: [
-          'node_modules/tooly/dist/tooly-slim.js',
-          distLap
+          'src/*.js',
+          'src/services/*.js',
+          'src/directives/*.js'
         ],
-        dest: distLap
+        dest: 'dist/lap.js'
       }
     },
 
@@ -45,10 +68,7 @@ module.exports = function(grunt) {
       options: {
         logConcurrentOutput: true
       },
-      debug: {
-        tasks: ['connect', 'watch']
-      },
-      angular: {
+      dev: {
         tasks: ['connect', 'watch']
       }
     },
@@ -87,13 +107,14 @@ module.exports = function(grunt) {
 
     jade: {
       options: {
-        pretty: true,
+        pretty: false,
         timestamp: '<%= grunt.template.today("yyyy-mm-dd") %> <%= new Date().getTime() %>'
       },
       angular: {
         files: {
           'src/templates/lap-controls.html': ['src/templates/lap-controls.jade'],
           'src/templates/lap-playlist.html': ['src/templates/lap-playlist.jade'],
+          'src/templates/lap-discog.html': ['src/templates/lap-discog.jade'],
         }
       }
     },
@@ -102,8 +123,7 @@ module.exports = function(grunt) {
       test: {
         options: {
           outputStyle: 'expanded',
-          noCache: true,
-          sourcemap: 'none'
+          noCache: true
         },
         files: {
           'test/test.css' : 'test/test.scss'
@@ -113,8 +133,7 @@ module.exports = function(grunt) {
         options: {
           outputStyle: 'expanded',
           cacheLocation: 'demo/.sass-cache',
-          noCache: true,
-          sourceMap: 'none'
+          noCache: true
         },
         files: {
           'demo/style.css': 'demo/sass/style.scss'
@@ -133,22 +152,15 @@ module.exports = function(grunt) {
         start_comment: '>>',
         end_comment: '<<'
       },
-      build: {
-        src: distLap
-      },
-      raw: {
-        src: 'dist/lap-raw.js'
+      dist: {
+        src: 'dist/lap.js'
       }
     },
 
     uglify: {
-      build: {
-        src: distLap,
+      dist: {
+        src: 'dist/lap.js',
         dest: 'dist/lap.min.js'
-      },
-      raw: {
-        src: 'dist/lap-raw.js',
-        dest: 'dist/lap-raw.min.js'
       }
     },
 
@@ -158,14 +170,14 @@ module.exports = function(grunt) {
         banner: require('./src/resources/banner'),
         linebreak: true
       },
-      build: {
+      dev: {
         files: {
-          src: [distLap]
+          src: 'dist/lap-debug.js'
         }
-      },
-      debug: {
-        files: { 
-          src: [distLapDebug] 
+      },      
+      dist: {
+        files: {
+          src: 'dist/lap.js'
         }
       },
       post: {
@@ -173,21 +185,8 @@ module.exports = function(grunt) {
           banner: require('./src/resources/banner-min')
         },
         files: {
-          src: ['dist/lap.min.js']
+          src: 'dist/lap.min.js'
         }
-      },
-      post_raw: {
-        options: {
-          banner: require('./src/resources/banner-min')
-        },
-        files: {
-          src: ['dist/lap-raw.min.js']
-        }        
-      },
-      raw: {
-        files: {
-          src: ['dist/lap-raw.js']
-        }        
       }
     },
 
@@ -201,11 +200,11 @@ module.exports = function(grunt) {
       },
       jade: {
         files: 'src/templates/*.jade',
-        tasks: ['jade']
+        tasks: ['jade', 'ngtemplates:build']
       },
       angular: {
-        files: ['**/*.js', 'demo/**/*'],
-        tasks: []
+        files: ['src/services/*.js', 'src/directives/*.js', 'demo/**/*'],
+        tasks: ['concat:dev']
       }
     }
   });
@@ -218,6 +217,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-cssbeautifier');
   grunt.loadNpmTasks('grunt-autoprefixer');
+  grunt.loadNpmTasks('grunt-angular-templates');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-sass');
@@ -225,30 +225,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-strip-code');
   grunt.loadNpmTasks('grunt-umd');
 
-  grunt.registerTask('default', ['concurrent']);
-  grunt.registerTask('all', ['debug', 'build', 'raw']);
-  grunt.registerTask('raw', [
-    'copy:raw',
-    'strip_code:raw',
-    'umd:raw', 
-    'usebanner:raw', 
-    'uglify:raw', 
-    'usebanner:post_raw'    
-  ]);
-  grunt.registerTask('debug', [
-    'copy:debug',
-    'umd:debug', 
-    'usebanner:debug',
-    'concat:debug'
-  ]);
+  grunt.registerTask('default', ['concurrent:dev']);
   grunt.registerTask('build', [
-    'copy:build',
-    'strip_code:build',
-    'umd:build', 
-    'usebanner:build', 
-    'concat:build',
-    'uglify:build', 
+    'concat:dist', 
+    'strip_code:dist', 
+    'uglify:dist', 
+    'usebanner:dist', 
     'usebanner:post'
   ]);
-  grunt.registerTask('angular', ['concurrent:angular']);
 };

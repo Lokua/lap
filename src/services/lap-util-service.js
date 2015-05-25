@@ -31,6 +31,13 @@
 
     return {
 
+      safeApply: function(scope) {
+        var phase = scope.$root.$$phase;
+        if (phase !== '$apply' && phase !== '$digest') {
+          scope.$apply();
+        }
+      },
+
       /**
        * Used to avoid duplicate selections of body element
        * @return {jqLite}
@@ -57,7 +64,6 @@
       element: function(selector, context) {
         return _query('querySelector', selector, context);
       },
-
       elementAll: function(selector, context) {
         return _query('querySelectorAll', selector, context);
       }

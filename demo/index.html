@@ -6,28 +6,38 @@
   <script src="../deps/lo66er/dist/lo66er.js"></script>
   <script src="../deps/angular/angular.js"></script>
   <script src="../deps/tooly/dist/ng-tooly.js"></script>
-  <script src="../src/lap-module-definition.js"></script>
-  <script src="../src/services/lap-service.js"></script>
-  <script src="../src/services/lap-util-service.js"></script>
-  <script src="../src/directives/lap-container-directive.js"></script>
-  <script src="../src/directives/lap-canvas-prog-seek-directive.js"></script>
-  <script src="../src/directives/lap-canvas-volume-range-directive.js"></script>
-  <script src="../src/directives/lap-volume-range-revealer-directive.js"></script>
-  <script src="../src/directives/lap-playlist-directive.js"></script>
+  <script src="../dist/lap-debug.js"></script>
+  <script src="../src/lap-templates.js"></script>
 </head>
 <body ng-app="demo" ng-controller="DemoCtrl" style="margin-top:32px">
 
   <div class="demo__container">
     <lap-container src="{{src}}"></lap-container>
+    <div class="lap__case">
+      <lap-playlist lap="lap" ng-show="!showDiscog_"></lap-playlist>
+      <lap-discog lap="lap" ng-show="showDiscog_"></lap-discog>
+    </div>
   </div>
 
   <script>'use strict';/*global Lo66er*/
     var logger = new Lo66er('DemoCtrl', { level: 0 });
     angular
       .module('demo', ['lnet.lap'])
-      .controller('DemoCtrl', ['$scope', function($scope) {
+      .controller('DemoCtrl', ['$scope', 'Lap', function($scope) {
         $scope.src = 'resources/lib.json';
+        $scope.showDiscog_ = false;
         // $scope.src = [{ files: ['resources/sh.mp3'] }];
+        $scope.$on('lnet.lap.instanceInitialized', function(event, lap) {
+          logger.debug('broadcast received >> lap: %o', lap);
+          $scope.lap = lap;
+          lap.on('discogClick', function(e) {
+            /*>>*/
+            logger.debug('discogClick...');
+            /*<<*/
+            $scope.showDiscog_ = !$scope.showDiscog_;
+            $scope.$apply();
+          });
+        });
       }]);
   </script>
 </body>

@@ -14,11 +14,12 @@
   /*<<*/
 
   angular.module('lnet.lap').factory('Lap', factory);
-  factory.$inject = ['$http', '$q', 'tooly', 'lapUtil'];
+  factory.$inject = ['$http', '$q', '$rootScope', 'tooly', 'lapUtil'];
 
-  function factory($http, $q, tooly, lapUtil) {
+  function factory($http, $q, $rootScope, tooly, lapUtil) {
 
     var _id = _id || 0,
+        _instances = [],
         _audioExtensionRegExp = /mp3|wav|ogg|aiff/i;
 
     /**
@@ -52,8 +53,15 @@
       echo('albumChange');
       echo('volumeChange');
       /*<<*/
+      _instances.push(this);
       return this;
     }
+
+    Lap.getInstance = function(index) {
+      var deferred = $q.defer();
+      deferred.resolve(_instances[index]);
+      return deferred.promise;
+    };
 
     /**
      * Static helper to fetch json or audio file, or convert an existing javascript Object/Array
@@ -69,18 +77,24 @@
       var deferred = $q.defer();
 
       if (tooly.type(arg) === 'object') {
-        logger.debug('isObject...');
+        /*>>*/
+        logger.debug('getLib >> isObject...');
+        /*<<*/
         deferred.resolve([arg]);
         return deferred.promise;
 
       } else if (tooly.type(arg) === 'array') {
-        logger.debug('isArray...');
+        /*>>*/
+        logger.debug('getLib >> isArray...');
+        /*<<*/
         deferred.resolve(arg);
         return deferred.promise;
 
       } else if (_audioExtensionRegExp.test(arg)) {
-        logger.debug('_audioExtensionRegExp.test(arg)...');
+        /*>>*/
+        logger.debug('getLib >> _audioExtensionRegExp.test(arg)...');
         logger.log('arg appears to be a single audio file');
+        /*<<*/
         deferred.resolve([{ files: arg }]);
         return deferred.promise;
       }
@@ -104,7 +118,6 @@
       callbacks: {},
       discogPlaylistExclusive: true,
       plugins: [],
-
       prependTrackNumbers: true,
       replacementText: void 0,
       startingAlbumIndex: 0,
@@ -184,6 +197,8 @@
       /*>>*/
       logger.debug('post initialize >> Lap instance #%d: %o', this.id, this);
       /*<<*/
+
+      $rootScope.$broadcast('lnet.lap.instanceInitialized', this);
 
       this.trigger('load');
     };
@@ -294,59 +309,14 @@
       var lap = this,
           els = lap.els;
 
-      if (els.playPause) {
-        els.playPause.on('click', function() { 
-          /*>>*/
-          logger.debug('hello');
-          /*<<*/
-          lap.togglePlay(); 
-        });
-      }
+      if (els.playPause) els.playPause.on('click', function() { lap.togglePlay(); });
       if (els.prev) els.prev.on('click', function() { lap.prev(); });
       if (els.next) els.next.on('click', function() { lap.next(); });
       if (els.volumeUp) els.volumeUp.on('click', function() { lap.incVolume(); });
       if (els.volumeDown) els.volumeDown.on('click', function() { lap.decVolume(); });
       if (els.prevAlbum) els.prevAlbum.on('click', function() { lap.prevAlbum(); });
       if (els.nextAlbum) els.nextAlbum.on('click', function() { lap.nextAlbum(); });
-
-      var hasPlaylist = els.playlistPanel && els.playlist;
-      var hasDiscog = els.discogPanel && els.discog;
-
-      if (hasPlaylist) {
-        els.playlist.on('click', function() {
-          if (els.playlistPanel.hasClass(lap.selectors.state.hidden)) {
-            els.playlistPanel.removeClass(lap.selectors.state.hidden);
-            _PLAYLIST_OPEN = true;
-            if (hasDiscog && lap.settings.discogPlaylistExclusive) {
-              els.discogPanel.addClass(lap.selectors.state.hidden);
-            }
-          } else {
-            els.playlistPanel.addClass(lap.selectors.state.hidden);
-            _PLAYLIST_OPEN = false;
-            if (hasDiscog && lap.settings.discogPlaylistExclusive && _DISCOG_OPEN) {
-              els.discogPanel.removeClass(lap.selectors.state.hidden);
-            }
-          }
-        });
-      }
-      if (hasDiscog) {
-        els.discog.on('click', function() {
-          // if (els.discogPanel.hasClass(lap.selectors.state.hidden)) {
-          //   els.discogPanel.removeClass(lap.selectors.state.hidden);
-          //   _DISCOG_OPEN = true;
-          //   if (hasPlaylist && lap.settings.discogPlaylistExclusive) {
-          //     els.playlistPanel.addClass(lap.selectors.state.hidden);
-          //   }
-          // } else {
-          //   els.discogPanel.addClass(lap.selectors.state.hidden);
-          //   _DISCOG_OPEN = false;
-          //   if (hasPlaylist && lap.settings.discogPlaylistExclusive && _PLAYLIST_OPEN) {
-          //     els.playlistPanel.removeClass(lap.selectors.state.hidden);
-          //   }
-          // }
-          lap.trigger('discogClick');
-        });
-      }      
+      if (els.discog) els.discog.on('click', function() { lap.trigger('discogClick'); });
 
       lap
         .on('load', function() {
@@ -355,7 +325,6 @@
           if (els.artist) lap.updateArtistEl();
           if (els.album) lap.updateAlbumEl();
           if (els.cover) lap.updateCover();
-          // if (els.playlistPanel) lap.populatePlaylist();
           if (els.playPause) {
             els.playPause.addClass(lap.selectors.state.paused);
             lap
@@ -384,7 +353,6 @@
           if (els.artist) lap.updateArtistEl();
           if (els.album) lap.updateAlbumEl();
           if (els.cover) lap.updateCover();
-          // if (els.playlistPanel) lap.populatePlaylist();
         });      
     };
 
@@ -625,32 +593,13 @@
       return lap;      
     };
 
-    Lap.prototype.populatePlaylist = function() {
-      var lap = this,
-          panel = lap.els.playlistPanel,
-          prepend = lap.settings.prependTrackNumbers;
-
-      var tracklist = lap.tracklist.map(function(track, i) {
-        return tooly.tag('li.'+lap.selectors.playlistItem, { 
-          content: prepend ? tooly.leftPad(i, 2, '0') + ' - ' + track : track,
-          'data-lap-playlist-index': i 
-        }, true);
-      }).join('');
-
-      panel.html('<ul>' + tracklist + '</ul>');
-
-      panel.find('.'+lap.selectors.playlistItem).on('click', function(e) {
-        lap.setTrack(angular.element(this).attr('data-lap-playlist-index'));
-      });
-
-      lap.playlistPopulated = true;      
-    };
-
     Lap.prototype.formatTracklist = function() {
       var lap = this;
       // if mismatch, ignore tracklist completely
       if (lap.tracklist === undefined || lap.trackCount > lap.tracklist.length) {
-        var re = lap.replacement, tracklist = [], i = 0;
+        var re = lap.replacement, 
+            tracklist = [], 
+            i = 0;
         for (; i < lap.trackCount; i++) {
           tracklist[i] = tooly.sliceRel(tooly.stripExtension(lap.files[i]));
           if (re !== undefined) {
