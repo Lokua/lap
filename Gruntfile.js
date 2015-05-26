@@ -14,17 +14,7 @@ module.exports = function(grunt) {
     ngtemplates: {
       build: {
         options: {
-          module: 'lnet.lap'/*,
-          htmlmin: {
-            collapseBooleanAttributes:      true,
-            collapseWhitespace:             true,
-            removeAttributeQuotes:          true,
-            removeComments:                 true, // Only if you don't use comment directives! 
-            removeEmptyAttributes:          true,
-            removeRedundantAttributes:      true,
-            removeScriptTypeAttributes:     true,
-            removeStyleLinkTypeAttributes:  true          
-          }*/
+          module: 'lnet.lap'
         },
         cwd: 'src/templates',
         src: '*.html',
@@ -226,6 +216,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-umd');
 
   grunt.registerTask('default', ['concurrent:dev']);
+  grunt.registerTask('devbuild', ['ngtemplates:build', 'concat:dev']);
   grunt.registerTask('build', [
     'concat:dist', 
     'strip_code:dist', 

@@ -463,7 +463,6 @@
     };
 
     Lap.prototype.togglePlay = function() {
-      logger.debug('toggle play called...');
       this.audio.paused ? this.play() : this.pause();
       this.trigger('togglePlay');
       return this;

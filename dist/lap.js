@@ -1,5 +1,5 @@
 /*!
- * lap - version 0.2.0 (built: 2015-05-25)
+ * lap - version 0.2.0 (built: 2015-05-26)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -462,7 +462,6 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
     };
 
     Lap.prototype.togglePlay = function() {
-      logger.debug('toggle play called...');
       this.audio.paused ? this.play() : this.pause();
       this.trigger('togglePlay');
       return this;

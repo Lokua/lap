@@ -30,6 +30,10 @@
     "describe": true,
     "inject": true,
     "beforeEach": true,
-    "afterEach": true
+    "afterEach": true,
+    "$": true,
+    "jasmine": true,
+    "loadFixtures": true,
+    "getJSONFixture": true
   }
 }
