@@ -44,6 +44,7 @@
 
         scope.loadAlbum = function(index) {
           lap.setAlbum(index);
+          scope.$emit('lnet.lap.discogItemChosen', true);
         };
       }        
     };

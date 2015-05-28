@@ -22,6 +22,7 @@
 
         scope.ready = false;
         scope.player = scope;
+        scope.discogActive = false;
 
         // element.addClass('lap');
 

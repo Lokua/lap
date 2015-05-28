@@ -37,7 +37,8 @@
       i.lap__prev-album.lap-i-prev-album
 
     .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='show albums')
-      i.lap__discog.lap-i-discog
+      i.lap__discog.lap-i-discog(ng-class='{active:discogActive}' 
+        ng-click='discogActive=!discogActive')
 
     .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next album')
       i.lap__next-album.lap-i-next-album

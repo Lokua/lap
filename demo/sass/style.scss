@@ -32,8 +32,16 @@ body {
   color: #444;
 }
 
-.demo__container {
-  // display: flex;
-  // justify-content: center;
-  // align-items: center;  
-}
+// .other, .demo__container {
+//   @include o-media(small) {
+//     @include o-span(12);
+//   }
+// }
+
+// .other {
+//   @include o-span(4);
+// }
+
+// .demo__container {
+//   @include o-span(8);
+// }

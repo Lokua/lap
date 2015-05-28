@@ -1264,6 +1264,7 @@
 
         scope.ready = false;
         scope.player = scope;
+        scope.discogActive = false;
 
         // element.addClass('lap');
 
@@ -1362,6 +1363,7 @@
 
         scope.loadAlbum = function(index) {
           lap.setAlbum(index);
+          scope.$emit('lnet.lap.discogItemChosen', true);
         };
       }        
     };

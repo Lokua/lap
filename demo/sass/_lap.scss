@@ -10,6 +10,7 @@ $lap-font-family: 'Source Code Pro';
 $lap-track-color: lighten($lap-icon-color, 32%);
 $lap-controls-width: 298px;
 $lap-monospace: 'Ubuntu Mono', Consolas, Menlo, monospace;
+$lap-active-color: cornflowerblue;
 
 $lap-DEBUG: false;
 
@@ -53,7 +54,7 @@ lap-container {
       color: lighten($lap-icon-color, 20%);
     }
     &.active {
-      color: cornflowerblue;
+      color: $lap-active-color;
     }
   }
 

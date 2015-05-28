@@ -213,7 +213,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-strip-code');
-  grunt.loadNpmTasks('grunt-umd');
 
   grunt.registerTask('default', ['concurrent:dev']);
   grunt.registerTask('devbuild', ['ngtemplates:build', 'concat:dev']);
