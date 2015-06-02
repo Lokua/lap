@@ -3,6 +3,8 @@
 
 module.exports = function(grunt) {
 
+  require('load-grunt-tasks')(grunt);
+
   var distLapDebug = 'dist/lap-debug.js';
   var distLap = 'dist/lap.js';
   var srcLap = 'src/lap.js';
@@ -199,20 +201,20 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-jade');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-cssbeautifier');
-  grunt.loadNpmTasks('grunt-autoprefixer');
-  grunt.loadNpmTasks('grunt-angular-templates');
-  grunt.loadNpmTasks('grunt-banner');
-  grunt.loadNpmTasks('grunt-concurrent');
-  grunt.loadNpmTasks('grunt-sass');
-  grunt.loadNpmTasks('grunt-shell');
-  grunt.loadNpmTasks('grunt-strip-code');
+  // grunt.loadNpmTasks('grunt-contrib-concat');
+  // grunt.loadNpmTasks('grunt-contrib-connect');
+  // grunt.loadNpmTasks('grunt-contrib-copy');
+  // grunt.loadNpmTasks('grunt-contrib-jade');
+  // grunt.loadNpmTasks('grunt-contrib-uglify');
+  // grunt.loadNpmTasks('grunt-contrib-watch');
+  // grunt.loadNpmTasks('grunt-cssbeautifier');
+  // grunt.loadNpmTasks('grunt-autoprefixer');
+  // grunt.loadNpmTasks('grunt-angular-templates');
+  // grunt.loadNpmTasks('grunt-banner');
+  // grunt.loadNpmTasks('grunt-concurrent');
+  // grunt.loadNpmTasks('grunt-sass');
+  // grunt.loadNpmTasks('grunt-shell');
+  // grunt.loadNpmTasks('grunt-strip-code');
 
   grunt.registerTask('default', ['concurrent:dev']);
   grunt.registerTask('devbuild', ['ngtemplates:build', 'concat:dev']);
