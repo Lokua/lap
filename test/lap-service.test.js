@@ -134,6 +134,14 @@ describe('lap-service', function() {
       lap.pause();
       lap.prev();
       expect(lap.audio.paused).toBe(true);
+    });
+    it('should fire trackChange handler', function() {
+      var count = 0;
+      lap.on('trackChange', function() {
+        count++;
+      });
+      lap.prev();
+      expect(count).toEqual(1);
     });    
   });
 
@@ -158,7 +166,239 @@ describe('lap-service', function() {
       lap.next();
       expect(lap.audio.paused).toBe(true);
     });
+    it('should fire trackChange handler', function() {
+      var count = 0;
+      lap.on('trackChange', function() {
+        count++;
+      });
+      lap.next();
+      expect(count).toEqual(1);
+    });     
+  });
+
+  describe('#prevAlbum', function() {
+    it('should skip to the previous album', function() {
+      lap.prevAlbum();
+      expect(lap.albumIndex).toEqual(2);
+      lap.prevAlbum();
+      expect(lap.albumIndex).toEqual(1);
+      lap.prevAlbum();
+      expect(lap.albumIndex).toEqual(0);
+      lap.prevAlbum();
+      expect(lap.albumIndex).toEqual(2);
+      expect(lap.audio.paused).toBe(true);
+    });
+    it('should continue playing after skipping', function() {
+      lap.play();
+      lap.prevAlbum();
+      expect(lap.audio.paused).toBe(false);
+    });
+    it('should fire albumChange handler', function() {
+      var count = 0;
+      lap.on('albumChange', function() {
+        count++;
+      });
+      lap.prevAlbum();
+      expect(count).toEqual(1);
+    });         
+  });
+
+  describe('#nextAlbum', function() {
+    it('should skip to the next album', function() {
+      lap.nextAlbum();
+      expect(lap.albumIndex).toEqual(1);
+      lap.nextAlbum();
+      expect(lap.albumIndex).toEqual(2);
+      lap.nextAlbum();
+      expect(lap.albumIndex).toEqual(0);
+      expect(lap.audio.paused).toBe(true);
+    });
+    it('should continue playing after skipping', function() {
+      lap.play();
+      lap.nextAlbum();
+      expect(lap.audio.paused).toBe(false);
+    });
+    it('should fire albumChange handler', function() {
+      var count = 0;
+      lap.on('albumChange', function() {
+        count++;
+      });
+      lap.nextAlbum();
+      expect(count).toEqual(1);
+    });      
+  });
+
+  describe('#setAlbum', function() {
+    it('should update the albumIndex', function() {
+      lap.setAlbum(1);
+      expect(lap.albumIndex).toEqual(1);
+      lap.setAlbum(2);
+      expect(lap.albumIndex).toEqual(2);
+    });
+    it('should clamp min max', function() {
+      lap.setAlbum(-2);
+      expect(lap.albumIndex).toEqual(0);
+      lap.setAlbum(44);
+      expect(lap.albumIndex).toEqual(2);
+    });
+    it('should reset trackIndex', function() {
+      expect(lap.trackIndex).toEqual(0);
+      lap.setTrack(2);
+      expect(lap.trackIndex).toEqual(2);
+      lap.setAlbum(1);
+      expect(lap.trackIndex).toEqual(0);
+    });
+    it('should honor a lib\'s startTrackIndex', function() {
+      lap.lib[2].startingTrackIndex = 2;
+      lap.setAlbum(2);
+      expect(lap.trackIndex).toEqual(2);
+    });
+    it('should fire albumChange', function() {
+      var count = 0;
+      lap.on('albumChange', function() {
+        count++;
+      });
+      lap.setAlbum(1);
+      expect(count).toEqual(1);      
+    });
+  });
+
+  describe('#incVolume', function() {
+    it('should increase volume', function() {
+      expect(+lap.audio.volume.toFixed(2)).toEqual(0.8);
+      lap.incVolume();
+      expect(+lap.audio.volume.toFixed(2)).toEqual(0.85);
+    });
+    it('should fire volumeChange handler', function() {
+      var count = 0;
+      lap.on('volumeChange', function() {
+        count++;
+      });
+      lap.incVolume();
+      expect(count).toEqual(1);
+    });    
+  });
+
+  describe('#decVolume', function() {
+    it('should decrease volume', function() {
+      expect(+lap.audio.volume.toFixed(2)).toEqual(0.8);
+      lap.incVolume();
+      expect(+lap.audio.volume.toFixed(2)).toEqual(0.85);
+    });
+    it('should fire volumeChange handler', function() {
+      var count = 0;
+      lap.on('volumeChange', function() {
+        count++;
+      });
+      lap.decVolume();
+      expect(count).toEqual(1);
+    });      
   });  
+
+  describe('#setVolume', function() { 
+    it('should set volume to whatever', function() {
+      lap.setVolume(true);
+      lap.setVolume(true);
+      expect(+lap.audio.volume.toFixed(2)).toEqual(0.9);
+      lap.setVolume(false);
+      lap.setVolume(false);
+      lap.setVolume(false);
+      lap.setVolume(false);
+      expect(+lap.audio.volume.toFixed(2)).toEqual(0.7);
+    });
+    it('should clamp min and max', function() {
+      lap.setVolume(true);
+      lap.setVolume(true);
+      lap.setVolume(true);
+      lap.setVolume(true);
+      lap.setVolume(true);
+      expect(+lap.audio.volume).toEqual(1);
+      for (var i = 0; i < 21; i++) {
+        lap.setVolume(false);
+      }
+      expect(+lap.audio.volume).toEqual(0);
+    });
+    it('should fire volumeChange handler', function() {
+      var count = 0;
+      lap.on('volumeChange', function() {
+        count++;
+      });
+      lap.setVolume(true);
+      lap.setVolume(false);
+      expect(count).toEqual(2);
+    });      
+  });
+
+  /* TODO: how to handle the interval in seek* methods? */
+
+  xdescribe('#seekBackward', function() {
+    beforeEach(function() {
+      lap.SEEKING = true;
+    });
+    it('should seek backward, duh!', function() {
+      lap.audio.currentTime = 300;
+      lap.seekBackward();
+      setTimeout(function() {
+        lap.SEEKING = false;
+      }, lap.settings.seekTime);      
+      expect(+lap.audio.currentTime).toEqual(50);
+    });
+    it('should clamp at 0', function() {
+      lap.seekBackward();
+      setTimeout(function() {
+        lap.SEEKING = false;
+      }, lap.settings.seekTime);
+      expect(+lap.audio.currentTime).toEqual(0);
+      lap.audio.currentTime = 300;
+      lap.seekBackward();
+      setTimeout(function() {
+        lap.SEEKING = false;
+      }, lap.settings.seekTime*2);      
+      expect(+lap.audio.currentTime).toEqual(0);
+    });
+    it('should fire seek event', function() {
+      var count = 0;
+      lap.on('seek', function() {
+        count++;
+      });
+      lap.audio.currentTime = 300;
+      lap.seekBackward();
+      setTimeout(function() {
+        lap.SEEKING = false;
+      }, lap.settings.seekTime+1);      
+      expect(count).toEqual(1);
+    });
+  });
+
+  xdescribe('#seekForward', function() {
+    beforeEach(function() {
+      lap.SEEKING = true;
+    });    
+    it('should seek forward, duh!', function() {
+      lap.SEEKING = true;
+      lap.audio.currentTime = 300;
+      lap.seekForward();
+      expect(+lap.audio.currentTime).toEqual(550);
+    });
+    xit('should clamp at audio duration', function() {
+      lap.seekForward();
+      expect(+lap.audio.currentTime).toEqual(250);
+      lap.audio.currentTime = 300;
+      lap.seekForward();
+      lap.seekForward();
+      expect(+lap.audio.currentTime).toEqual(0);
+    });
+    it('should fire seek event', function() {
+      lap.SEEKING = true;
+      var count = 0;
+      lap.on('seek', function() {
+        count++;
+      });
+      lap.seekForward();   
+      expect(count).toEqual(1);
+    });    
+  });
+
 
 
 });

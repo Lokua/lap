@@ -5,7 +5,8 @@
   "main": "dist/lap.js",
   "bugs": "dev@lokua.net",
   "scripts": {
-    "test": "karma start karma.conf.js"
+    "test": "karma start karma.conf.js",
+    "postinstall": "bower install"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "connect-livereload": "^0.5.3",
+    "express": "^4.12.4",
     "grunt": "~0.4.5",
     "grunt-angular-templates": "^0.5.7",
     "grunt-autoprefixer": "^1.0.1",
@@ -38,11 +40,13 @@
     "grunt-sass": "^0.18.1",
     "grunt-shell": "~0.7.0",
     "grunt-strip-code": "^0.1.2",
+    "jade": "^1.10.0",
     "jasmine-core": "^2.3.4",
     "karma": "^0.12.32",
     "karma-chrome-launcher": "^0.1.12",
     "karma-coverage": "^0.3.1",
     "karma-jasmine": "^0.3.5",
-    "karma-spec-reporter": "0.0.19"
+    "karma-spec-reporter": "0.0.19",
+    "morgan": "^1.5.3"
   }
 }

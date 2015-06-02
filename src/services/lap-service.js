@@ -174,6 +174,10 @@
       volumeUp:            'lap__volume-up'
     };
 
+    Lap.prototype.SEEKING = false;
+    Lap.prototype.VOLUME_CHANGING = false;
+    Lap.prototype.MOUSEDOWN_TIMER = 0;
+
     Lap.prototype.initialize = function() {
 
       this.plugins = {};
@@ -365,20 +369,20 @@
 
       if (nativeSeek) {
         audio.addEventListener('timeupdate', function(e) {
-          if (!_SEEKING) {
+          if (!lap.SEEKING) {
             seekRange.get(0).value = tooly.scale(audio.currentTime, 0, audio.duration, 0, 100);
           }
         });
         seekRange
           .on('mousedown', function(e) {
-            _SEEKING = true;
+            lap.SEEKING = true;
           })
           .on('mouseup', function(e) {
             var el = seekRange.get(0);
             if (!el.value) lap.logger.debug('what the fuck! ' + el);
             audio.currentTime = tooly.scale(el.value, 0, el.max, 0, audio.duration);
             lap.trigger('seek');
-            _SEEKING = false;
+            lap.SEEKING = false;
           });
 
       } else { // using buttons
@@ -386,7 +390,7 @@
           if (!el) return;
           el
             .on('mousedown', function(e) {
-              _SEEKING = true;
+              lap.SEEKING = true;
               if (angular.element(e.target).hasClass(lap.selectors.seekForward)) {
                 lap.seekForward();
               } else {
@@ -394,10 +398,8 @@
               }
             })
             .on('mouseup', function(e) {
-              _SEEKING = false;
-              // TODO: won't this private _MOUSEDOWN_TIMER be universal
-              // to all Lap instance's? Should be instance member
-              clearTimeout(_MOUSEDOWN_TIMER);
+              lap.SEEKING = false;
+              clearTimeout(lap.MOUSEDOWN_TIMER);
             });
         });
       }
@@ -411,18 +413,18 @@
 
       if (lap.settings.useNativeVolumeRange && vslider && vslider.els.length > 0) {
         audio.addEventListener('volumechange', function() {
-          if (!_VOLUME_CHANGING) {
+          if (!lap.VOLUME_CHANGING) {
             vslider.get(0).value = lap.volumeFormatted();
           }
         });
         vslider
           .on('mousedown', function() {
-            _VOLUME_CHANGING = true;
+            lap.VOLUME_CHANGING = true;
           })
           .on('mouseup', function() {
             audio.volume = vslider.get(0).value * 0.01;
             lap.trigger('volumeChange');
-            _VOLUME_CHANGING = false;
+            lap.VOLUME_CHANGING = false;
           });
       }
     };
@@ -576,17 +578,17 @@
       return lap;      
     }    
     Lap.prototype.seekBackward = function() {
-      if (!_SEEKING) return this;
+      if (!this.SEEKING) return this;
       var lap = this;
-      _MOUSEDOWN_TIMER = setInterval(function() {
+      this.MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(lap, false);
       }, lap.settings.seekTime);
       return lap;      
     };
     Lap.prototype.seekForward = function() {
-      if (!_SEEKING) return this;
+      if (!this.SEEKING) return this;
       var lap = this;
-      _MOUSEDOWN_TIMER = setInterval(function() {
+      this.MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(lap, true);
       }, lap.settings.seekTime);
       return lap;      

@@ -1,5 +1,5 @@
 /*!
- * lap - version 0.2.0 (built: 2015-05-26)
+ * lap - version 0.2.0 (built: 2015-06-01)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -20,12 +20,12 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('lap-controls.html',
-    "<div class=\"lap lap__player\"><div class=\"lap__details\"><div><span class=\"lap__detail lap__artist\"></span><span class=\"lap__detail lap__album\"></span></div><div><span class=\"lap__detail lap__track-number\"></span><span class=\"lap__detail lap__track-title\"></span></div></div><br/><div class=\"lap__controls\"><div class=\"lap__control lap__speaker__container\"><i class=\"lap__speaker lap-i-volume-high\"></i></div><lap-canvas-volume-range lap-volume-range-revealer=\"vRangeReady\" class=\"lap__canvas-volume-range lap--hidden\"></lap-canvas-volume-range><div class=\"lap__control lap__non-v\"><i class=\"lap__play-pause lap-i-play\"></i></div><div data-lap-tooltip=\"previous track\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__prev lap-i-prev\"></i></div><div data-lap-tooltip=\"next track\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__next lap-i-next\"></i></div><div class=\"lap__read lap__non-v lap__current-time\">00:00</div><lap-canvas-prog-seek ready=\"ready\" class=\"lap__control lap__prog-seek lap__non-v\"></lap-canvas-prog-seek><div class=\"lap__read lap__duration lap__non-v\">00:00</div><div data-lap-tooltip=\"previous album\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__prev-album lap-i-prev-album\"></i></div><div data-lap-tooltip=\"show albums\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__discog lap-i-discog\"></i></div><div data-lap-tooltip=\"next album\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__next-album lap-i-next-album\"></i></div></div></div>"
+    "<div class=\"lap lap__player\"><div class=\"lap__details\"><div><span class=\"lap__detail lap__artist\"></span><span class=\"lap__detail lap__album\"></span></div><div><span class=\"lap__detail lap__track-number\"></span><span class=\"lap__detail lap__track-title\"></span></div></div><br/><div class=\"lap__controls\"><div class=\"lap__control lap__speaker__container\"><i class=\"lap__speaker lap-i-volume-high\"></i></div><lap-canvas-volume-range lap-volume-range-revealer=\"vRangeReady\" class=\"lap__canvas-volume-range lap--hidden\"></lap-canvas-volume-range><div class=\"lap__control lap__non-v\"><i class=\"lap__play-pause lap-i-play\"></i></div><div data-lap-tooltip=\"previous track\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__prev lap-i-prev\"></i></div><div data-lap-tooltip=\"next track\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__next lap-i-next\"></i></div><div class=\"lap__read lap__non-v lap__current-time\">00:00</div><lap-canvas-prog-seek ready=\"ready\" class=\"lap__control lap__prog-seek lap__non-v\"></lap-canvas-prog-seek><div class=\"lap__read lap__duration lap__non-v\">00:00</div><div data-lap-tooltip=\"previous album\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__prev-album lap-i-prev-album\"></i></div><div data-lap-tooltip=\"show albums\" class=\"lap__control lap__tooltip lap__non-v\"><i ng-class=\"{active:discogActive}\" ng-click=\"discogActive=!discogActive\" class=\"lap__discog lap-i-discog\"></i></div><div data-lap-tooltip=\"next album\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__next-album lap-i-next-album\"></i></div></div></div>"
   );
 
 
   $templateCache.put('lap-discog.html',
-    "<div ng-show=\"showDiscog\" class=\"lap__discog__panel\"><div ng-repeat=\"album in lib\" ng-click=\"loadAlbum($index)\" class=\"lap__discog__item\"><img ng-src=\"{{album.cover}}\"/><aside>{{album.album}}</aside></div></div>"
+    "<div class=\"lap__discog__panel\"><div ng-repeat=\"album in lib\" ng-click=\"loadAlbum($index)\" ng-class=\"{active:$index===lap.albumIndex}\" class=\"lap__discog__item\"><img ng-src=\"{{album.cover}}\"/><aside>{{album.album}}</aside></div></div>"
   );
 
 
@@ -175,6 +175,10 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
       volumeRange:         'lap__volume-range',
       volumeUp:            'lap__volume-up'
     };
+
+    Lap.prototype.SEEKING = false;
+    Lap.prototype.VOLUME_CHANGING = false;
+    Lap.prototype.MOUSEDOWN_TIMER = 0;
 
     Lap.prototype.initialize = function() {
 
@@ -364,20 +368,20 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
 
       if (nativeSeek) {
         audio.addEventListener('timeupdate', function(e) {
-          if (!_SEEKING) {
+          if (!lap.SEEKING) {
             seekRange.get(0).value = tooly.scale(audio.currentTime, 0, audio.duration, 0, 100);
           }
         });
         seekRange
           .on('mousedown', function(e) {
-            _SEEKING = true;
+            lap.SEEKING = true;
           })
           .on('mouseup', function(e) {
             var el = seekRange.get(0);
             if (!el.value) lap.logger.debug('what the fuck! ' + el);
             audio.currentTime = tooly.scale(el.value, 0, el.max, 0, audio.duration);
             lap.trigger('seek');
-            _SEEKING = false;
+            lap.SEEKING = false;
           });
 
       } else { // using buttons
@@ -385,7 +389,7 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
           if (!el) return;
           el
             .on('mousedown', function(e) {
-              _SEEKING = true;
+              lap.SEEKING = true;
               if (angular.element(e.target).hasClass(lap.selectors.seekForward)) {
                 lap.seekForward();
               } else {
@@ -393,10 +397,8 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
               }
             })
             .on('mouseup', function(e) {
-              _SEEKING = false;
-              // TODO: won't this private _MOUSEDOWN_TIMER be universal
-              // to all Lap instance's? Should be instance member
-              clearTimeout(_MOUSEDOWN_TIMER);
+              lap.SEEKING = false;
+              clearTimeout(lap.MOUSEDOWN_TIMER);
             });
         });
       }
@@ -410,18 +412,18 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
 
       if (lap.settings.useNativeVolumeRange && vslider && vslider.els.length > 0) {
         audio.addEventListener('volumechange', function() {
-          if (!_VOLUME_CHANGING) {
+          if (!lap.VOLUME_CHANGING) {
             vslider.get(0).value = lap.volumeFormatted();
           }
         });
         vslider
           .on('mousedown', function() {
-            _VOLUME_CHANGING = true;
+            lap.VOLUME_CHANGING = true;
           })
           .on('mouseup', function() {
             audio.volume = vslider.get(0).value * 0.01;
             lap.trigger('volumeChange');
-            _VOLUME_CHANGING = false;
+            lap.VOLUME_CHANGING = false;
           });
       }
     };
@@ -575,17 +577,17 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
       return lap;      
     }    
     Lap.prototype.seekBackward = function() {
-      if (!_SEEKING) return this;
+      if (!this.SEEKING) return this;
       var lap = this;
-      _MOUSEDOWN_TIMER = setInterval(function() {
+      this.MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(lap, false);
       }, lap.settings.seekTime);
       return lap;      
     };
     Lap.prototype.seekForward = function() {
-      if (!_SEEKING) return this;
+      if (!this.SEEKING) return this;
       var lap = this;
-      _MOUSEDOWN_TIMER = setInterval(function() {
+      this.MOUSEDOWN_TIMER = setInterval(function() {
         lap.seek(lap, true);
       }, lap.settings.seekTime);
       return lap;      
@@ -1217,6 +1219,7 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
 
         scope.ready = false;
         scope.player = scope;
+        scope.discogActive = false;
 
         // element.addClass('lap');
 
@@ -1302,6 +1305,7 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
 
         scope.loadAlbum = function(index) {
           lap.setAlbum(index);
+          scope.$emit('lnet.lap.discogItemChosen', true);
         };
       }        
     };

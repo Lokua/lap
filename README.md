@@ -4,9 +4,13 @@
 
 If you'd like to see what's up:
 
-1. download/clone the project, 
+1. download/clone the project
 2. run `npm install` from the project's root
 3. run `grunt` (default task), and point your browser to `localhost:3000/demo`
 4. press play
+
+### Testing
+
+run `karma start` or `npm run test`
 
 [0]: http://lokua.net
