@@ -362,7 +362,6 @@
         .on('trackChange', function() {
           if (els.trackTitle) lap.updateTrackTitleEl();
           if (els.trackNumber) lap.updateTrackNumberEl();
-          if (els.playlistPanel) lap.updatePlaylistItem();
           if (els.currentTime) els.currentTime.html(lap.currentTimeFormatted());
           if (els.duration) els.duration.html(lap.durationFormatted());
         })
@@ -610,40 +609,23 @@
     };
 
     Lap.prototype.formatTracklist = function() {
-      var lap = this;
-      // if mismatch, ignore tracklist completely
-      if (lap.tracklist === undefined || lap.trackCount > lap.tracklist.length) {
-        var re = lap.replacement, 
-            tracklist = [], 
-            i = 0;
-        for (; i < lap.trackCount; i++) {
-          tracklist[i] = tooly.sliceRel(tooly.stripExtension(lap.files[i]));
-          if (re !== undefined) {
-            tracklist[i] = tracklist[i].replace(re[0], re[1]);
-          }
-          tracklist[i] = tracklist[i].trim();
-        }
-        lap.tracklist = tracklist;
-      }      
-    };
-
-    Lap.prototype.playlistFormatted = function() {
-      var lap = this,
-          prepend = lap.settings.prependTrackNumbers;
-      return lap.tracklist.map(function(track, i) {
-        return (prepend ? lap.trackNumberFormatted(i+1) : '') + track.trim();
-      });      
-    };
-
-    Lap.prototype.updatePlaylistItem = function() {
-      var lap = this;
-      if (lap.playlistPopulated) {
-        angular.element('li', lap.els.playlistPanel)
-          .removeClass(lap.selectors.state.playlistItemCurrent)
-          .eq(lap.trackIndex)
-          .addClass(lap.selectors.state.playlistItemCurrent);
+      // don't fuck with the user's tracklist
+      if (tooly.truthy(this.tracklist)) {
+        return this;
       }
-      return lap;      
+      var lap = this,
+          re = lap.replacement, 
+          tracklist = [], 
+          i = 0;
+      for (; i < lap.trackCount; i++) {
+        tracklist[i] = tooly.sliceRel(tooly.stripExtension(lap.files[i]));
+        if (tooly.truthy(re)) {
+          tracklist[i] = tracklist[i].replace(re[0], re[1]);
+        }
+        tracklist[i] = tracklist[i].trim();
+      }
+      lap.tracklist = tracklist;
+      return lap;
     };
 
     Lap.prototype.bufferFormatted = function() {

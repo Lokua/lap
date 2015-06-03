@@ -186,4 +186,5 @@ module.exports = function(grunt) {
     'usebanner:dist', 
     'usebanner:post'
   ]);
+  grunt.registerTask('all', ['devbuild', 'build']);
 };

@@ -399,7 +399,18 @@ describe('lap-service', function() {
     });    
   });
 
-
+  describe('#formatTracklist', function() {
+    it('should do nothing if a tracklist already exists', function() {
+      lap.tracklist = [true];
+      expect(lap.formatTracklist().tracklist[0]).toBe(true);
+    });
+    it('should not apply replacement if one doesn\'t exist', function() {
+      lap.replacement = undefined;
+      lap.tracklist = undefined;
+      lap.formatTracklist();
+      expect(lap.tracklist[0]).toEqual('Lokua_-_16');
+    });
+  });
 
 });
 
