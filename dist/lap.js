@@ -1,5 +1,5 @@
 /*!
- * lap - version 0.2.0 (built: 2015-06-01)
+ * lap - version 0.2.0 (built: 2015-06-02)
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
