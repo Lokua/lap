@@ -192,7 +192,10 @@
       this.initElements();
 
       this.addAudioListeners();
-      this.addVolumeListeners();
+
+      if (!lapUtil.isMobile()) {
+        this.addVolumeListeners();
+      }
       this.addSeekListeners();
       this.addListeners();
 
@@ -248,7 +251,7 @@
           canPlay = this.audio.canPlayType('audio/' + fileType);
       if (canPlay === 'probably' || canPlay === 'maybe') {
         this.setSource();
-        this.audio.volume = 0.80;
+        this.audio.volume = lapUtil.isMobile() ? 0.80 : 1;
       } else {
         console.warn('This browser does not support ' + fileType + ' playback.');
       }
@@ -296,7 +299,7 @@
           els.duration.html(lap.durationFormatted());        
         });
       }
-      if (els.volumeRead) {
+      if (!lapUtil.isMobile() && els.volumeRead) {
         audio.addEventListener('volumechange', function() {
           els.volumeRead.html(lap.volumeFormatted());
         });
@@ -316,8 +319,10 @@
       if (els.playPause) els.playPause.on('click', function() { lap.togglePlay(); });
       if (els.prev) els.prev.on('click', function() { lap.prev(); });
       if (els.next) els.next.on('click', function() { lap.next(); });
-      if (els.volumeUp) els.volumeUp.on('click', function() { lap.incVolume(); });
-      if (els.volumeDown) els.volumeDown.on('click', function() { lap.decVolume(); });
+      if (!lapUtil.isMobile()) {
+        if (els.volumeUp) els.volumeUp.on('click', function() { lap.incVolume(); });
+        if (els.volumeDown) els.volumeDown.on('click', function() { lap.decVolume(); });
+      }
       if (els.prevAlbum) els.prevAlbum.on('click', function() { lap.prevAlbum(); });
       if (els.nextAlbum) els.nextAlbum.on('click', function() { lap.nextAlbum(); });
       if (els.discog) els.discog.on('click', function() { lap.trigger('discogClick'); });
@@ -404,29 +409,59 @@
       }
     };
 
-    Lap.prototype.addVolumeListeners = function() {
-      var lap = this, 
-          els = lap.els,
-          audio = lap.audio,
-          vslider = els.volumeRange;
+    if (!lapUtil.isMobile()) {
 
-      if (lap.settings.useNativeVolumeRange && vslider && vslider.els.length > 0) {
-        audio.addEventListener('volumechange', function() {
-          if (!lap.VOLUME_CHANGING) {
-            vslider.get(0).value = lap.volumeFormatted();
-          }
-        });
-        vslider
-          .on('mousedown', function() {
-            lap.VOLUME_CHANGING = true;
-          })
-          .on('mouseup', function() {
-            audio.volume = vslider.get(0).value * 0.01;
-            lap.trigger('volumeChange');
-            lap.VOLUME_CHANGING = false;
+      Lap.prototype.addVolumeListeners = function() {
+        var lap = this, 
+            els = lap.els,
+            audio = lap.audio,
+            vslider = els.volumeRange;
+
+        if (lap.settings.useNativeVolumeRange && vslider && vslider.els.length > 0) {
+          audio.addEventListener('volumechange', function() {
+            if (!lap.VOLUME_CHANGING) {
+              vslider.get(0).value = lap.volumeFormatted();
+            }
           });
-      }
-    };
+          vslider
+            .on('mousedown', function() {
+              lap.VOLUME_CHANGING = true;
+            })
+            .on('mouseup', function() {
+              audio.volume = vslider.get(0).value * 0.01;
+              lap.trigger('volumeChange');
+              lap.VOLUME_CHANGING = false;
+            });
+        }
+      };
+
+      Lap.prototype.incVolume = function() {
+        this.setVolume(true);
+        return this;      
+      };
+
+      Lap.prototype.decVolume = function() {
+        this.setVolume(false);
+        return this;
+      };
+
+      Lap.prototype.setVolume = function(up) {
+        var vol = this.audio.volume,
+            interval = this.settings.volumeInterval;
+        if (up) {
+          this.audio.volume = (vol + interval >= 1) ? 1 : vol + interval;
+        } else {
+          this.audio.volume = (vol - interval <= 0) ? 0 : vol - interval;
+        }
+        this.trigger('volumeChange');
+        return this;      
+      };
+      
+      Lap.prototype.volumeFormatted = function() {
+        return Math.round(this.audio.volume * 100);
+      };      
+    }
+
 
     /**
      * Add a plug-in instance to the plugins hash
@@ -544,26 +579,6 @@
       return this;      
     };
 
-    Lap.prototype.incVolume = function() {
-      this.setVolume(true);
-      return this;      
-    };
-    Lap.prototype.decVolume = function() {
-      this.setVolume(false);
-      return this;
-    };
-    Lap.prototype.setVolume = function(up) {
-      var vol = this.audio.volume,
-          interval = this.settings.volumeInterval;
-      if (up) {
-        this.audio.volume = (vol + interval >= 1) ? 1 : vol + interval;
-      } else {
-        this.audio.volume = (vol - interval <= 0) ? 0 : vol - interval;
-      }
-      this.trigger('volumeChange');
-      return this;      
-    };
-
     function _seek(lap, forward) {
       var applied;
       if (forward) {
@@ -649,10 +664,6 @@
         return formatted.slice(3); // nn:nn
       }
       return formatted;      
-    };
-
-    Lap.prototype.volumeFormatted = function() {
-      return Math.round(this.audio.volume * 100);
     };
 
     Lap.prototype.trackNumberFormatted = function(n) {

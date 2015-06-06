@@ -9,9 +9,9 @@
   /*<<*/
   
   angular.module('lnet.lap').directive('lapContainer', lapContainer);
-  lapContainer.$inject = ['$templateCache', '$parse', 'Lap'];
+  lapContainer.$inject = ['$templateCache', '$parse', 'Lap', 'lapUtil'];
 
-  function lapContainer($templateCache, $parse, Lap) {
+  function lapContainer($templateCache, $parse, Lap, lapUtil) {
     return {
       restrict: 'E',
       scope: {
@@ -23,6 +23,7 @@
         scope.ready = false;
         scope.player = scope;
         scope.discogActive = false;
+        scope.isMobile = lapUtil.isMobile();
 
         // element.addClass('lap');
 
@@ -41,6 +42,7 @@
           }
 
           Lap.getLib(src).then(function(lib) {
+            /* TODO: options should be able to be passed from user */
             scope.lap = new Lap(element, lib, {
               discogPlaylistExclusive: true,
               plugins: [],

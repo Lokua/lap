@@ -1,6 +1,6 @@
 @import url(http://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700,400italic,700italic);
 
-.lap__player:after {
+.lap__player:after, .lap__player .lap__controls.lap--mobile [class^='lap__mobile-section']:after {
   content: '';
   display: table;
   clear: both;
@@ -48,6 +48,74 @@ lap-container {
 
 .lap__player i.active {
   color: cornflowerblue;
+}
+
+.lap__player .lap__controls.lap--mobile {
+  display: inline-block;
+  height: auto;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__control {
+  display: inline-block;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__control i {
+  font-size: 24px;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__control i.lap__play-pause {
+  font-size: 32px;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__control .lap-i-play .lap__tooltip {
+  display: none;
+}
+
+.lap__player .lap__controls.lap--mobile [class^='lap__mobile-section'] {
+  display: block;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--1 .lap__control {
+  width: 33.3333333333%;
+  float: left;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--1 .lap__control i {
+  display: block;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--1 .lap__control:nth-of-type(1) {
+  text-align: right;
+  padding-top: 4px;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--1 .lap__control:nth-of-type(2) {
+  text-align: center;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--1 .lap__control:nth-of-type(3) {
+  text-align: left;
+  padding-top: 4px;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--2 .lap__read {
+  width: 16.6666666667%;
+  float: left;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--2 .lap__read.lap__current-time, .lap__player .lap__controls.lap--mobile .lap__mobile-section--2 .lap__read.lap__duration {
+  text-align: center;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--2 .lap__prog-seek {
+  width: 66.6666666667%;
+  float: left;
+}
+
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--3 .lap__control {
+  width: 100%;
+  float: left;
+  text-align: center;
 }
 
 .lap__controls, .lap__details {

@@ -12,6 +12,8 @@
 
   function lapVolumeRangeRevealer($document, $timeout, $interval, tooly, Lap, lapUtil) {
 
+    if (lapUtil.isMobile()) return angular.noop;
+
     /**
      * Lap plugin providing support for hiding and showing
      * of a native range input on speaker-icon hover - like Youtube.

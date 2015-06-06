@@ -12,7 +12,7 @@
 
   function lapUtil(tooly) {
 
-    var _body;
+    var _body, _isMobileRegExp;
 
     function _isNode(el) {
       return el && (el.nodeType === 1 || el.nodeType === 9);
@@ -30,6 +30,13 @@
     }
 
     return {
+
+      isMobile: function() {
+        if (!_isMobileRegExp) {
+          _isMobileRegExp = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+        }
+        return _isMobileRegExp.test(navigator.userAgent);
+      },
 
       safeApply: function(scope) {
         var phase = scope.$root.$$phase;

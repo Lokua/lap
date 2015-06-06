@@ -207,7 +207,10 @@
       this.initElements();
 
       this.addAudioListeners();
-      this.addVolumeListeners();
+
+      if (!lapUtil.isMobile()) {
+        this.addVolumeListeners();
+      }
       this.addSeekListeners();
       this.addListeners();
 
@@ -263,7 +266,7 @@
           canPlay = this.audio.canPlayType('audio/' + fileType);
       if (canPlay === 'probably' || canPlay === 'maybe') {
         this.setSource();
-        this.audio.volume = 0.80;
+        this.audio.volume = lapUtil.isMobile() ? 0.80 : 1;
       } else {
         console.warn('This browser does not support ' + fileType + ' playback.');
       }
@@ -311,7 +314,7 @@
           els.duration.html(lap.durationFormatted());        
         });
       }
-      if (els.volumeRead) {
+      if (!lapUtil.isMobile() && els.volumeRead) {
         audio.addEventListener('volumechange', function() {
           els.volumeRead.html(lap.volumeFormatted());
         });
@@ -331,8 +334,10 @@
       if (els.playPause) els.playPause.on('click', function() { lap.togglePlay(); });
       if (els.prev) els.prev.on('click', function() { lap.prev(); });
       if (els.next) els.next.on('click', function() { lap.next(); });
-      if (els.volumeUp) els.volumeUp.on('click', function() { lap.incVolume(); });
-      if (els.volumeDown) els.volumeDown.on('click', function() { lap.decVolume(); });
+      if (!lapUtil.isMobile()) {
+        if (els.volumeUp) els.volumeUp.on('click', function() { lap.incVolume(); });
+        if (els.volumeDown) els.volumeDown.on('click', function() { lap.decVolume(); });
+      }
       if (els.prevAlbum) els.prevAlbum.on('click', function() { lap.prevAlbum(); });
       if (els.nextAlbum) els.nextAlbum.on('click', function() { lap.nextAlbum(); });
       if (els.discog) els.discog.on('click', function() { lap.trigger('discogClick'); });
@@ -419,29 +424,59 @@
       }
     };
 
-    Lap.prototype.addVolumeListeners = function() {
-      var lap = this, 
-          els = lap.els,
-          audio = lap.audio,
-          vslider = els.volumeRange;
+    if (!lapUtil.isMobile()) {
 
-      if (lap.settings.useNativeVolumeRange && vslider && vslider.els.length > 0) {
-        audio.addEventListener('volumechange', function() {
-          if (!lap.VOLUME_CHANGING) {
-            vslider.get(0).value = lap.volumeFormatted();
-          }
-        });
-        vslider
-          .on('mousedown', function() {
-            lap.VOLUME_CHANGING = true;
-          })
-          .on('mouseup', function() {
-            audio.volume = vslider.get(0).value * 0.01;
-            lap.trigger('volumeChange');
-            lap.VOLUME_CHANGING = false;
+      Lap.prototype.addVolumeListeners = function() {
+        var lap = this, 
+            els = lap.els,
+            audio = lap.audio,
+            vslider = els.volumeRange;
+
+        if (lap.settings.useNativeVolumeRange && vslider && vslider.els.length > 0) {
+          audio.addEventListener('volumechange', function() {
+            if (!lap.VOLUME_CHANGING) {
+              vslider.get(0).value = lap.volumeFormatted();
+            }
           });
-      }
-    };
+          vslider
+            .on('mousedown', function() {
+              lap.VOLUME_CHANGING = true;
+            })
+            .on('mouseup', function() {
+              audio.volume = vslider.get(0).value * 0.01;
+              lap.trigger('volumeChange');
+              lap.VOLUME_CHANGING = false;
+            });
+        }
+      };
+
+      Lap.prototype.incVolume = function() {
+        this.setVolume(true);
+        return this;      
+      };
+
+      Lap.prototype.decVolume = function() {
+        this.setVolume(false);
+        return this;
+      };
+
+      Lap.prototype.setVolume = function(up) {
+        var vol = this.audio.volume,
+            interval = this.settings.volumeInterval;
+        if (up) {
+          this.audio.volume = (vol + interval >= 1) ? 1 : vol + interval;
+        } else {
+          this.audio.volume = (vol - interval <= 0) ? 0 : vol - interval;
+        }
+        this.trigger('volumeChange');
+        return this;      
+      };
+      
+      Lap.prototype.volumeFormatted = function() {
+        return Math.round(this.audio.volume * 100);
+      };      
+    }
+
 
     /**
      * Add a plug-in instance to the plugins hash
@@ -559,26 +594,6 @@
       return this;      
     };
 
-    Lap.prototype.incVolume = function() {
-      this.setVolume(true);
-      return this;      
-    };
-    Lap.prototype.decVolume = function() {
-      this.setVolume(false);
-      return this;
-    };
-    Lap.prototype.setVolume = function(up) {
-      var vol = this.audio.volume,
-          interval = this.settings.volumeInterval;
-      if (up) {
-        this.audio.volume = (vol + interval >= 1) ? 1 : vol + interval;
-      } else {
-        this.audio.volume = (vol - interval <= 0) ? 0 : vol - interval;
-      }
-      this.trigger('volumeChange');
-      return this;      
-    };
-
     function _seek(lap, forward) {
       var applied;
       if (forward) {
@@ -666,10 +681,6 @@
       return formatted;      
     };
 
-    Lap.prototype.volumeFormatted = function() {
-      return Math.round(this.audio.volume * 100);
-    };
-
     Lap.prototype.trackNumberFormatted = function(n) {
       var count = (''+this.trackCount).length - (''+n).length;
       return tooly.repeat('0', count) + n + this.settings.trackNumberPostfix;      
@@ -695,7 +706,7 @@
 
   function lapUtil(tooly) {
 
-    var _body;
+    var _body, _isMobileRegExp;
 
     function _isNode(el) {
       return el && (el.nodeType === 1 || el.nodeType === 9);
@@ -713,6 +724,13 @@
     }
 
     return {
+
+      isMobile: function() {
+        if (!_isMobileRegExp) {
+          _isMobileRegExp = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+        }
+        return _isMobileRegExp.test(navigator.userAgent);
+      },
 
       safeApply: function(scope) {
         var phase = scope.$root.$$phase;
@@ -850,6 +868,7 @@
           settings = thiz.settings,
           audio = thiz.lap.audio,
           MOUSEDOWN = false,
+          TOUCHING = false,
           x;
 
       thiz.track.width  = thiz.progress.width  = thiz.knob.width  = settings.width;
@@ -861,32 +880,72 @@
       thiz.drawKnob(0);
 
       audio.addEventListener('progress', function() { 
-        if (!MOUSEDOWN) thiz.drawProgress(); 
+        if (!MOUSEDOWN && !TOUCHING) {
+          thiz.drawProgress(); 
+        }
+      });
+      audio.addEventListener('timeupdate', function() { 
+        if (!MOUSEDOWN && !TOUCHING) {
+          thiz.drawKnob(); 
+        }
       });
 
-      audio.addEventListener('timeupdate', function() { 
-        if (!MOUSEDOWN) thiz.drawKnob(); 
-      });
+      var touchHandler = function(e) {
+        if (TOUCHING) {
+          var x = e.changedTouches[0].screenX - thiz.knob.getBoundingClientRect().left;
+
+          thiz.drawKnob(x);
+          x = tooly.scale(x, 0, settings.width - settings.knob.width, 0, audio.duration);
+          if (x >= audio.duration) {
+            x = audio.duration;
+          }
+          audio.currentTime = x;
+        }        
+      };
+      angular.element(thiz.knob)
+        .on('touchstart', function(e) {
+          // disable the mousedown/click event
+          e.preventDefault();
+          TOUCHING = true;
+        })
+        .on('touchmove', touchHandler)
+        .on('touchend', function(e) {
+          touchHandler(e);
+          TOUCHING = false;
+        });
+
 
       thiz.element
         .on('mousedown', function(e) {
+          /*>>*/
+          logger.debug('mousedown');
+          /*<<*/
           MOUSEDOWN = true; 
         })
         .on('mousemove', function(e) {
+          /*>>*/
+          logger.debug('mousemove >> e: %o', e);
+          /*<<*/          
           if (MOUSEDOWN) {
             thiz.drawKnob(e.offsetX);
             x = tooly.scale(e.offsetX, 0, settings.width - settings.knob.width, 0, 1);
             if (x >= audio.duration) x = audio.duration;
             audio.currentTime = x;
           }
-        });
+        })
+        .on('mouseup', mouseupHandler);
 
-      lapUtil.body().on('mouseup', function(e) {
+      lapUtil.body().on('mouseup', mouseupHandler);
+
+      function mouseupHandler(e) {
+        /*>>*/
+        logger.debug('mouseupHandler >> e: %o', e);
+        /*<<*/
         if (MOUSEDOWN) {
           audio.currentTime = tooly.scale(e.offsetX, 0, settings.width, 0, audio.duration);
           MOUSEDOWN = false;
         }
-      });
+      }
 
       /*>>*/
       logger.debug('post init >> this: %o', thiz);
@@ -1014,7 +1073,7 @@
             trackColor = '#a7a7a7';
 
         var options = {
-          width: 76,
+          width: attrs.width || 76,
           height: 18,
           track: {
             fill: trackColor,
@@ -1059,6 +1118,8 @@
   lapCanvasVolumeRange.$inject = ['tooly', 'Lap', 'lapUtil'];
 
   function lapCanvasVolumeRange(tooly, Lap, lapUtil) {
+
+    if (lapUtil.isMobile()) return angular.noop;
 
     var _MOUSEDOWN = false;
 
@@ -1202,6 +1263,8 @@
       template: '<div class="lap__canvas-volume-range lap__volume-range"></div>',
       link: function(scope, element, attrs) {
 
+        if (lapUtil.isMobile()) return;
+
         var volumeRange;       
 
         var options = { 
@@ -1235,9 +1298,9 @@
   /*<<*/
   
   angular.module('lnet.lap').directive('lapContainer', lapContainer);
-  lapContainer.$inject = ['$templateCache', '$parse', 'Lap'];
+  lapContainer.$inject = ['$templateCache', '$parse', 'Lap', 'lapUtil'];
 
-  function lapContainer($templateCache, $parse, Lap) {
+  function lapContainer($templateCache, $parse, Lap, lapUtil) {
     return {
       restrict: 'E',
       scope: {
@@ -1249,6 +1312,7 @@
         scope.ready = false;
         scope.player = scope;
         scope.discogActive = false;
+        scope.isMobile = lapUtil.isMobile();
 
         // element.addClass('lap');
 
@@ -1267,6 +1331,7 @@
           }
 
           Lap.getLib(src).then(function(lib) {
+            /* TODO: options should be able to be passed from user */
             scope.lap = new Lap(element, lib, {
               discogPlaylistExclusive: true,
               plugins: [],
@@ -1432,6 +1497,8 @@
   lapVolumeRangeRevealer.$inject = ['$document', '$timeout', '$interval', 'tooly', 'Lap', 'lapUtil'];
 
   function lapVolumeRangeRevealer($document, $timeout, $interval, tooly, Lap, lapUtil) {
+
+    if (lapUtil.isMobile()) return angular.noop;
 
     /**
      * Lap plugin providing support for hiding and showing

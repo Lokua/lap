@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <head>
   <title>Lap | Angular Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="lap-icons/style.css">
   <script src="../deps/lo66er/dist/lo66er.js"></script>
   <script src="../deps/angular/angular.js"></script>
   <script src="../deps/tooly/dist/ng-tooly.js"></script>
-  <script src="../dist/lap.js"></script>
-  <!-- <script src="../dist/lap-debug.js"></script>
-  <script src="../src/lap-templates.js"></script> -->
+  <!-- <script src="../dist/lap.js"></script> -->
+  <script src="../dist/lap-debug.js"></script>
+  <script src="../src/lap-templates.js"></script>
 </head>
 <body ng-app="demo" ng-controller="DemoCtrl" style="margin-top:32px">
 
@@ -30,10 +31,12 @@
     </div>
   </div>
 
-  <script>'use strict';/*global Lo66er*/
+  <script>'use strict';/*global Lo66er*//*global alert*/
+
+
     var logger = new Lo66er('DemoCtrl', { level: 0 });
-    angular
-      .module('demo', ['lnet.lap'])
+
+    angular.module('demo', ['lnet.lap'])
       .controller('DemoCtrl', ['$scope', 'Lap', function($scope) {
         $scope.src = 'resources/lib.json';
         $scope.showDiscog_ = false;

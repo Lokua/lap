@@ -92,6 +92,7 @@
           settings = thiz.settings,
           audio = thiz.lap.audio,
           MOUSEDOWN = false,
+          TOUCHING = false,
           x;
 
       thiz.track.width  = thiz.progress.width  = thiz.knob.width  = settings.width;
@@ -103,32 +104,72 @@
       thiz.drawKnob(0);
 
       audio.addEventListener('progress', function() { 
-        if (!MOUSEDOWN) thiz.drawProgress(); 
+        if (!MOUSEDOWN && !TOUCHING) {
+          thiz.drawProgress(); 
+        }
+      });
+      audio.addEventListener('timeupdate', function() { 
+        if (!MOUSEDOWN && !TOUCHING) {
+          thiz.drawKnob(); 
+        }
       });
 
-      audio.addEventListener('timeupdate', function() { 
-        if (!MOUSEDOWN) thiz.drawKnob(); 
-      });
+      var touchHandler = function(e) {
+        if (TOUCHING) {
+          var x = e.changedTouches[0].screenX - thiz.knob.getBoundingClientRect().left;
+
+          thiz.drawKnob(x);
+          x = tooly.scale(x, 0, settings.width - settings.knob.width, 0, audio.duration);
+          if (x >= audio.duration) {
+            x = audio.duration;
+          }
+          audio.currentTime = x;
+        }        
+      };
+      angular.element(thiz.knob)
+        .on('touchstart', function(e) {
+          // disable the mousedown/click event
+          e.preventDefault();
+          TOUCHING = true;
+        })
+        .on('touchmove', touchHandler)
+        .on('touchend', function(e) {
+          touchHandler(e);
+          TOUCHING = false;
+        });
+
 
       thiz.element
         .on('mousedown', function(e) {
+          /*>>*/
+          logger.debug('mousedown');
+          /*<<*/
           MOUSEDOWN = true; 
         })
         .on('mousemove', function(e) {
+          /*>>*/
+          logger.debug('mousemove >> e: %o', e);
+          /*<<*/          
           if (MOUSEDOWN) {
             thiz.drawKnob(e.offsetX);
             x = tooly.scale(e.offsetX, 0, settings.width - settings.knob.width, 0, 1);
             if (x >= audio.duration) x = audio.duration;
             audio.currentTime = x;
           }
-        });
+        })
+        .on('mouseup', mouseupHandler);
 
-      lapUtil.body().on('mouseup', function(e) {
+      lapUtil.body().on('mouseup', mouseupHandler);
+
+      function mouseupHandler(e) {
+        /*>>*/
+        logger.debug('mouseupHandler >> e: %o', e);
+        /*<<*/
         if (MOUSEDOWN) {
           audio.currentTime = tooly.scale(e.offsetX, 0, settings.width, 0, audio.duration);
           MOUSEDOWN = false;
         }
-      });
+      }
 
       /*>>*/
       logger.debug('post init >> this: %o', thiz);
@@ -256,7 +297,7 @@
             trackColor = '#a7a7a7';
 
         var options = {
-          width: 76,
+          width: attrs.width || 76,
           height: 18,
           track: {
             fill: trackColor,

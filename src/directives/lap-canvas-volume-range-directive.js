@@ -12,6 +12,8 @@
 
   function lapCanvasVolumeRange(tooly, Lap, lapUtil) {
 
+    if (lapUtil.isMobile()) return angular.noop;
+
     var _MOUSEDOWN = false;
 
     Lap.CanvasVolumeRange = function(lap, element, options) {
@@ -153,6 +155,8 @@
       restrict: 'E',
       template: '<div class="lap__canvas-volume-range lap__volume-range"></div>',
       link: function(scope, element, attrs) {
+
+        if (lapUtil.isMobile()) return;
 
         var volumeRange;       
 
