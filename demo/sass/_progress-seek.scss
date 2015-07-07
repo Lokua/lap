@@ -1,0 +1,86 @@
+
+@mixin o-progress-seek (
+
+    $rounded: false, 
+    $width: 100%,
+    $height: 2px,
+    $knob-width: 6px, // only used if $rounded==false
+    $knob-height: 10px,
+    $track-color: #999,
+    $progress-color: #666,
+    $knob-color: #333) {
+    
+  @if ($rounded) {
+    $knob-height: $knob-width;
+  }
+  
+  width: $width;
+  position: relative;
+      
+  input, progress {
+    &:focus {
+      border: none;
+      outline: none;
+    }
+  }
+  
+  input[type='range'] {
+    position: absolute;
+    top: 0px; 
+    left: -2px; // webkit only?
+    -webkit-appearance: none;
+    background: transparent;
+    width: 100%;
+    height: $height;
+    z-index: 1;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    background: $knob-color;
+    height: $knob-height;
+    width: $knob-width;
+    @if ($rounded) {
+      border-radius: 50%;
+    }
+  }
+
+  progress[value]::-webkit-progress-bar {
+    background: $track-color;
+  }
+  progress[value]::-webkit-progress-value {
+    background: $progress-color;
+  }
+  progress {
+    position: absolute;
+    top: 2px; // webkit only?
+    left: 0px;
+    -webkit-appearance: none;
+    width: 100%;
+    height: $height;
+  }
+}
+
+/* --- */
+
+// body {
+//   background: #ddd;
+// }
+
+// .demo {
+//   width: 50%;
+//   padding-top: 22px;
+//   margin: 0 auto;
+// }
+
+// .progress-seek--1 {
+//   top: 0;
+//   left: 0;
+//   @include progress-seek(false);
+// }
+// .progress-seek--2 {
+//   top: 32px;
+//   left: 0;
+//   @include progress-seek(true, 100%, 2px, 8px);
+// }
+
+

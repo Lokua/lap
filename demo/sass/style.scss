@@ -4,6 +4,7 @@
 @import url(http://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700,400italic,700italic);
 @import 'lap';
 @import 'lap-extras';
+@import 'prog-seek';
 
 @font-face {
   font-family: 'balhamregular';
@@ -31,17 +32,3 @@ body {
   font-size: $lap-font-size;
   color: #444;
 }
-
-// .other, .demo__container {
-//   @include o-media(small) {
-//     @include o-span(12);
-//   }
-// }
-
-// .other {
-//   @include o-span(4);
-// }
-
-// .demo__container {
-//   @include o-span(8);
-// }

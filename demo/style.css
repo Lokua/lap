@@ -112,6 +112,10 @@ lap-container {
   float: left;
 }
 
+.lap__player .lap__controls.lap--mobile .lap__mobile-section--2 .lap__prog-seek .prog-seek .prog-seek__inner {
+  width: 200px;
+}
+
 .lap__player .lap__controls.lap--mobile .lap__mobile-section--3 .lap__control {
   width: 100%;
   float: left;
@@ -194,10 +198,8 @@ lap-container {
   padding-top: 3px;
 }
 
-.lap__prog-seek canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
+.lap__prog-seek .prog-seek, .lap__prog-seek .prog-seek__container {
+  width: 100%;
 }
 
 .lap__read {
@@ -210,13 +212,21 @@ lap-container {
 }
 
 .lap__current-time {
-  text-align: right;
+  text-align: left;
   font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
 }
 
 .lap__duration {
-  text-align: left;
+  text-align: right;
   font-family: 'Ubuntu Mono', Consolas, Menlo, monospace;
+}
+
+.lap--mobile .lap__duration {
+  text-align: right;
+}
+
+.lap--mobile .lap__current-time {
+  text-align: left;
 }
 
 .lap__tooltip {
@@ -388,6 +398,63 @@ img.lap__cover {
 
 .lap__discog__item aside {
   text-align: center;
+}
+
+prog-seek.prog-seek .prog-seek__container {
+  display: inline-block;
+  width: 100%;
+  height: 10px;
+}
+
+prog-seek.prog-seek .prog-seek__container, prog-seek.prog-seek .prog-seek__container * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+prog-seek.prog-seek .prog-seek__inner {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: 100%;
+  height: 2px;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+prog-seek.prog-seek .prog-seek__track, prog-seek.prog-seek .prog-seek__handle, prog-seek.prog-seek .prog-seek__progress {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  position: absolute;
+  z-index: -22;
+}
+
+prog-seek.prog-seek .prog-seek__handle {
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 10px;
+  background: #222;
+  z-index: 333;
+}
+
+prog-seek.prog-seek .prog-seek__progress {
+  height: 2px;
+  top: 4px;
+  left: 0;
+  background: #555;
+}
+
+prog-seek.prog-seek .prog-seek__track {
+  width: 100%;
+  height: 2px;
+  top: 4px;
+  left: 0;
+  background: #888;
 }
 
 @font-face {

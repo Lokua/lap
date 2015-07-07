@@ -192,6 +192,7 @@
     Lap.prototype.SEEKING = false;
     Lap.prototype.VOLUME_CHANGING = false;
     Lap.prototype.MOUSEDOWN_TIMER = 0;
+    Lap.prototype.PLAYING = false;
 
     Lap.prototype.initialize = function() {
 
@@ -287,7 +288,6 @@
       tooly.each(lap.selectors, function(sel, key) {
         if (tooly.type(sel) === 'object') return;
         var el = lapUtil.element('.' + sel, lap.element);
-        // var el = angular.element(lap.element[0].querySelector('.' + sel));
         if (el.length) lap.els[key] = el;
       });
     };
@@ -320,8 +320,12 @@
         });
       }
       audio.addEventListener('ended', function() {
-        lap.next();
-        if (lap.audio.paused) lap.audio.play();
+        /*>>*/logger.debug('ended > lap.audio.paused: %o', lap.audio.paused);/*<<*/
+        // if (lap.audio.paused) lap.audio.play();
+        if (lap.PLAYING) {
+          lap.next();
+          lap.audio.play();
+        }
       });
 
       return lap;       
@@ -520,11 +524,13 @@
     };
     Lap.prototype.play = function() {
       this.audio.play();
+      this.PLAYING = true;
       this.trigger('play');
       return this;
     };
     Lap.prototype.pause = function() {
       this.audio.pause();
+      this.PLAYING = false;
       this.trigger('pause');
       return this;
     };
@@ -777,519 +783,6 @@
 (function() { 'use strict';
 
   /*>>*/
-  var logger = new Lo66er('lapCanvasProgSeek', { 
-    nameStyle: 'color:brown',
-    level: 0 
-  });
-  /*<<*/
-
-  
-  angular.module('lnet.lap').directive('lapCanvasProgSeek', lapCanvasProgSeek);
-  lapCanvasProgSeek.$inject = ['tooly', 'Lap', 'lapUtil'];
-
-  function lapCanvasProgSeek(tooly, Lap, lapUtil) {
-
-    /**
-     * Combination of seekbar + progress range for the Lokua Audio Player
-     * 
-     * @type {Object}
-     * @constructor
-     * @static
-     */
-    Lap.CanvasProgSeek = function(lap, element, options) {
-
-      var thiz = this;
-      thiz.lap = lap;
-      thiz.element = angular.element(element.children()[0]);
-
-      if (!thiz.element.length) {
-        throw new Lap.PluginConstructorError('unable to find Lap.CanvasProgSeek element');
-      }
-
-      // appended in intended stacking order
-      thiz.element
-        .append(tooly.tag('canvas.lap__prog-seek__track'))
-        .append(tooly.tag('canvas.lap__prog-seek__progress'))
-        .append(tooly.tag('canvas.lap__prog-seek__knob'));
-
-      thiz.track    = thiz.element[0].querySelector('.lap__prog-seek__track');
-      thiz.progress = thiz.element[0].querySelector('.lap__prog-seek__progress');
-      thiz.knob     = thiz.element[0].querySelector('.lap__prog-seek__knob');
-
-      // helper
-      var errCheck = function(el) {
-        if (!thiz[el]) {
-          throw new Lap.PluginConstructorError('unable to find ' + el + ' element');
-        }
-      };
-      errCheck('track');
-      errCheck('progress');
-      errCheck('knob');
-
-      thiz.trackCtx    = thiz.track.getContext('2d');
-      thiz.progressCtx = thiz.progress.getContext('2d');
-      thiz.knobCtx     = thiz.knob.getContext('2d');
-
-      var defaultHeight = 16;
-      thiz.settings = angular.extend({}, {
-        track: {
-          fill: '#bbb',
-          stroke: null,
-          height: defaultHeight
-        },
-        progress: {
-          fill: '#999',
-          stroke: null,
-          height: defaultHeight
-        },    
-        knob: {
-          fill: '#000',
-          stroke: null,
-          height: defaultHeight,
-          width: 4
-        },
-        lineWidth: 2,
-        width:  thiz.track.width  || 100,
-        height: thiz.track.height || 16,
-        padding: 0
-      }, options);
-
-      return thiz;
-    };
-
-    /**
-     * Initialize this CanvasProgSeek. Draws the track, knob, and progress value; 
-     * sets up audio and mouse event listeners.
-     * 
-     * @return {CanvasProgSeek} this
-     */
-    Lap.CanvasProgSeek.prototype.init = function() {
-      var thiz = this,
-          settings = thiz.settings,
-          audio = thiz.lap.audio,
-          MOUSEDOWN = false,
-          TOUCHING = false,
-          x;
-
-      thiz.track.width  = thiz.progress.width  = thiz.knob.width  = settings.width;
-      thiz.track.height = thiz.progress.height = thiz.knob.height = settings.height;
-      thiz.element.attr('height', thiz.settings.height);
-
-      thiz.drawTrack();
-      thiz.drawProgress();
-      thiz.drawKnob(0);
-
-      audio.addEventListener('progress', function() { 
-        if (!MOUSEDOWN && !TOUCHING) {
-          thiz.drawProgress(); 
-        }
-      });
-      audio.addEventListener('timeupdate', function() { 
-        if (!MOUSEDOWN && !TOUCHING) {
-          thiz.drawKnob(); 
-        }
-      });
-
-      var touchHandler = function(e) {
-        if (TOUCHING) {
-          var x = e.changedTouches[0].screenX - thiz.knob.getBoundingClientRect().left;
-
-          thiz.drawKnob(x);
-          x = tooly.scale(x, 0, settings.width - settings.knob.width, 0, audio.duration);
-          if (x >= audio.duration) {
-            x = audio.duration;
-          }
-          audio.currentTime = x;
-        }        
-      };
-      angular.element(thiz.knob)
-        .on('touchstart', function(e) {
-          // disable the mousedown/click event
-          e.preventDefault();
-          TOUCHING = true;
-        })
-        .on('touchmove', touchHandler)
-        .on('touchend', function(e) {
-          touchHandler(e);
-          TOUCHING = false;
-        });
-
-
-      thiz.element
-        .on('mousedown', function(e) {
-          /*>>*/
-          logger.debug('mousedown');
-          /*<<*/
-          MOUSEDOWN = true; 
-        })
-        .on('mousemove', function(e) {
-          /*>>*/
-          logger.debug('mousemove >> e: %o', e);
-          /*<<*/          
-          if (MOUSEDOWN) {
-            thiz.drawKnob(e.offsetX);
-            x = tooly.scale(e.offsetX, 0, settings.width - settings.knob.width, 0, 1);
-            if (x >= audio.duration) x = audio.duration;
-            audio.currentTime = x;
-          }
-        })
-        .on('mouseup', mouseupHandler);
-
-      lapUtil.body().on('mouseup', mouseupHandler);
-
-      function mouseupHandler(e) {
-        /*>>*/
-        logger.debug('mouseupHandler >> e: %o', e);
-        /*<<*/
-        if (MOUSEDOWN) {
-          audio.currentTime = tooly.scale(e.offsetX, 0, settings.width, 0, audio.duration);
-          MOUSEDOWN = false;
-        }
-      }
-
-      /*>>*/
-      logger.debug('post init >> this: %o', thiz);
-      /*<<*/
-
-      thiz.lap.registerPlugin('CanvasProgSeek', thiz);
-
-      return thiz;
-    };
-
-    /**
-     * Draws the static progressbar/seekbar track.
-     * 
-     * @return {CanvasProgSeek} this
-     */
-    Lap.CanvasProgSeek.prototype.drawTrack = function() {
-      var thiz = this,
-          ctx = thiz.trackCtx,
-          canvas = thiz.track,
-          settings = thiz.settings,
-          params = [],
-          offset = 0;
-      ctx.clearRect(0, 0, settings.width, settings.height);
-      ctx.fillStyle = settings.track.fill;
-      if (settings.track.height < settings.knob.height) {
-        offset = (settings.knob.height - settings.track.height)/2; 
-      }
-      // x, y, width, height
-      params = [0, offset, canvas.width, settings.track.height];
-      ctx.fillRect.apply(ctx, params);
-      if (settings.track.stroke) {
-        ctx.strokeStyle = settings.track.stroke;
-        ctx.strokeRect.apply(ctx, params);
-      }
-    };
-
-    /**
-     * Draws the progress value over the track.
-     *     
-     * @return {CanvasProgSeek} this
-     */
-    Lap.CanvasProgSeek.prototype.drawProgress = function() {
-      var thiz = this,
-          lap = thiz.lap,
-          settings = thiz.settings,
-          ctx = thiz.progressCtx,
-          canvas = thiz.progress,
-          params = [],
-          offset = 0,
-          x = lap.bufferFormatted();
-      ctx.clearRect(0, 0, settings.width, settings.height);
-      ctx.fillStyle = settings.progress.fill;
-      if (settings.progress.height < settings.knob.height) {
-        offset = (settings.knob.height - settings.progress.height)/2;
-      }
-      // x, y, width, height
-      params = [
-        0, 
-        offset, 
-        tooly.scale(x, 0, 100, 0, canvas.width), 
-        settings.progress.height
-      ];
-      ctx.fillRect.apply(ctx, params);
-      if (settings.progress.stroke) {
-        ctx.strokeStyle = settings.progress.stroke;
-        ctx.strokeRect.apply(ctx, params);
-      }
-
-      return this;   
-    };
-
-    /**
-     * Draws the knob/playhead of the seekbar.
-     * 
-     * @param  {Number} override used to update the knob position from
-     *                           user interaction, otherwise the knob is auto
-     *                           adjusted from audio.currentTime
-     * @return {CanvasProgSeek} this
-     */
-    Lap.CanvasProgSeek.prototype.drawKnob = function(override) {
-      var thiz = this,
-          settings = thiz.settings,
-          ctx = thiz.knobCtx,
-          canvas = thiz.knob,
-          audio = thiz.lap.audio,
-          params = [],
-          offset,
-          x = override !== undefined ? override : audio.currentTime;
-      ctx.lineWidth = settings.lineWidth;        
-      ctx.clearRect(0, 0, settings.width, settings.height);
-      ctx.fillStyle = settings.knob.fill;
-
-      if (override !== undefined) {
-        if (override >= canvas.width - thiz.settings.knob.width) {
-          override = canvas.width - thiz.settings.knob.width;
-        }
-        x = override;
-      } else {
-        x = audio.currentTime;
-      }
-
-      // x, y, width, height
-      params = [
-        override !== undefined ? override : tooly.scale(x, 0, audio.duration, 0, canvas.width), 
-        0, 
-        settings.knob.width, 
-        settings.knob.height
-      ];
-      ctx.fillRect.apply(ctx, params);
-      if (settings.knob.stroke) {
-        ctx.strokeStyle = settings.knob.stroke;
-        ctx.strokeRect.apply(ctx, params);
-      }
-
-      return this;
-    };
-
-    return {
-      restrict: 'E',
-      template: '<div class="lap__prog-seek"></div>',
-      link: function(scope, element, attrs) {
-
-        var progSeek,
-            fillColor = '#555',
-            trackColor = '#a7a7a7';
-
-        var options = {
-          width: attrs.width || 76,
-          height: 18,
-          track: {
-            fill: trackColor,
-            height: 2
-          },
-          progress: {
-            fill: fillColor,
-            height: 2
-          },
-          knob: {
-            fill: fillColor,
-            height: 12,
-            width: 6
-          }
-        };
-
-        var off = scope.$watch('ready', function(newValue, oldValue) {
-          if (!newValue) return;
-
-          progSeek = new Lap.CanvasProgSeek(scope.lap, element, options);
-          progSeek.init();
-
-          off();
-        });
-
-      }
-    };
-  }
-
-})();
-
-(function() { 'use strict';
-
-  /*>>*/
-  var logger = new Lo66er('lapCanvasVolumeRange', { 
-    nameStyle: 'color:forestgreen',
-    level: 0 
-  });
-  /*<<*/
-
-  angular.module('lnet.lap').directive('lapCanvasVolumeRange', lapCanvasVolumeRange);
-  lapCanvasVolumeRange.$inject = ['tooly', 'Lap', 'lapUtil'];
-
-  function lapCanvasVolumeRange(tooly, Lap, lapUtil) {
-
-    if (lapUtil.isMobile()) return angular.noop;
-
-    var _MOUSEDOWN = false;
-
-    Lap.CanvasVolumeRange = function(lap, element, options) {
-      var thiz = this;
-      thiz.lap = lap;
-      thiz.element = angular.element(element.children()[0]);
-
-      if (!thiz.element.length) {
-        throw new Lap.PluginConstructorError('unable to find Lap.VolumeRange element');
-      }
-
-      thiz.element
-        .append(tooly.tag('canvas.lap__canvas-volume-range__track'))
-        .append(tooly.tag('canvas.lap__canvas-volume-range__knob'));
-
-      thiz.track = thiz.element[0].querySelector('.lap__canvas-volume-range__track');
-      thiz.knob  = thiz.element[0].querySelector('.lap__canvas-volume-range__knob');
-
-      if (!thiz.track) {
-        throw new Lap.PluginConstructorError('unable to find track element');
-      }
-      if (!thiz.knob) {
-        throw new Lap.PluginConstructorError('unable to find knob element');
-      }  
-
-      thiz.trackCtx = thiz.track.getContext('2d');
-      thiz.knobCtx  = thiz.knob.getContext('2d');    
-
-      thiz.settings = angular.extend({}, {
-        trackColor: '#a7a7a7',
-        trackHeight: 2,
-        knobColor: '#555',
-        knobWidth: 6,
-        knobHeight: 12,
-        width: 76,
-        height: 16
-      }, options);
-
-      return thiz;       
-    };
-
-    Lap.CanvasVolumeRange.prototype.init = function() {
-      var thiz = this,
-          settings = thiz.settings,
-          audio = thiz.lap.audio,
-          v;
-
-      thiz.track.width  = thiz.knob.width  = settings.width;
-      thiz.track.height = thiz.knob.height = settings.height;
-      thiz.element.attr('height', thiz.settings.height);
-
-      thiz.drawTrack();
-      thiz.drawKnob(tooly.scale(audio.volume, 0, 1, 0, settings.width));
-
-      thiz.element
-        .on('mousedown', function(e) {
-          _MOUSEDOWN = true; 
-        })
-        .on('mousemove', function(e) {
-          if (_MOUSEDOWN) {
-            thiz.drawKnob(e.offsetX);
-            v = tooly.scale(e.offsetX, 0, settings.width - settings.knobWidth, 0, 1);
-            if (v >= 0.95) v = 1;
-            if (v < 0) v = 0;
-            audio.volume = v;
-            thiz.lap.trigger('volumeChange');
-          }
-        });
-
-      lapUtil.body().on('mouseup', function(e) {
-        if (_MOUSEDOWN) _MOUSEDOWN = false;
-      });
-
-      /*>>*/
-      logger.debug('post init >> this: %o', thiz);
-      /*<<*/
-
-      thiz.lap.registerPlugin('CanvasVolumeRange', thiz);
-
-      return thiz;
-    };
-
-    Lap.CanvasVolumeRange.prototype.drawTrack = function() {
-      var thiz = this,
-          ctx = thiz.trackCtx,
-          canvas = thiz.track,
-          settings = thiz.settings,
-          params = [],
-          offset = 0;
-      ctx.clearRect(0, 0, settings.width, settings.height);
-      ctx.fillStyle = settings.trackColor;
-      if (settings.trackHeight < settings.knobHeight) {
-        offset = (settings.knobHeight - settings.trackHeight)/2; 
-      }
-      // x, y, width, height
-      params = [0, offset, canvas.width, settings.trackHeight];
-      ctx.fillRect.apply(ctx, params);
-      if (settings.trackStroke) {
-        ctx.strokeStyle = settings.trackStroke;
-        ctx.strokeRect.apply(ctx, params);
-      }
-      return thiz;
-    };
-
-    Lap.CanvasVolumeRange.prototype.drawKnob = function(override) {
-      var thiz = this,
-          settings = thiz.settings,
-          ctx = thiz.knobCtx,
-          canvas = thiz.knob,
-          audio = thiz.lap.audio,
-          params = [],
-          offset,
-          x;
-      ctx.clearRect(0, 0, settings.width, settings.height);
-      ctx.fillStyle = settings.knobColor;
-      if (override !== undefined) {
-        if (override >= canvas.width - thiz.settings.knobWidth) {
-          override = canvas.width - thiz.settings.knobWidth;
-        }
-        x = override;
-      } else {
-        x = audio.volume;
-      }
-      params = [
-        override !== undefined ? override : tooly.scale(x, 0, 1, 0, canvas.width), 
-        0, 
-        settings.knobWidth, 
-        settings.knobHeight
-      ];
-      ctx.fillRect.apply(ctx, params);
-      if (settings.knobStroke) {
-        ctx.strokeStyle = settings.knobStroke;
-        ctx.strokeRect.apply(ctx, params);
-      }
-      return thiz;
-    };    
-
-    return {
-      restrict: 'E',
-      template: '<div class="lap__canvas-volume-range lap__volume-range"></div>',
-      link: function(scope, element, attrs) {
-
-        if (lapUtil.isMobile()) return;
-
-        var volumeRange;       
-
-        var options = { 
-          width: 76, 
-          height: 18 
-        };
-
-        var off = scope.$watch('ready', function(newValue, oldValue) {
-          if (!newValue) return;
-
-          volumeRange = new Lap.CanvasVolumeRange(scope.lap, element, options);
-          volumeRange.init();
-          scope.vRangeReady = true;
-
-          off();
-        });
-
-      }
-    };
-  }
-})();
-
-(function() { 'use strict';
-
-  /*>>*/
   var logger = new Lo66er('lapContainer', { 
     outputTimestamp: false,
     level: 0,
@@ -1310,7 +803,6 @@
       link: function(scope, element, attrs) {
 
         scope.ready = false;
-        scope.player = scope;
         scope.discogActive = false;
         scope.isMobile = lapUtil.isMobile();
 
@@ -1324,15 +816,13 @@
           var ch = src.charAt(0);
 
           if (ch === '[' || ch === '{') {
-            /*>>*/
-            logger.debug('src.charAt(0) === `[` or `}`. Evaluating...');
-            /*<<*/
+            /*>>*/logger.debug('src.charAt(0) === `[` or `}`. Evaluating...');/*<<*/
             src = scope.$eval(src);
           }
 
           Lap.getLib(src).then(function(lib) {
             /* TODO: options should be able to be passed from user */
-            scope.lap = new Lap(element, lib, {
+            new Lap(element, lib, {
               discogPlaylistExclusive: true,
               plugins: [],
               prependTrackNumbers: true,
@@ -1350,13 +840,11 @@
               volumeInterval: 0.05,              
               callbacks: {
                 load: function() {
+                  scope.lap = this;
                   scope.ready = true;
                 }
               }
-            }, false, true); // ,,postpone,debug
-            /*>>*/
-            logger.debug('scope.lap: %o', scope.lap);
-            /*<<*/
+            }, false, true);
           }); 
 
         });
@@ -1484,6 +972,95 @@
 
 })();
 
+(function() { 'use strict';
+
+  /*>>*/
+  var logger = new Lo66er('lapProgSeek', {
+    level: 0,
+    nameStyle: 'color:indigo'
+  });
+  /*<<*/
+
+  angular.module('lnet.lap').directive('progSeek', progSeek);
+  progSeek.$inject = ['$timeout', 'tooly'];
+
+  var _id = _id || 0;
+
+  function progSeek($timeout, tooly) {
+
+    function makeEl(name, id) {
+      return angular.element('<div class="prog-seek__' + name +
+        '" id="prog-seek__'+ name + '--' + id + '">');
+    }
+
+    return {
+      restrict: 'E',
+      link: function(scope, element, attrs) {
+
+        var id = _id++,
+            container = makeEl('container', id),
+            inner     = makeEl('inner',     id),
+            track     = makeEl('track',     id),
+            progress  = makeEl('progress',  id),
+            handle    = makeEl('handle',    id),
+            dragging = false,
+            timeUpdating = false,
+            dragdealer, lap, audio;
+
+        if (scope.options && !angular.equals(scope.options, {})) {
+          var o = scope.options;
+          if (o.progressColor) progress.css('background-color', o.progressColor);
+          if (o.handleColor) handle.css('background-color', o.handleColor);
+          if (o.trackColor) track.css('background-color', o.trackColor);
+        }
+
+        element.append(container.append(inner
+          .append(track)
+          .append(progress)
+          .append(handle)));
+
+        var off = scope.$watch('ready', function(newValue, oldValue) {
+          if (!newValue) return;
+          off();
+
+
+          lap = scope.$parent.lap;
+          /*>>*/logger.debug('ready >> lap: %o', lap);/*<<*/
+          audio = lap.audio;
+
+          dragdealer = new Dragdealer('prog-seek__container--' + id, {
+            handleClass: 'prog-seek__handle',
+            dragStartCallback: function(x, y) {
+              dragging = true;
+            },
+            dragStopCallback: function(x, y) {
+              audio.currentTime = tooly.scale(x, 0, 1, 0, audio.duration);
+              dragging = false;
+            }/*,
+            animationCallback: function(x, y) {
+              $timeout(function() {
+                if (dragging) {
+                  audio.currentTime = tooly.scale(x, 0, 1, 0, audio.duration);
+                }
+              });
+            }*/
+          });          
+
+          audio.addEventListener('timeupdate', function(e) {
+            if (!dragging) {
+              dragdealer.setValue(tooly.scale(audio.currentTime, 0, audio.duration, 0, 1));
+            }
+          });
+          audio.addEventListener('progress', function(e) {
+            var x = +lap.bufferFormatted();
+            progress.css('width', x + '%');
+          });
+        });
+      }
+    };
+  }
+})();
+
 (function(undefined) { 'use strict';
 
   /*>>*/
@@ -1558,8 +1135,8 @@
             classNum = Math.ceil(n); 
           }
 
-          logger.debug('rangeWidth: %o, e.offsetX: %o, v: %o, classNum: %o, thiz.levelClasses[classNum]: %o', 
-            rangeWidth, e.offsetX, v, classNum, thiz.levelClasses[classNum]);
+          /*>>*/logger.debug('rangeWidth: %o, e.offsetX: %o, v: %o, classNum: %o, thiz.levelClasses[classNum]: %o', 
+            rangeWidth, e.offsetX, v, classNum, thiz.levelClasses[classNum]);/*<<*/
 
           speaker.removeClass(thiz.levelClasses.filter(function(c) {
             return c !== thiz.levelClasses[classNum];

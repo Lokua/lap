@@ -11,28 +11,23 @@
   br
 
 
+  .lap__controls(ng-switch-default='false')
 
-  //- NON-MOBILE
-  .lap__controls(ng-switch-default='')
-
-    .lap__control.lap__speaker__container
-      i.lap__speaker.lap-i-volume-high
+    .lap__control.lap__speaker__container: i.lap__speaker.lap-i-volume-high
 
     lap-canvas-volume-range.lap__canvas-volume-range.lap--hidden(
       lap-volume-range-revealer='vRangeReady')
 
-    .lap__control.lap__non-v
-      i.lap__play-pause.lap-i-play
+    .lap__control.lap__non-v: i.lap__play-pause.lap-i-play
 
     .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='previous track')
       i.lap__prev.lap-i-prev
-
     .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next track')
       i.lap__next.lap-i-next
 
     .lap__read.lap__non-v.lap__current-time 00:00
 
-    lap-canvas-prog-seek.lap__control.lap__prog-seek.lap__non-v(ready='ready')
+    .lap__prog-seek: prog-seek.prog-seek
 
     .lap__read.lap__duration.lap__non-v 00:00
 
@@ -40,7 +35,8 @@
       i.lap__prev-album.lap-i-prev-album
 
     .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='show albums')
-      i.lap__discog.lap-i-discog(ng-class='{active:discogActive}' 
+      i.lap__discog.lap-i-discog(
+        ng-class='{active:discogActive}' 
         ng-click='discogActive=!discogActive')
 
     .lap__control.lap__tooltip.lap__non-v(data-lap-tooltip='next album')
@@ -58,13 +54,12 @@
 
     section.lap__mobile-section--2
       .lap__read.lap__current-time 00:00
-      lap-canvas-prog-seek.lap__control.lap__prog-seek(ready='ready' width='200')
+      .lap__prog-seek: prog-seek.prog-seek
       .lap__read.lap__duration 00:00
 
     section.lap__mobile-section--3
-      //- .lap__control: i.lap__prev-album.lap-i-prev-album
-      .lap__control: i.lap__discog.lap-i-discog(ng-class='{active:discogActive}' 
+      .lap__control: i.lap__discog.lap-i-discog(
+        ng-class='{active:discogActive}' 
         ng-click='discogActive=!discogActive')
-      //- .lap__control: i.lap__next-album.lap-i-next-album 
 
 

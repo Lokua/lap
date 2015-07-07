@@ -21,7 +21,6 @@
       link: function(scope, element, attrs) {
 
         scope.ready = false;
-        scope.player = scope;
         scope.discogActive = false;
         scope.isMobile = lapUtil.isMobile();
 
@@ -35,15 +34,13 @@
           var ch = src.charAt(0);
 
           if (ch === '[' || ch === '{') {
-            /*>>*/
-            logger.debug('src.charAt(0) === `[` or `}`. Evaluating...');
-            /*<<*/
+            /*>>*/logger.debug('src.charAt(0) === `[` or `}`. Evaluating...');/*<<*/
             src = scope.$eval(src);
           }
 
           Lap.getLib(src).then(function(lib) {
             /* TODO: options should be able to be passed from user */
-            scope.lap = new Lap(element, lib, {
+            new Lap(element, lib, {
               discogPlaylistExclusive: true,
               plugins: [],
               prependTrackNumbers: true,
@@ -61,13 +58,11 @@
               volumeInterval: 0.05,              
               callbacks: {
                 load: function() {
+                  scope.lap = this;
                   scope.ready = true;
                 }
               }
-            }, false, true); // ,,postpone,debug
-            /*>>*/
-            logger.debug('scope.lap: %o', scope.lap);
-            /*<<*/
+            }, false, true);
           }); 
 
         });

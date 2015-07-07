@@ -177,6 +177,7 @@
     Lap.prototype.SEEKING = false;
     Lap.prototype.VOLUME_CHANGING = false;
     Lap.prototype.MOUSEDOWN_TIMER = 0;
+    Lap.prototype.PLAYING = false;
 
     Lap.prototype.initialize = function() {
 
@@ -272,7 +273,6 @@
       tooly.each(lap.selectors, function(sel, key) {
         if (tooly.type(sel) === 'object') return;
         var el = lapUtil.element('.' + sel, lap.element);
-        // var el = angular.element(lap.element[0].querySelector('.' + sel));
         if (el.length) lap.els[key] = el;
       });
     };
@@ -305,8 +305,12 @@
         });
       }
       audio.addEventListener('ended', function() {
-        lap.next();
-        if (lap.audio.paused) lap.audio.play();
+        /*>>*/logger.debug('ended > lap.audio.paused: %o', lap.audio.paused);/*<<*/
+        // if (lap.audio.paused) lap.audio.play();
+        if (lap.PLAYING) {
+          lap.next();
+          lap.audio.play();
+        }
       });
 
       return lap;       
@@ -505,11 +509,13 @@
     };
     Lap.prototype.play = function() {
       this.audio.play();
+      this.PLAYING = true;
       this.trigger('play');
       return this;
     };
     Lap.prototype.pause = function() {
       this.audio.pause();
+      this.PLAYING = false;
       this.trigger('pause');
       return this;
     };

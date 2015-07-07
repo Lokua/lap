@@ -58,7 +58,7 @@ lap-container {
     }
   }
 
-  // MOBILE
+  /// MOBILE
 
   .lap__controls.lap--mobile {
 
@@ -90,16 +90,16 @@ lap-container {
         i {
           display: block;
         }
-        // prev
+        /// prev
         &:nth-of-type(1) {
           text-align: right;
           padding-top: 4px;
         }
-        // play-pause
+        /// play-pause
         &:nth-of-type(2) {
           text-align: center;
         }
-        // next
+        /// next
         &:nth-of-type(3) {
           text-align: left;
           padding-top: 4px;
@@ -109,13 +109,16 @@ lap-container {
 
     .lap__mobile-section--2 {
       .lap__read {
-        @include o-span(2); // = 4 cols
+        @include o-span(2); /// = 4 cols
         &.lap__current-time, &.lap__duration {
           text-align: center;
         }
       }
       .lap__prog-seek {
         @include o-span(8);
+        .prog-seek .prog-seek__inner {
+          width: 200px;
+        }
       }
     }
 
@@ -210,10 +213,8 @@ lap-container {
   position: relative;
   flex-grow: 4;
   padding-top: 3px;
-  canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
+  .prog-seek, .prog-seek__container {
+    width: 100%;
   }
 }
 
@@ -228,12 +229,20 @@ lap-container {
 }
 
 .lap__current-time {
-  text-align: right;
+  text-align: left;
   font-family: $lap-monospace;
 }
 .lap__duration {
-  text-align: left;
+  text-align: right;
   font-family: $lap-monospace;
+}
+.lap--mobile {
+  .lap__duration {
+    text-align: right;
+  }
+  .lap__current-time {
+    text-align: left;
+  }
 }
 
 .lap__tooltip {

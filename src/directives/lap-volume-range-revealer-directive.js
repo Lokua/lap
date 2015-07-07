@@ -72,8 +72,8 @@
             classNum = Math.ceil(n); 
           }
 
-          logger.debug('rangeWidth: %o, e.offsetX: %o, v: %o, classNum: %o, thiz.levelClasses[classNum]: %o', 
-            rangeWidth, e.offsetX, v, classNum, thiz.levelClasses[classNum]);
+          /*>>*/logger.debug('rangeWidth: %o, e.offsetX: %o, v: %o, classNum: %o, thiz.levelClasses[classNum]: %o', 
+            rangeWidth, e.offsetX, v, classNum, thiz.levelClasses[classNum]);/*<<*/
 
           speaker.removeClass(thiz.levelClasses.filter(function(c) {
             return c !== thiz.levelClasses[classNum];
