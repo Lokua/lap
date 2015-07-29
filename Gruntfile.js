@@ -31,7 +31,8 @@ module.exports = function(grunt) {
         src: [
           'src/lap-module-definition.js',
           'src/services/*.js',
-          'src/directives/*.js'
+          'src/directives/*.js',
+          'src/directives/!*volume*.js'
         ],
         dest: 'dist/lap-debug.js'
       },

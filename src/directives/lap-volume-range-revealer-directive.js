@@ -11,6 +11,7 @@
   lapVolumeRangeRevealer.$inject = ['$document', '$timeout', '$interval', 'tooly', 'Lap', 'lapUtil'];
 
   function lapVolumeRangeRevealer($document, $timeout, $interval, tooly, Lap, lapUtil) {
+    
 
     if (lapUtil.isMobile()) return angular.noop;
 
@@ -39,14 +40,14 @@
       'lap-i-volume-max'
     ];
 
-    Lap.VolumeRangeRevealer.prototype.init = function() {
+    Lap.VolumeRangeRevealer.prototype.init = function(scope, attrs) {
       var thiz = this,
           lap = thiz.lap,
           lapContainer = angular.element(lap.container)[0],
           speaker = lapUtil.element('.lap__speaker', lapContainer),
           speakerContainer = lapUtil.element('.lap__speaker__container', lapContainer),
           volumeRange = lap.els.volumeRange,
-          rangeWidth = thiz.element[0].querySelector('.lap__canvas-volume-range__track').width,
+          rangeWidth = thiz.element[0].querySelector('.lap__volume-range__track').width,
           nonVolumeControls = lapUtil.elementAll('.lap__non-v', lapContainer),
           MOUSEDOWN, SPEAKER_ENTERED, RANGE_ENTERED;
 
@@ -87,6 +88,9 @@
 
       speaker
         .on('mouseenter', function() {
+          /*>>*/logger.debug('scope.vrangeDragging: %o', scope.vrangeDragging);/*<<*/
+          /*>>*/logger.debug('attrs.vrangeDragging: %o', attrs.vrangeDragging);/*<<*/
+
           if (!SPEAKER_ENTERED && !RANGE_ENTERED) {
             thiz.element.removeClass(lap.selectors.state.hidden);
             nonVolumeControls.addClass(lap.selectors.state.hidden);
@@ -100,7 +104,7 @@
             if (!SPEAKER_ENTERED && !RANGE_ENTERED) {
               release();
             }
-          }, 500);
+          }, 1000);
         });
 
 
@@ -133,13 +137,17 @@
         var unwatch = scope.$watch('ready', function(newValue, oldValue) {
           if (!newValue) return;
 
+          /*>>*/logger.debug('ready >> lap: %o', scope.lap);/*<<*/
+
           revealer = new Lap.VolumeRangeRevealer(scope.lap, element);
           unwatch();
 
           unwatch = scope.$watch('vRangeReady', function(newValue, oldValue) {
             if (!newValue) return;
 
-            revealer.init();
+            /*>>*/logger.debug('vRangeReady >> lap: %o', scope.lap);/*<<*/
+
+            revealer.init(scope, attrs);
             unwatch();
           });
         });

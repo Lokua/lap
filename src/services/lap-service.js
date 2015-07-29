@@ -1,15 +1,6 @@
 (function() { 'use strict';
 
   /*>>*/
-  Lo66er.setDefaults({
-    outputTimestamp: false,
-    outputSource: true,
-    useAbsoluteSource: true,
-    nameStyle: 'color:darkblue'
-  });
-  /*<<*/
-
-  /*>>*/
   var logger = new Lo66er('Lap', { level: 0 });
   /*<<*/
 
