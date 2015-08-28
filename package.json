@@ -1,6 +1,6 @@
 {
   "name": "lap",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "HTML5 audio player",
   "main": "dist/lap.js",
   "bugs": "dev@lokua.net",
@@ -39,6 +39,7 @@
     "grunt-sass": "^0.18.1",
     "grunt-shell": "~0.7.0",
     "grunt-strip-code": "^0.1.2",
+    "grunt-wrap": "^0.3.0",
     "jade": "^1.10.0",
     "jasmine-core": "^2.3.4",
     "karma": "^0.12.32",

@@ -1,5 +1,5 @@
 (function() { 'use strict';
-  
+
   /*>>*/
   Lo66er.setDefaults({
     outputTimestamp: false,
@@ -12,6 +12,7 @@
   angular.module('lnet.lap', ['tooly']);
 
 })();
+
 
 (function() { 'use strict';
 

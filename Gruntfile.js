@@ -55,15 +55,15 @@ module.exports = function(grunt) {
       }
     },
 
-    connect: { 
-      main: { 
-        options: { 
+    connect: {
+      main: {
+        options: {
           hostname: '0.0.0.0',
-          port: 8000, 
+          port: 8000,
           keepalive: true,
-          livereload: true 
-        } 
-      } 
+          livereload: true
+        }
+      }
     },
 
     cssbeautifier : {
@@ -96,7 +96,7 @@ module.exports = function(grunt) {
         src: '*.html',
         dest: 'src/lap-templates.js'
       }
-    },    
+    },
 
     sass: {
       demo: {
@@ -144,7 +144,7 @@ module.exports = function(grunt) {
         files: {
           src: 'dist/lap-debug.js'
         }
-      },      
+      },
       dist: {
         files: {
           src: 'dist/lap.js'
@@ -170,22 +170,34 @@ module.exports = function(grunt) {
       },
       jade: {
         files: 'src/templates/*.jade',
-        tasks: ['jade', 'ngtemplates:build']
+        tasks: ['jade', 'ngtemplates:build', 'wrap:templates']
       },
       angular: {
         files: ['src/services/*.js', 'src/directives/*.js', 'demo/**/*'],
         tasks: ['concat:dev']
       }
+    },
+
+    wrap: {
+      templates: {
+        src: 'src/lap-templates.js',
+        dest: 'src/lap-templates.js',
+        options: {
+          wrapper: function(filepath, options) {
+            return ['!function() {\n\n', '\n\n}();']
+          }
+        }
+      }
     }
   });
 
   grunt.registerTask('default', ['concurrent:dev']);
-  grunt.registerTask('devbuild', ['ngtemplates:build', 'concat:dev']);
+  grunt.registerTask('devbuild', ['ngtemplates:build', 'wrap:templates', 'concat:dev']);
   grunt.registerTask('build', [
-    'concat:dist', 
-    'strip_code:dist', 
-    'uglify:dist', 
-    'usebanner:dist', 
+    'concat:dist',
+    'strip_code:dist',
+    'uglify:dist',
+    'usebanner:dist',
     'usebanner:post'
   ]);
   grunt.registerTask('all', ['devbuild', 'build']);

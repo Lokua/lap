@@ -1,5 +1,5 @@
 (function() { 'use strict';
-  
+
   /*>>*/
   Lo66er.setDefaults({
     outputTimestamp: false,

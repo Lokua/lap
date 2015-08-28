@@ -1,3 +1,6 @@
+!function() {
+
+
 angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
   'use strict';
 
@@ -16,3 +19,7 @@ angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
   );
 
 }]);
+
+
+
+}();
