@@ -1,1234 +1,746 @@
-/*!
- * lap - version 0.4.0 (built: 2015-08-28)
- * HTML5 audio player
- *
- * https://github.com/Lokua/lap.git
- *
- * Copyright © 2015 Joshua Kleckner
- * Licensed under the MIT license.
- * http://lokua.net/license-mit.html
- */
-
-(function() { 'use strict';
-
-
-  angular.module('lnet.lap', ['tooly']);
-
-})();
-
-
-!function() {
-
-
-angular.module('lnet.lap').run(['$templateCache', function($templateCache) {
+(function (global, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define('Lap', ['exports', 'module'], factory);
+  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
+    factory(exports, module);
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports, mod);
+    global.Lap = mod.exports;
+  }
+})(this, function (exports, module) {
+  /*>>*/
   'use strict';
 
-  $templateCache.put('lap-controls.html',
-    "<div ng-switch=\"isMobile\" class=\"lap lap__player\"><div class=\"lap__details\"><div><span class=\"lap__detail lap__artist\"></span><span class=\"lap__detail lap__album\"></span></div><div><span class=\"lap__detail lap__track-number\"></span><span class=\"lap__detail lap__track-title\"></span></div></div><br/><div ng-switch-default=\"false\" class=\"lap__controls\"><div class=\"lap__control lap__non-v\"><i class=\"lap__play-pause lap-i-play\"></i></div><div data-lap-tooltip=\"previous track\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__prev lap-i-prev\"></i></div><div data-lap-tooltip=\"next track\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__next lap-i-next\"></i></div><div class=\"lap__read lap__non-v lap__current-time\">00:00</div><div class=\"lap__prog-seek\"><prog-seek class=\"prog-seek\"></prog-seek></div><div class=\"lap__read lap__duration lap__non-v\">00:00</div><div data-lap-tooltip=\"previous album\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__prev-album lap-i-prev-album\"></i></div><div data-lap-tooltip=\"show albums\" class=\"lap__control lap__tooltip lap__non-v\"><i ng-class=\"{active:discogActive}\" ng-click=\"discogActive=!discogActive\" class=\"lap__discog lap-i-discog\"></i></div><div data-lap-tooltip=\"next album\" class=\"lap__control lap__tooltip lap__non-v\"><i class=\"lap__next-album lap-i-next-album\"></i></div></div><div ng-switch-when=\"true\" class=\"lap__controls lap--mobile\"><section class=\"lap__mobile-section--1\"><div class=\"lap__control\"><i class=\"lap__prev lap-i-prev\"></i></div><div class=\"lap__control\"><i class=\"lap__play-pause lap-i-play\"></i></div><div class=\"lap__control\"><i class=\"lap__next lap-i-next\"></i></div></section><section class=\"lap__mobile-section--2\"><div class=\"lap__read lap__current-time\">00:00</div><div class=\"lap__prog-seek\"><prog-seek class=\"prog-seek\"></prog-seek></div><div class=\"lap__read lap__duration\">00:00</div></section><section class=\"lap__mobile-section--3\"><div class=\"lap__control\"><i ng-class=\"{active:discogActive}\" ng-click=\"discogActive=!discogActive\" class=\"lap__discog lap-i-discog\"></i></div></section></div></div>"
-  );
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+  var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-  $templateCache.put('lap-discog.html',
-    "<div class=\"lap__discog__panel\"><div ng-repeat=\"album in lib\" ng-click=\"loadAlbum($index)\" ng-class=\"{active:$index===lap.albumIndex}\" class=\"lap__discog__item\"><img ng-src=\"{{album.cover}}\"/><aside>{{album.album}}</aside></div></div>"
-  );
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+  function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-  $templateCache.put('lap-playlist.html',
-    "<div class=\"lap__cover__container\"><img ng-src=\"{{cover}}\" class=\"lap__cover\"/></div><div ng-show=\"showPlayist\" class=\"lap__playlist__panel\"><div class=\"lap__playlist__panel__inner\"><div ng-repeat=\"track in tracklist\" ng-class=\"{ &quot;lap__playlist__item--current&quot;: $index === lap.trackIndex }\" ng-click=\"setTrack($index)\" class=\"lap__playlist__item\"><span class=\"lap__playlist__track-number\">{{trackNumbers[$index]}} &nbsp;</span><span class=\"lap__playlist__track-title\">{{track}}</span></div></div></div>"
-  );
+  var logger = new Logger('Lap', {
+    level: 0,
+    nameStyle: 'color:rgb(10, 102, 85)'
+  });
+  /*<<*/
 
-}]);
+  var _ = tooly;
+  var $ = _.Frankie;
+  var IS_MOBILE = true; // temp fix as we don't give a shit about volume for now...
 
+  var $$instances = Symbol();
+  var $$defaultSettings = Symbol();
+  var $$defaultSelectors = Symbol();
+  var $$audioExtensionRegExp = Symbol();
 
+  var Lap = (function (_Bus) {
+    _inherits(Lap, _Bus);
 
-}();
+    function Lap(element, lib, options) {
+      var _this = this;
 
-(function() { 'use strict';
+      var postpone = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
 
+      _classCallCheck(this, Lap);
 
-  angular.module('lnet.lap').factory('Lap', factory);
-  factory.$inject = ['$http', '$q', '$rootScope', 'tooly', 'lapUtil'];
-
-  function factory($http, $q, $rootScope, tooly, lapUtil) {
-
-    var _id = _id || 0,
-        _instances = [],
-        _audioExtensionRegExp = /mp3|wav|ogg|aiff/i;
-
-    /**
-     * @constructor
-     * @param {jqLite}  element  the container angular.element (lapContainer directive)
-     * @param {Array}   lib      list of album objects of the form []
-     * @param {Object}  options  hash of options to merge with Lap.prototype.defaultOptions
-     * @param {Boolean} postpone if true, Lap will not call its initialize function 
-     *                           when instantiated
-     */
-    function Lap(element, lib, options, postpone) {
-      tooly.Handler.call(this);
-      this.id = ++_id;
+      _get(Object.getPrototypeOf(Lap.prototype), 'constructor', this).call(this);
+      this.id = options && options.id ? options.id : Lap[$$instances].length;
       this.element = element;
-      this.container = element[0];
-      this.settings = angular.extend({}, this.defaultSettings, options);
+      this.container = document.querySelector(element);
+      this.settings = _.extend({}, Lap[$$defaultSettings], options);
       this.lib = lib;
       if (!postpone) this.initialize();
-      _instances.push(this);
+
+      /*>>*/
+      var echo = function echo(e) {
+        return _this.on(e, function () {
+          return logger.info('%c%s handler called', 'color:#800080', e);
+        });
+      };
+      echo('load');
+      echo('play');
+      echo('pause');
+      echo('seek');
+      echo('trackChange');
+      echo('albumChange');
+      echo('volumeChange');
+      /*<<*/
+
+      Lap[$$instances].push(this);
       return this;
     }
 
-    Lap.getInstance = function(index) {
-      var deferred = $q.defer();
-      deferred.resolve(_instances[index]);
-      return deferred.promise;
-    };
+    _createClass(Lap, [{
+      key: 'initialize',
+      value: function initialize() {
+        var _this2 = this;
 
-    /**
-     * Static helper to fetch json or audio file, or convert an existing javascript Object/Array
-     * into the proper format for Lap's lib member.
-     * 
-     * @param  {Object|Array|String} arg either an array of album objects, a single album object
-     *                                   or a url pointing to either a json file or single audio 
-     *                                   file
-     * @return {Promise.Array[Object]} 
-     * @static
-     */
-    Lap.getLib = function(arg) {
-      var deferred = $q.defer();
+        this.SEEKING = false;
+        this.VOLUME_CHANGING = false;
+        this.MOUSEDOWN_TIMER = 0;
+        this.PLAYING = false;
 
-      if (tooly.type(arg) === 'object') {
-        deferred.resolve([arg]);
-        return deferred.promise;
+        this.plugins = this.settings.plugins;
+        this.playlistPopulated = false;
 
-      } else if (tooly.type(arg) === 'array') {
-        deferred.resolve(arg);
-        return deferred.promise;
+        this.albumIndex = this.settings.startingAlbumIndex;
+        this.albumCount = this.lib.length;
 
-      } else if (_audioExtensionRegExp.test(arg)) {
-        deferred.resolve([{ files: arg }]);
-        return deferred.promise;
+        this.update();
+        this.initAudio();
+        this.initElements();
+        this.addAudioListeners();
+        if (!IS_MOBILE) this.addVolumeListeners();
+        this.addSeekListeners();
+        this.addListeners();
+
+        _.each(this.settings.callbacks, function (fn, key) {
+          return _this2.on(key, fn);
+        });
+        this.activatePlugins();
+
+        /*>>*/logger.debug('initialize >> instance #%o: %o', this.id, this); /*<<*/
+
+        this.trigger('load');
+      }
+    }, {
+      key: 'activatePlugins',
+      value: function activatePlugins() {
+        var _this3 = this;
+
+        this.plugins.forEach(function (plugin, i) {
+          _this3.plugins[i] = new plugin(_this3); /* jshint ignore:line */
+        });
       }
 
-      return $http.get(arg).then(function(response) {
-        deferred.resolve(response.data);
-        return deferred.promise;
-      }, function(err) {
-        return deferred.reject(err);
-      });
-    };
+      /**
+       * Configures instance variables relative to the current album.
+       * Called on initialization and whenever an album is changed.
+       *
+       * @return {Lap} this
+       */
+    }, {
+      key: 'update',
+      value: function update() {
+        var _this4 = this;
 
-    Lap.PluginConstructorError = function(msg) {
-      Error.call(this);
-    };
-    Lap.PluginConstructorError.prototype = Error;
+        this.trackIndex = this.settings.startingTrackIndex;
+        this.playlistPopulated = false;
 
-    Lap.prototype = new tooly.Handler();
+        var currentLibItem = this.lib[this.albumIndex];
 
-    Lap.prototype.defaultSettings = {
-      callbacks: {},
-      discogPlaylistExclusive: true,
-      plugins: [],
-      prependTrackNumbers: true,
-      replacementText: void 0,
-      startingAlbumIndex: 0,
-      startingTrackIndex: 0,
-      seekInterval: 5, 
-      seekTime: 250,
-      selectors: {}, // see #initElements
-      selectorPrefix: 'lap',
-      trackNumberPostfix: ' - ',
-      useNativeProgress: false,
-      useNativeSeekRange: false,
-      useNativeVolumeRange: false,
-      volumeInterval: 0.05
-    };
+        ['artist', 'album', 'files', 'cover', 'tracklist', 'replacement'].forEach(function (key) {
+          return _this4[key] = currentLibItem[key];
+        });
 
-    Lap.prototype.selectors = {
-      state: {
-        playlistItemCurrent:  'lap__playlist__item--current',
-        playing:              'lap--playing',
-        paused:               'lap--paused',
-        hidden:               'lap--hidden'
-      },
-      album:               'lap__album',
-      artist:              'lap__artist',
-      buffered:            'lap__buffered',
-      cover:               'lap__cover',
-      currentTime:         'lap__current-time',
-      discog:              'lap__discog',
-      discogItem:          'lap__discog__item',
-      discogPanel:         'lap__discog__panel',
-      duration:            'lap__duration',
-      info:                'lap__info', // button
-      infoPanel:           'lap__info-panel',
-      next:                'lap__next',
-      nextAlbum:           'lap__next-album',
-      playPause:           'lap__play-pause',
-      playlist:            'lap__playlist', // button
-      playlistItem:        'lap__playlist__item', // list item
-      playlistPanel:       'lap__playlist__panel',
-      playlistTrackNumber: 'lap__playlist__track-number',
-      playlistTrackTitle:  'lap__playlist__track-title',
-      prev:                'lap__prev',
-      prevAlbum:           'lap__prev-album',
-      progress:            'lap__progress',
-      seekBackward:        'lap__seek-backward',
-      seekForward:         'lap__seek-forward',
-      seekRange:           'lap__seek-range',
-      trackNumber:         'lap__track-number', // the currently cued track
-      trackTitle:          'lap__track-title',
-      volumeButton:        'lap__volume-button',
-      volumeDown:          'lap__volume-down',
-      volumeRead:          'lap__volume-read',
-      volumeRange:         'lap__volume-range',
-      volumeUp:            'lap__volume-up'
-    };
+        this.trackCount = this.files.length;
 
-    Lap.prototype.SEEKING = false;
-    Lap.prototype.VOLUME_CHANGING = false;
-    Lap.prototype.MOUSEDOWN_TIMER = 0;
-    Lap.prototype.PLAYING = false;
-
-    Lap.prototype.initialize = function() {
-
-      this.plugins = {};
-      this.playlistPopulated = false;
-
-      this.albumIndex = this.settings.startingAlbumIndex;
-      this.albumCount = this.lib.length;
-
-      this.update();
-
-      this.initAudio();
-      this.initElements();
-
-      this.addAudioListeners();
-
-      if (!lapUtil.isMobile()) {
-        this.addVolumeListeners();
+        if (this.replacement !== undefined) {
+          var re = this.replacement;
+          /* for replacment without value specified, empty string */
+          if (_.type(re) === 'string') re = [re, ''];
+          /* re may contain string-wrapped regexp (from json), convert if so */
+          if (_.type(re[0]) !== 'regexp') {
+            var flags = re[2];
+            re[0] = new RegExp(re[0], flags !== undefined ? flags : 'g');
+          }
+        }
+        this.formatTracklist();
+        return this;
       }
-      this.addSeekListeners();
-      this.addListeners();
-
-      this.register(this.settings.callbacks);
-
-
-      $rootScope.$broadcast('lnet.lap.instanceInitialized', this);
-
-      this.trigger('load');
-    };
-
-    /**
-     * Configures instance variables relative to the current album.
-     * Called on initialization and whenever an album is changed.
-     *     
-     * @return {Lap} this
-     */
-    Lap.prototype.update = function() {
-      var lap = this,
-          lib = lap.lib,
-          currentLibItem = lib[lap.albumIndex];
-
-      lap.trackIndex = lap.settings.startingTrackIndex;
-      lap.playlistPopulated = false;
-
-      ['artist', 'album', 'files', 'cover', 'tracklist', 'replacement'].forEach(function(key) {
-        lap[key] = currentLibItem[key];
-      });
-
-      lap.trackCount = lap.files.length;
-
-      if (lap.replacement !== undefined) {
-        var re = lap.replacement;
-        // for replacment without value specified, empty string
-        if (tooly.type(re) === 'string') re = [re, ''];
-        // re may contain string-wrapped regexp (from json), convert if so
-        if (tooly.type(re[0]) !== 'regexp') {
-          var flags = re[2];
-          re[0] = new RegExp(re[0], flags !== undefined ? flags : 'g');
+    }, {
+      key: 'initAudio',
+      value: function initAudio() {
+        this.audio = new Audio();
+        this.audio.preload = 'auto';
+        var fileType = this.getFileType();
+        var canPlay = this.audio.canPlayType('audio/' + fileType);
+        if (canPlay === 'probably' || canPlay === 'maybe') {
+          this.setSource();
+          this.audio.volume = 1;
+        } else {
+          // TODO: return a flag to signal skipping the rest of the initialization process
+          console.warn('This browser does not support ' + filetype + ' playback.');
         }
       }
-      lap.formatTracklist();
-      return lap;
-    };
-
-    Lap.prototype.initAudio = function() {  
-      this.audio = new Audio();
-      this.audio.preload = 'auto';
-      var fileType = this.getFileType(),
-          canPlay = this.audio.canPlayType('audio/' + fileType);
-      if (canPlay === 'probably' || canPlay === 'maybe') {
-        this.setSource();
-        this.audio.volume = lapUtil.isMobile() ? 0.80 : 1;
-      } else {
-        console.warn('This browser does not support ' + fileType + ' playback.');
+    }, {
+      key: 'setSource',
+      value: function setSource() {
+        this.audio.src = this.files[this.trackIndex];
+        return this;
       }
-    };
+    }, {
+      key: 'getFileType',
+      value: function getFileType() {
+        var f = this.files[this.trackIndex];
+        return f.substr(0, f.lastIndexOf('.'));
+      }
+    }, {
+      key: 'initElements',
+      value: function initElements() {
+        var _this5 = this;
 
-    Lap.prototype.setSource = function() {
-      this.audio.src = this.files[this.trackIndex];
-    };
-
-    Lap.prototype.getFileType = function() {
-      return tooly.extension(this.files[this.trackIndex]);
-    };
-
-    Lap.prototype.initElements = function() {
-      var lap = this;
-      lap.els = {};
-      lap.selectors = angular.extend({}, lap.selectors, lap.settings.selectors);
-      tooly.each(lap.selectors, function(sel, key) {
-        if (tooly.type(sel) === 'object') return;
-        var el = lapUtil.element('.' + sel, lap.element);
-        if (el.length) lap.els[key] = el;
-      });
-    };
-
-    Lap.prototype.addAudioListeners = function() {
-      var lap = this, 
-          audio = lap.audio,
-          els = lap.els;
-
-      if (els.buffered || (lap.settings.useNativeProgress && els.progress)) {
-        audio.addEventListener('progress', function() {
-          var buffered = +lap.bufferFormatted();
-          if (els.buffered)   els.buffered.html(buffered);
-          if (nativeProgress) els.progress[0].value = buffered;
+        this.els = {};
+        this.selectors = Object.keys(Lap[$$defaultSelectors]).map(function (key) {
+          return _this5.settings.selectors[key] || Lap[$$defaultSelectors][key];
+        });
+        Object.keys(this.selectors).forEach(function (sel, key) {
+          if (_.type(sel) === 'object') return;
+          var el = document.querySelector('.' + sel, _this5.element);
+          if (el) _this5.els[key] = el;
         });
       }
-      if (els.currentTime) {
-        audio.addEventListener('timeupdate', function() {
-          els.currentTime.html(lap.currentTimeFormatted());
-        });
-      }
-      if (els.duration) {
-        audio.addEventListener('durationchange', function() {
-          els.duration.html(lap.durationFormatted());        
-        });
-      }
-      if (!lapUtil.isMobile() && els.volumeRead) {
-        audio.addEventListener('volumechange', function() {
-          els.volumeRead.html(lap.volumeFormatted());
-        });
-      }
-      audio.addEventListener('ended', function() {
-        // if (lap.audio.paused) lap.audio.play();
-        if (lap.PLAYING) {
-          lap.next();
-          lap.audio.play();
-        }
-      });
+    }, {
+      key: 'addAudioListeners',
+      value: function addAudioListeners() {
+        var _this6 = this;
 
-      return lap;       
-    };    
+        var audio = this.audio;
+        var els = this.els;
 
-    Lap.prototype.addListeners = function() {
-      var lap = this,
-          els = lap.els;
-
-      if (els.playPause) els.playPause.on('click', function() { lap.togglePlay(); });
-      if (els.prev) els.prev.on('click', function() { lap.prev(); });
-      if (els.next) els.next.on('click', function() { lap.next(); });
-      if (!lapUtil.isMobile()) {
-        if (els.volumeUp) els.volumeUp.on('click', function() { lap.incVolume(); });
-        if (els.volumeDown) els.volumeDown.on('click', function() { lap.decVolume(); });
-      }
-      if (els.prevAlbum) els.prevAlbum.on('click', function() { lap.prevAlbum(); });
-      if (els.nextAlbum) els.nextAlbum.on('click', function() { lap.nextAlbum(); });
-      if (els.discog) els.discog.on('click', function() { lap.trigger('discogClick'); });
-
-      lap
-        .on('load', function() {
-          if (els.trackTitle) lap.updateTrackTitleEl();
-          if (els.trackNumber) lap.updateTrackNumberEl();
-          if (els.artist) lap.updateArtistEl();
-          if (els.album) lap.updateAlbumEl();
-          if (els.cover) lap.updateCover();
-          if (els.playPause) {
-            els.playPause.addClass(lap.selectors.state.paused);
-            lap
-              .on('play', function() {
-                els.playPause
-                  .removeClass(lap.selectors.state.paused)
-                  .addClass(lap.selectors.state.playing);
-              })
-              .on('pause', function() {
-                els.playPause
-                  .removeClass(lap.selectors.state.playing)
-                  .addClass(lap.selectors.state.paused);
-              });
-          }
-        })
-        .on('trackChange', function() {
-          if (els.trackTitle) lap.updateTrackTitleEl();
-          if (els.trackNumber) lap.updateTrackNumberEl();
-          if (els.currentTime) els.currentTime.html(lap.currentTimeFormatted());
-          if (els.duration) els.duration.html(lap.durationFormatted());
-        })
-        .on('albumChange', function() {
-          if (els.trackTitle) lap.updateTrackTitleEl();
-          if (els.trackNumber) lap.updateTrackNumberEl();
-          if (els.artist) lap.updateArtistEl();
-          if (els.album) lap.updateAlbumEl();
-          if (els.cover) lap.updateCover();
-        });      
-    };
-
-    Lap.prototype.addSeekListeners = function() {
-      var lap = this, 
-          els = lap.els,
-          audio = lap.audio,
-          seekRange = els.seekRange,
-          nativeSeek = lap.settings.useNativeSeekRange && seekRange && seekRange.els.length > 0;
-
-      if (nativeSeek) {
-        audio.addEventListener('timeupdate', function(e) {
-          if (!lap.SEEKING) {
-            seekRange.get(0).value = tooly.scale(audio.currentTime, 0, audio.duration, 0, 100);
-          }
-        });
-        seekRange
-          .on('mousedown', function(e) {
-            lap.SEEKING = true;
-          })
-          .on('mouseup', function(e) {
-            var el = seekRange.get(0);
-            if (!el.value) lap.logger.debug('what the fuck! ' + el);
-            audio.currentTime = tooly.scale(el.value, 0, el.max, 0, audio.duration);
-            lap.trigger('seek');
-            lap.SEEKING = false;
+        if (els.buffered || this.settings.useNativeProgress && els.progress) {
+          audio.addEventListener('progress', function () {
+            // TODO: verify if this really needs to be type cast...
+            var buffered = +_this6.bufferFormatted();
+            if (els.buffered) els.buffered.outerHTML = buffered;
+            if (nativeProgress) els.progress.value = buffered;
           });
-
-      } else { // using buttons
-        [els.seekForward, els.seekBackward].forEach(function(el) {
-          if (!el) return;
-          el
-            .on('mousedown', function(e) {
-              lap.SEEKING = true;
-              if (angular.element(e.target).hasClass(lap.selectors.seekForward)) {
-                lap.seekForward();
-              } else {
-                lap.seekBackward();
-              }
-            })
-            .on('mouseup', function(e) {
-              lap.SEEKING = false;
-              clearTimeout(lap.MOUSEDOWN_TIMER);
-            });
+        }
+        if (els.currentTime) {
+          audio.addEventListener('timeupdate', function () {
+            els.currentTime.outerHTML = _this6.currentTimeFormatted();
+          });
+        }
+        if (els.duration) {
+          audio.addEventListener('durationchange', function () {
+            els.duration.outerHTML = _this6.durationFormatted();
+          });
+        }
+        if (!IS_MOBILE && els.volumeRead) {
+          audio.addEventListener('volumechange', function () {
+            els.volumeRead.outerHTML = _this6.volumeFormatted();
+          });
+        }
+        audio.addEventListener('ended', function () {
+          /*>>*/logger.debug('ended > this.audio.paused: %o', _this6.audio.paused); /*<<*/
+          if (_this6.PLAYING) {
+            _this6.next();
+            _this6.audio.play();
+          }
         });
+
+        return this;
       }
-    };
+    }, {
+      key: 'addListeners',
+      value: function addListeners() {
+        var _this7 = this;
 
-    if (!lapUtil.isMobile()) {
+        var els = this.els;
 
-      Lap.prototype.addVolumeListeners = function() {
-        var lap = this, 
-            els = lap.els,
-            audio = lap.audio,
-            vslider = els.volumeRange;
+        if (els.playPause) els.playPause.addEventListener('click', function () {
+          return _this7.togglePlay();
+        });
+        if (els.prev) els.prev.addEventListener('click', function () {
+          return _this7.prev();
+        });
+        if (els.next) els.next.addEventListener('click', function () {
+          return _this7.next();
+        });
+        if (!IS_MOBILE) {
+          if (els.volumeUp) els.volumeUp.addEventListener('click', function () {
+            return _this7.incVolume();
+          });
+          if (els.volumeDown) els.volumeDown.addEventListener('click', function () {
+            return _this7.decVolume();
+          });
+        }
+        if (els.prevAlbum) els.prevAlbum.addEventListener('click', function () {
+          return _this7.prevAlbum();
+        });
+        if (els.nextAlbum) els.nextAlbum.addEventListener('click', function () {
+          return _this7.nextAlbum();
+        });
+        if (els.discog) els.discog.addEventListener('click', function () {
+          return _this7.trigger('discogClick');
+        });
+        if (els.playlist) els.playlist.addEventListener('click', function () {
+          return _this7.trigger('playlistClick');
+        });
 
-        if (lap.settings.useNativeVolumeRange && vslider && vslider.els.length > 0) {
-          audio.addEventListener('volumechange', function() {
-            if (!lap.VOLUME_CHANGING) {
-              vslider.get(0).value = lap.volumeFormatted();
+        // this
+        //   .on('load', () => {
+        //     if (els.trackTitle) this.updateTrackTitleEl();
+        //     if (els.trackNumber) this.updateTrackNumberEl();
+        //     if (els.artist) this.updateArtistEl();
+        //     if (els.album) this.updateAlbumEl();
+        //     if (els.cover) this.updateCover();
+        //     if (els.playPause) {
+        //       els.playPause.addClass(this.selectors.state.paused);
+        //       this
+        //         .on('play', () => {
+        //           els.playPause
+        //             .removeClass(this.selectors.state.paused)
+        //             .addClass(this.selectors.state.playing);
+        //         })
+        //         .on('pause', () => {
+        //           els.playPause
+        //             .removeClass(this.selectors.state.playing)
+        //             .addClass(this.selectors.state.paused);
+        //         });
+        //     }
+        //   })
+        //   .on('trackChange', () => {
+        //     if (els.trackTitle) this.updateTrackTitleEl();
+        //     if (els.trackNumber) this.updateTrackNumberEl();
+        //     if (els.currentTime) els.currentTime.html(this.currentTimeFormatted());
+        //     if (els.duration) els.duration.html(this.durationFormatted());
+        //   })
+        //   .on('albumChange', () => {
+        //     if (els.trackTitle) this.updateTrackTitleEl();
+        //     if (els.trackNumber) this.updateTrackNumberEl();
+        //     if (els.artist) this.updateArtistEl();
+        //     if (els.album) this.updateAlbumEl();
+        //     if (els.cover) this.updateCover();
+        //   });
+      }
+    }, {
+      key: 'addSeekListeners',
+      value: function addSeekListeners() {
+        var _this8 = this;
+
+        var els = this.els;
+        var audio = this.audio;
+        var seekRange = els.seekRange;
+        var nativeSeek = this.settings.useNativeSeekRange && seekRange && seekRange.els.length;
+
+        if (nativeSeek) {
+          audio.addEventListener('timeupdate', function (e) {
+            if (!_this8.SEEKING) {
+              seekRange.get(0).value = _.scale(audio.currentTime, 0, audio.duration, 0, 100);
             }
           });
-          vslider
-            .on('mousedown', function() {
-              lap.VOLUME_CHANGING = true;
-            })
-            .on('mouseup', function() {
-              audio.volume = vslider.get(0).value * 0.01;
-              lap.trigger('volumeChange');
-              lap.VOLUME_CHANGING = false;
+          seekRange.on('mousedown', function (e) {
+            _this8.SEEKING = true;
+          }).on('mouseup', function (e) {
+            var el = seekRange.get(0);
+            if (!el.value) _this8.logger.debug('what the fuck! ' + el);
+            audio.currentTime = _.scale(el.value, 0, el.max, 0, audio.duration);
+            _this8.trigger('seek');
+            _this8.SEEKING = false;
+          });
+        } else {
+          // using buttons
+          [els.seekForward, els.seekBackward].forEach(function (el) {
+            if (!el) return;
+            el.on('mousedown', function (e) {
+              _this8.SEEKING = true;
+              if ($(e.target).hasClass(_this8.selectors.seekForward)) {
+                _this8.seekForward();
+              } else {
+                _this8.seekBackward();
+              }
+            }).on('mouseup', function (e) {
+              _this8.SEEKING = false;
+              clearTimeout(_this8.MOUSEDOWN_TIMER);
             });
+          });
         }
-      };
+      }
+    }, {
+      key: 'addVolumeListeners',
+      value: function addVolumeListeners() {
+        var _this9 = this;
 
-      Lap.prototype.incVolume = function() {
+        if (IS_MOBILE) return this;
+
+        var lap = this;
+        var els = this.els;
+        var audio = this.audio;
+        var vslider = els.volumeRange;
+
+        if (this.settings.useNativeVolumeRange && vslider && vslider.els.length) {
+          audio.addEventListener('volumechange', function () {
+            if (!_this9.VOLUME_CHANGING) {
+              vslider.get(0).value = _this9.volumeFormatted();
+            }
+          });
+          vslider.on('mousedown', function () {
+            _this9.VOLUME_CHANGING = true;
+          }).on('mouseup', function () {
+            audio.volume = vslider.get(0).value * 0.01;
+            _this9.trigger('volumeChange');
+            _this9.VOLUME_CHANGING = false;
+          });
+        }
+      }
+    }, {
+      key: 'incVolume',
+      value: function incVolume() {
+        if (IS_MOBILE) return this;
         this.setVolume(true);
-        return this;      
-      };
-
-      Lap.prototype.decVolume = function() {
+        return this;
+      }
+    }, {
+      key: 'decVolume',
+      value: function decVolume() {
+        if (IS_MOBILE) return this;
         this.setVolume(false);
         return this;
-      };
-
-      Lap.prototype.setVolume = function(up) {
+      }
+    }, {
+      key: 'setVolume',
+      value: function setVolume(up) {
+        if (IS_MOBILE) return this;
         var vol = this.audio.volume,
             interval = this.settings.volumeInterval;
         if (up) {
-          this.audio.volume = (vol + interval >= 1) ? 1 : vol + interval;
+          this.audio.volume = vol + interval >= 1 ? 1 : vol + interval;
         } else {
-          this.audio.volume = (vol - interval <= 0) ? 0 : vol - interval;
+          this.audio.volume = vol - interval <= 0 ? 0 : vol - interval;
         }
         this.trigger('volumeChange');
-        return this;      
-      };
-      
-      Lap.prototype.volumeFormatted = function() {
-        return Math.round(this.audio.volume * 100);
-      };      
-    }
-
-
-    /**
-     * Add a plug-in instance to the plugins hash
-     * @param  {String} key    the plugin instance identifier
-     * @param  {Object} plugin the plugin instance (not the class)
-     * @return {Lap}           this
-     */ 
-    Lap.prototype.registerPlugin = function(key, plugin) {
-      this.plugins[key] = plugin;
-    };
-
-    Lap.prototype.updateTrackTitleEl = function() {
-      this.els.trackTitle.html(this.tracklist[this.trackIndex]);
-      return this;
-    };
-
-    Lap.prototype.updateTrackNumberEl = function() {
-      this.els.trackNumber.html(+this.trackIndex+1);
-      return this;
-    };
-
-    Lap.prototype.updateArtistEl = function() {
-      this.els.artist.html(this.artist);
-      return this;      
-    };
-
-    Lap.prototype.updateAlbumEl = function() {
-      this.els.album.html(this.album);
-      return this;      
-    };
-
-    Lap.prototype.updateCover = function() {
-      this.els.cover.get(0).src = this.cover;
-      return this;      
-    };
-
-    Lap.prototype.togglePlay = function() {
-      this.audio.paused ? this.play() : this.pause();
-      this.trigger('togglePlay');
-      return this;
-    };
-    Lap.prototype.play = function() {
-      this.audio.play();
-      this.PLAYING = true;
-      this.trigger('play');
-      return this;
-    };
-    Lap.prototype.pause = function() {
-      this.audio.pause();
-      this.PLAYING = false;
-      this.trigger('pause');
-      return this;
-    };
-
-    Lap.prototype.setTrack = function(index) {
-      if (index <= 0) {
-        this.trackIndex = 0;
-      } else if (index >= this.trackCount) {
-        this.trackIndex = this.trackCount-1;
-      } else {
-        this.trackIndex = index;
-      }
-      var wasPlaying = !this.audio.paused;
-      this.setSource();
-      if (wasPlaying) this.audio.play();
-      this.trigger('trackChange');
-      return this;      
-    };
-    Lap.prototype.prev = function() {
-      var wasPlaying = !this.audio.paused;
-      this.trackIndex = (this.trackIndex-1 < 0) ? this.trackCount-1 : this.trackIndex-1;
-      this.setSource();
-      if (wasPlaying) this.audio.play();
-      this.trigger('trackChange');
-      return this;       
-    };
-    Lap.prototype.next = function() {
-      var wasPlaying = !this.audio.paused;
-      this.trackIndex = (this.trackIndex+1 >= this.trackCount) ? 0 : this.trackIndex+1;
-      this.setSource();
-      if (wasPlaying) this.audio.play();
-      this.trigger('trackChange');
-      return this;      
-    };
-
-    Lap.prototype.prevAlbum = function() {
-      var wasPlaying = !this.audio.paused;
-      this.albumIndex = (this.albumIndex-1 < 0) ? this.albumCount-1 : this.albumIndex-1;
-      this.update();
-      this.trackIndex = 0;
-      this.setSource();
-      if (wasPlaying) this.audio.play();
-      this.trigger('albumChange');
-      return this;      
-    };
-    Lap.prototype.nextAlbum = function() {
-      var wasPlaying= !this.audio.paused;
-      this.albumIndex = (this.albumIndex+1 > this.albumCount-1) ? 0 : this.albumIndex+1;
-      this.update();
-      this.trackIndex = 0;
-      this.setSource();
-      if (wasPlaying) this.audio.play();
-      this.trigger('albumChange');
-      return this;      
-    };
-    Lap.prototype.setAlbum = function(index) {
-      if (index <= 0) {
-        this.albumIndex = 0;
-      } else if (index >= this.albumCount) {
-        this.albumIndex = this.albumCount-1;
-      } else {
-        this.albumIndex = index;
-      }
-      this.update();
-      this.setTrack(this.lib[this.albumIndex].startingTrackIndex || 0);
-      this.trigger('albumChange');
-      return this;      
-    };
-
-    function _seek(lap, forward) {
-      var applied;
-      if (forward) {
-        applied = lap.audio.currentTime + lap.settings.seekInterval;
-        lap.audio.currentTime = (applied >= lap.audio.duration) ? lap.audio.duration : applied;
-      } else {
-        applied = lap.audio.currentTime + (lap.settings.seekInterval * -1);
-        lap.audio.currentTime = (applied <= 0) ? 0 : applied;
-      }
-      lap.trigger('seek');
-      return lap;      
-    }    
-    Lap.prototype.seekBackward = function() {
-      if (!this.SEEKING) return this;
-      var lap = this;
-      this.MOUSEDOWN_TIMER = setInterval(function() {
-        lap.seek(lap, false);
-      }, lap.settings.seekTime);
-      return lap;      
-    };
-    Lap.prototype.seekForward = function() {
-      if (!this.SEEKING) return this;
-      var lap = this;
-      this.MOUSEDOWN_TIMER = setInterval(function() {
-        lap.seek(lap, true);
-      }, lap.settings.seekTime);
-      return lap;      
-    };
-
-    Lap.prototype.formatTracklist = function() {
-      // don't fuck with the user's tracklist
-      if (tooly.truthy(this.tracklist)) {
         return this;
       }
-      var lap = this,
-          re = lap.replacement, 
-          tracklist = [], 
-          i = 0;
-      for (; i < lap.trackCount; i++) {
-        tracklist[i] = tooly.sliceRel(tooly.stripExtension(lap.files[i]));
-        if (tooly.truthy(re)) {
-          tracklist[i] = tracklist[i].replace(re[0], re[1]);
+    }, {
+      key: 'volumeFormatted',
+      value: function volumeFormatted() {
+        return Math.round(this.audio.volume * 100);
+      }
+
+      /**
+       * Add a plug-in instance to the plugins hash
+       * @param  {String} key    the plugin instance identifier
+       * @param  {Object} plugin the plugin instance (not the class)
+       * @return {Lap}           this
+       */
+    }, {
+      key: 'registerPlugin',
+      value: function registerPlugin(key, plugin) {
+        this.plugins[key] = plugin;
+      }
+    }, {
+      key: 'updateTrackTitleEl',
+      value: function updateTrackTitleEl() {
+        this.els.trackTitle.outerHTML = this.tracklist[this.trackIndex];
+        return this;
+      }
+    }, {
+      key: 'updateTrackNumberEl',
+      value: function updateTrackNumberEl() {
+        this.els.trackNumber.outerHTML = +this.trackIndex + 1;
+        return this;
+      }
+    }, {
+      key: 'updateArtistEl',
+      value: function updateArtistEl() {
+        this.els.artist.outerHTML = this.artist;
+        return this;
+      }
+    }, {
+      key: 'updateAlbumEl',
+      value: function updateAlbumEl() {
+        this.els.album.outerHTML = this.album;
+        return this;
+      }
+    }, {
+      key: 'updateCover',
+      value: function updateCover() {
+        this.els.cover.get(0).src = this.cover;
+        return this;
+      }
+    }, {
+      key: 'togglePlay',
+      value: function togglePlay() {
+        this.audio.paused ? this.play() : this.pause();
+        this.trigger('togglePlay');
+        return this;
+      }
+    }, {
+      key: 'play',
+      value: function play() {
+        this.audio.play();
+        this.PLAYING = true;
+        this.trigger('play');
+        return this;
+      }
+    }, {
+      key: 'pause',
+      value: function pause() {
+        this.audio.pause();
+        this.PLAYING = false;
+        this.trigger('pause');
+        return this;
+      }
+    }, {
+      key: 'setTrack',
+      value: function setTrack(index) {
+        if (index <= 0) {
+          this.trackIndex = 0;
+        } else if (index >= this.trackCount) {
+          this.trackIndex = this.trackCount - 1;
+        } else {
+          this.trackIndex = index;
         }
-        tracklist[i] = tracklist[i].trim();
+        var wasPlaying = !this.audio.paused;
+        this.setSource();
+        if (wasPlaying) this.audio.play();
+        this.trigger('trackChange');
+        return this;
       }
-      lap.tracklist = tracklist;
-      return lap;
-    };
-
-    Lap.prototype.bufferFormatted = function() {
-      if (!this.audio) return 0;
-
-      var buffered,
-          audio = this.audio;
-
-      try {
-        buffered = audio.buffered.end(audio.buffered.length-1);
-      } catch(e) {
-        return 0;
+    }, {
+      key: 'prev',
+      value: function prev() {
+        var wasPlaying = !this.audio.paused;
+        this.trackIndex = this.trackIndex - 1 < 0 ? this.trackCount - 1 : this.trackIndex - 1;
+        this.setSource();
+        if (wasPlaying) this.audio.play();
+        this.trigger('trackChange');
+        return this;
       }
-      var formatted = Math.round(tooly.scale(buffered, 0, audio.duration, 0, 100));
-      // TODO: why are we returning 0?
-      return isNaN(formatted) ? 0 : formatted;      
-    };
-
-    Lap.prototype.currentTimeFormatted = function() {
-      if (isNaN(this.audio.duration)) {
-        return '00:00';
-      }      
-      var formatted = tooly.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
-      if (this.audio.duration < 3600 || formatted === '00:00:00') {
-        return formatted.slice(3); // nn:nn
+    }, {
+      key: 'next',
+      value: function next() {
+        var wasPlaying = !this.audio.paused;
+        this.trackIndex = this.trackIndex + 1 >= this.trackCount ? 0 : this.trackIndex + 1;
+        this.setSource();
+        if (wasPlaying) this.audio.play();
+        this.trigger('trackChange');
+        return this;
       }
-      return formatted;      
-    };
-
-    Lap.prototype.durationFormatted = function() {
-      if (isNaN(this.audio.duration)) {
-        return '00:00';
+    }, {
+      key: 'prevAlbum',
+      value: function prevAlbum() {
+        var wasPlaying = !this.audio.paused;
+        this.albumIndex = this.albumIndex - 1 < 0 ? this.albumCount - 1 : this.albumIndex - 1;
+        this.update();
+        this.trackIndex = 0;
+        this.setSource();
+        if (wasPlaying) this.audio.play();
+        this.trigger('albumChange');
+        return this;
       }
-      var formatted = tooly.formatTime(Math.floor(this.audio.duration.toFixed(1)));
-      if (this.audio.duration < 3600 || formatted === '00:00:00') {
-        return formatted.slice(3); // nn:nn
+    }, {
+      key: 'nextAlbum',
+      value: function nextAlbum() {
+        var wasPlaying = !this.audio.paused;
+        this.albumIndex = this.albumIndex + 1 > this.albumCount - 1 ? 0 : this.albumIndex + 1;
+        this.update();
+        this.trackIndex = 0;
+        this.setSource();
+        if (wasPlaying) this.audio.play();
+        this.trigger('albumChange');
+        return this;
       }
-      return formatted;      
-    };
+    }, {
+      key: 'setAlbum',
+      value: function setAlbum(index) {
+        if (index <= 0) {
+          this.albumIndex = 0;
+        } else if (index >= this.albumCount) {
+          this.albumIndex = this.albumCount - 1;
+        } else {
+          this.albumIndex = index;
+        }
+        this.update();
+        this.setTrack(this.lib[this.albumIndex].startingTrackIndex || 0);
+        this.trigger('albumChange');
+        return this;
+      }
+    }, {
+      key: 'seekBackward',
+      value: function seekBackward() {
+        var _this10 = this;
 
-    Lap.prototype.trackNumberFormatted = function(n) {
-      var count = (''+this.trackCount).length - (''+n).length;
-      return tooly.repeat('0', count) + n + this.settings.trackNumberPostfix;      
-    };
+        if (!this.SEEKING) return this;
+        this.MOUSEDOWN_TIMER = setInterval(function () {
+          var applied = _this10.audio.currentTime + _this10.settings.seekInterval * -1;
+          _this10.audio.currentTime = applied <= 0 ? 0 : applied;
+        }, this.settings.seekTime);
+        return this;
+      }
+    }, {
+      key: 'seekForward',
+      value: function seekForward() {
+        var _this11 = this;
+
+        if (!this.SEEKING) return this;
+        this.MOUSEDOWN_TIMER = setInterval(function () {
+          var applied = _this11.audio.currentTime + _this11.settings.seekInterval;
+          _this11.audio.currentTime = applied >= _this11.audio.duration ? _this11.audio.duration : applied;
+        }, this.settings.seekTime);
+        return this;
+      }
+    }, {
+      key: 'formatTracklist',
+      value: function formatTracklist() {
+        /* don't fuck with the user's tracklist */
+        if (_.truthy(this.tracklist)) {
+          return this;
+        }
+        var re = this.replacement;
+        var tracklist = []; // let?
+        for (var i = 0; i < this.trackCount; i++) {
+          tracklist[i] = _.sliceRel(_.stripExtension(this.files[i]));
+          if (_.truthy(re)) {
+            tracklist[i] = tracklist[i].replace(re[0], re[1]);
+          }
+          tracklist[i] = tracklist[i].trim();
+        }
+        this.tracklist = tracklist;
+        return this;
+      }
+    }, {
+      key: 'bufferFormatted',
+      value: function bufferFormatted() {
+        if (!this.audio) return 0;
+
+        var audio = this.audio;
+        var buffered = undefined;
+
+        try {
+          buffered = audio.buffered.end(audio.buffered.length - 1);
+        } catch (e) {
+          return 0;
+        }
+        var formatted = Math.round(_.scale(buffered, 0, audio.duration, 0, 100));
+        return isNaN(formatted) ? 0 : formatted;
+      }
+    }, {
+      key: 'currentTimeFormatted',
+      value: function currentTimeFormatted() {
+        if (isNaN(this.audio.duration)) {
+          return '00:00';
+        }
+        var formatted = _.formatTime(Math.floor(this.audio.currentTime.toFixed(1)));
+        if (this.audio.duration < 3600 || formatted === '00:00:00') {
+          return formatted.slice(3); // nn:nn
+        }
+        return formatted;
+      }
+    }, {
+      key: 'durationFormatted',
+      value: function durationFormatted() {
+        if (isNaN(this.audio.duration)) {
+          return '00:00';
+        }
+        var formatted = _.formatTime(Math.floor(this.audio.duration.toFixed(1)));
+        if (this.audio.duration < 3600 || formatted === '00:00:00') {
+          return formatted.slice(3); // nn:nn
+        }
+        return formatted;
+      }
+    }, {
+      key: 'trackNumberFormatted',
+      value: function trackNumberFormatted(n) {
+        var count = ('' + this.trackCount).length - ('' + n).length;
+        return _.repeat('0', count) + n + this.settings.trackNumberPostfix;
+      }
+
+      /**
+       * Convenience method to grab a property from the currently cued album. A
+       * second argument can be passed to choose a specific album.
+       * @method get
+       * @param  {String} what the property
+       * @return {[type]}      [description]
+       */
+    }, {
+      key: 'get',
+      value: function get(key, index) {
+        return this.lib[index === undefined ? this.albumIndex : index][key];
+      }
+    }], [{
+      key: 'getInstance',
+      value: function getInstance(id) {
+        return Lap[$$instances][id];
+      }
+    }, {
+      key: 'setLib',
+      value: function setLib(lib) {
+        if (Array.isArray(lib)) return this.lib = lib;
+        if (typeof lib === 'string' && Lap[$$audioExtensionRegExp].test(lib)) {
+          return this.lib = [{ files: lib }];
+        }
+        if (typeof lib === 'object') return this.lib = [lib];
+        throw new TypeError(lib + ' must be an array, object, or string');
+      }
+    }]);
 
     return Lap;
-  }
-
-
-})();
-
-(function() { 'use strict';
-
-
-  angular.module('lnet.lap').factory('lapUtil', lapUtil);
-  lapUtil.$inject = ['tooly'];
-
-  function lapUtil(tooly) {
-
-    var _body, _isMobileRegExp;
-
-    function _isNode(el) {
-      return el && (el.nodeType === 1 || el.nodeType === 9);
-    }
-
-    function _query(which, selector, context) {
-      var node;
-      if (context) {
-        node = (_isNode(context) ? context : context[0])[which](selector);
-      } else {
-        node = document[which](selector);
-      }
-      return angular.element(node);
-
-    }
-
-    return {
-
-      isMobile: function() {
-        if (!_isMobileRegExp) {
-          _isMobileRegExp = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
-        }
-        return _isMobileRegExp.test(navigator.userAgent);
-      },
-
-      safeApply: function(scope) {
-        var phase = scope.$root.$$phase;
-        if (phase !== '$apply' && phase !== '$digest') {
-          scope.$apply();
-        }
-      },
-
-      /**
-       * Used to avoid duplicate selections of body element
-       * @return {jqLite}
-       */
-      body: function() {
-        if (!_body) {
-          _body = this.element('body');
-        }
-        return _body;
-      },
-
-      /**
-       * @return {Boolean}    true if el is an instance of Node
-       */
-      isNode: function(el) {
-        return _isNode(el);
-      },
-
-      /**
-       * angular's jqLite does not provide lookup by class,
-       * so here we have an abstraction that works exactly like HTMLElement.querySelector,
-       * only returning an angular.element instead. for querySelectorAll use #elementAll
-       */
-      element: function(selector, context) {
-        return _query('querySelector', selector, context);
-      },
-      elementAll: function(selector, context) {
-        return _query('querySelectorAll', selector, context);
-      }
-
-    };
-  }
-
-})();
-
-(function() { 'use strict';
-
-  
-  angular.module('lnet.lap').directive('lapContainer', lapContainer);
-  lapContainer.$inject = ['$templateCache', '$parse', 'Lap', 'lapUtil'];
-
-  function lapContainer($templateCache, $parse, Lap, lapUtil) {
-    return {
-      restrict: 'E',
-      scope: {
-        src: '@'
-      },
-      template: $templateCache.get('lap-controls.html'),
-      link: function(scope, element, attrs) {
-
-        scope.ready = false;
-        scope.discogActive = false;
-        scope.isMobile = lapUtil.isMobile();
-
-        // element.addClass('lap');
-
-        if (!attrs.hasOwnProperty('src')) {
-          return console.warn('lap-container needs a src attribute. Exiting.');
-        }
-
-        scope.$watch('src', function(src) {
-          var ch = src.charAt(0);
-
-          if (ch === '[' || ch === '{') {
-            src = scope.$eval(src);
-          }
-
-          Lap.getLib(src).then(function(lib) {
-            /* TODO: options should be able to be passed from user */
-            new Lap(element, lib, {
-              discogPlaylistExclusive: true,
-              plugins: [],
-              prependTrackNumbers: true,
-              replacementText: void 0,
-              startingAlbumIndex: 0,
-              startingTrackIndex: 0,
-              seekInterval: 5, 
-              seekTime: 250,
-              selectors: {},
-              selectorPrefix: 'lap',
-              trackNumberPostfix: ' - ',
-              useNativeProgress: false,
-              useNativeSeekRange: false,
-              useNativeVolumeRange: false,
-              volumeInterval: 0.05,              
-              callbacks: {
-                load: function() {
-                  scope.lap = this;
-                  scope.ready = true;
-                }
-              }
-            }, false, true);
-          }); 
-
-        });
-      }
-    };
-  }
-
-})();
-
-(function() { 'use strict';
-
-  
-  angular.module('lnet.lap').directive('lapDiscog', lapDiscog);
-  lapDiscog.$inject = ['$templateCache', 'tooly'];
-
-  function lapDiscog($templateCache, tooly) {
-    return {
-      restrict: 'E',
-      template: $templateCache.get('lap-discog.html'),
-      scope: true,
-      link: function(scope, element, attrs) {
-
-        var lap;
-
-        var off = scope.$watch('lap', function(newValue, oldValue) {
-          if (!newValue) return;
-          lap = newValue;
-          logger.debug('watch >> lap: %o', lap);
-          init();
-          off();
-        });        
-
-        function init() {
-          update();
-          scope.showDiscog = true;
-        }
-
-        function update() {
-          scope.lib = lap.lib.map(function(item) {
-            return { 
-              cover: item.cover, 
-              album: item.album 
-            };
-          });
-        }
-
-        scope.loadAlbum = function(index) {
-          lap.setAlbum(index);
-          scope.$emit('lnet.lap.discogItemChosen', true);
-        };
-      }        
-    };
-  }
-  
-})();
-
-(function() { 'use strict';
-
-  
-  angular.module('lnet.lap').directive('lapPlaylist', lapPlaylist);
-  lapPlaylist.$inject = ['$templateCache', 'tooly', 'lapUtil'];
-
-  function lapPlaylist($templateCache, tooly, lapUtil) {
-    return {
-      restrict: 'E',
-      template: $templateCache.get('lap-playlist.html'),
-      scope: true,
-      link: function(scope, element, attrs) {
-
-        var lap;
-
-        var off = scope.$watch('lap', function(newValue, oldValue) {
-          if (!newValue) return;
-          lap = newValue;
-          logger.debug('watch >> lap: %o', lap);
-          init();
-          off();
-        });        
-
-        function init() {
-
-          update();
-          scope.showPlayist = true;
-          
-          lap
-            .on('albumChange', function() {
-              update();
-              lapUtil.safeApply(scope);
-            })
-            .on('trackChange', function() {
-              lapUtil.safeApply(scope);
-            });
-        }
-
-        scope.setTrack = function(index) {
-          lap.setTrack(index);
-        };
-
-        function update() {
-          var len = String(lap.trackCount).length;
-          scope.trackNumbers = lap.tracklist.map(function(track, i) {
-            return tooly.lpad(String(i+1), len, '0');
-          });
-          scope.tracklist = lap.tracklist;
-          scope.cover = lap.cover;
-        }
-      }
-    };
-  }
-
-
-})();
-
-(function() { 'use strict';
-
-
-  angular.module('lnet.lap').directive('progSeek', progSeek);
-  progSeek.$inject = ['$timeout', 'tooly'];
-
-  var _id = _id || 0;
-
-  function progSeek($timeout, tooly) {
-
-    function makeEl(name, id) {
-      return angular.element('<div class="prog-seek__' + name +
-        '" id="prog-seek__'+ name + '--' + id + '">');
-    }
-
-    return {
-      restrict: 'E',
-      link: function(scope, element, attrs) {
-
-        var id = _id++,
-            container = makeEl('container', id),
-            inner     = makeEl('inner',     id),
-            track     = makeEl('track',     id),
-            progress  = makeEl('progress',  id),
-            handle    = makeEl('handle',    id),
-            dragging = false,
-            timeUpdating = false,
-            dragdealer, lap, audio;
-
-        if (scope.options && !angular.equals(scope.options, {})) {
-          var o = scope.options;
-          if (o.progressColor) progress.css('background-color', o.progressColor);
-          if (o.handleColor) handle.css('background-color', o.handleColor);
-          if (o.trackColor) track.css('background-color', o.trackColor);
-        }
-
-        element.append(container.append(inner
-          .append(track)
-          .append(progress)
-          .append(handle)));
-
-        var off = scope.$watch('ready', function(newValue, oldValue) {
-          if (!newValue) return;
-          off();
-
-
-          lap = scope.$parent.lap;
-          audio = lap.audio;
-
-          dragdealer = new Dragdealer('prog-seek__container--' + id, {
-            handleClass: 'prog-seek__handle',
-            dragStartCallback: function(x, y) {
-              dragging = true;
-            },
-            dragStopCallback: function(x, y) {
-              audio.currentTime = tooly.scale(x, 0, 1, 0, audio.duration);
-              dragging = false;
-            }
-          });          
-
-          audio.addEventListener('timeupdate', function(e) {
-            if (!dragging) {
-              dragdealer.setValue(tooly.scale(audio.currentTime, 0, audio.duration, 0, 1));
-            }
-          });
-          audio.addEventListener('progress', function(e) {
-            var x = +lap.bufferFormatted();
-            progress.css('width', x + '%');
-          });
-        });
-      }
-    };
-  }
-})();
-
-(function(undefined) { 'use strict';
-
-
-  angular.module('lnet.lap').directive('lapVolumeRangeRevealer', lapVolumeRangeRevealer);
-  lapVolumeRangeRevealer.$inject = ['$document', '$timeout', '$interval', 'tooly', 'Lap', 'lapUtil'];
-
-  function lapVolumeRangeRevealer($document, $timeout, $interval, tooly, Lap, lapUtil) {
-    
-
-    if (lapUtil.isMobile()) return angular.noop;
-
-    /**
-     * Lap plugin providing support for hiding and showing
-     * of a native range input on speaker-icon hover - like Youtube.
-     * Hover over the speaker icon and the volume range appears; move away, 
-     * it is again hidden.
-     * 
-     * @param {Lap}    lap       the Lap instance
-     * @param {jqLite} element
-     * @constructor
-     */
-    Lap.VolumeRangeRevealer = function(lap, element) {
-      var thiz = this;
-      thiz.lap = lap;
-      thiz.element = element;
-      return thiz;      
-    };  
-
-    Lap.VolumeRangeRevealer.prototype.levelClasses = [
-      'lap-i-volume-off',
-      'lap-i-volume-low',
-      'lap-i-volume-mid',
-      'lap-i-volume-high',
-      'lap-i-volume-max'
-    ];
-
-    Lap.VolumeRangeRevealer.prototype.init = function(scope, attrs) {
-      var thiz = this,
-          lap = thiz.lap,
-          lapContainer = angular.element(lap.container)[0],
-          speaker = lapUtil.element('.lap__speaker', lapContainer),
-          speakerContainer = lapUtil.element('.lap__speaker__container', lapContainer),
-          volumeRange = lap.els.volumeRange,
-          rangeWidth = thiz.element[0].querySelector('.lap__volume-range__track').width,
-          nonVolumeControls = lapUtil.elementAll('.lap__non-v', lapContainer),
-          MOUSEDOWN, SPEAKER_ENTERED, RANGE_ENTERED;
-
-      if (!volumeRange || !volumeRange.length) {
-        throw new Lap.PluginContructorError(
-          'Lap.VolumeRangeRevealer cannot init without Lap#els.volumeRange element');
-      }
-
-      // TODO: these would be better as callback hooks on CanvasVolumeRange events
-      volumeRange
-        .on('mouseenter', function() {
-          RANGE_ENTERED = true;
-        })
-        .on('mousedown', function() {
-          MOUSEDOWN = true;
-        })
-        .on('mousemove', function(e) {
-          if (!MOUSEDOWN) return;
-          var v = tooly.scale(e.offsetX, 0, rangeWidth, 0, 100),
-              classNum = 0;
-          if (v > 0) {
-            var n = tooly.scale(v, 0, 100, 0, thiz.levelClasses.length-1);
-            classNum = Math.ceil(n); 
-          }
-
-
-          speaker.removeClass(thiz.levelClasses.filter(function(c) {
-            return c !== thiz.levelClasses[classNum];
-          }).join(' ')).addClass(thiz.levelClasses[classNum]);
-        })
-        .on('mouseleave', function() {
-          RANGE_ENTERED = false;
-          if (!MOUSEDOWN) release();
-        });
-
-
-      speaker
-        .on('mouseenter', function() {
-
-          if (!SPEAKER_ENTERED && !RANGE_ENTERED) {
-            thiz.element.removeClass(lap.selectors.state.hidden);
-            nonVolumeControls.addClass(lap.selectors.state.hidden);
-            SPEAKER_ENTERED = true;
-          }
-        })
-        .on('mouseleave', function(e) {
-          SPEAKER_ENTERED = false;
-          // allow time to move mouse into the range element
-          $timeout(function() {
-            if (!SPEAKER_ENTERED && !RANGE_ENTERED) {
-              release();
-            }
-          }, 1000);
-        });
-
-
-      // add the mouseup to the body so we can inc/dec volume by dragging
-      // left or right regardless if we're in the same horizontal span as the slider
-      // or not
-      lapUtil.body().on('mouseup', function() {
-        MOUSEDOWN = false;
-        if (!RANGE_ENTERED && !SPEAKER_ENTERED) release();
-      });
-
-      function release() {
-        thiz.element.addClass(lap.selectors.state.hidden);
-        nonVolumeControls.removeClass(lap.selectors.state.hidden);
-      }
-
-      lap.registerPlugin('VolumeRangeRevealer', thiz);
-
-    };
-
-    return {
-      restrict: 'A',
-      link: function(scope, element, attrs) {
-
-        var revealer;
-
-        var unwatch = scope.$watch('ready', function(newValue, oldValue) {
-          if (!newValue) return;
-
-
-          revealer = new Lap.VolumeRangeRevealer(scope.lap, element);
-          unwatch();
-
-          unwatch = scope.$watch('vRangeReady', function(newValue, oldValue) {
-            if (!newValue) return;
-
-
-            revealer.init(scope, attrs);
-            unwatch();
-          });
-        });
-      }
-    };
-  }
-
-
-})();
-
-(function() { 'use strict';
-
-
-  angular.module('lnet.lap').directive('lapVolumeRange', lapVolumeRange);
-  lapVolumeRange.$inject = ['tooly'];
-
-  var _id = _id || 0;
-
-  function lapVolumeRange() {
-
-    function makeEl(name, id) {
-      return angular.element('<div class="lap__volume-range__' + name +
-        '" id="lap__volume-range__'+ name + '--' + id + '">');
-    }
-
-    return {
-      restrict: 'E',
-      link: function(scope, element, attrs) {
-          var id = _id++,
-            container = makeEl('container', id),
-            inner     = makeEl('inner',     id),
-            track     = makeEl('track',     id),
-            handle    = makeEl('handle',    id),
-            dragging = false,
-            // timeUpdating = false,
-            dragdealer, lap, audio;
-
-        if (scope.options && !angular.equals(scope.options, {})) {
-          var o = scope.options;
-          // if (o.progressColor) progress.css('background-color', o.progressColor);
-          if (o.handleColor) handle.css('background-color', o.handleColor);
-          if (o.trackColor) track.css('background-color', o.trackColor);
-        }
-
-        element.append(container.append(inner
-          .append(track)
-          // .append(progress)
-          .append(handle)));
-
-        var off = scope.$watch('ready', function(newValue, oldValue) {
-          if (!newValue) return;
-          off();
-
-          lap = scope.$parent.lap;
-          audio = lap.audio;
-
-          dragdealer = new Dragdealer('lap-volume-range__container--' + id, {
-            handleClass: 'lap__volume-range__handle',
-            dragStartCallback: function(x, y) {
-              dragging = true;
-              scope.vrangeDragging = true;
-              scope.$apply();
-            },
-            dragStopCallback: function(x, y) {
-              // audio.volume = tooly.scale(x, 0, 1, 0, audio.duration);
-              dragging = false;
-              scope.vrangeDragging = false;
-              scope.$apply();
-            }
-          });
-
-          scope.vRangeReady = true;
-
-          audio.addEventListener('volumeupdate', function(e) {
-            // if (!dragging) {
-            //   dragdealer.setValue(tooly.scale(audio.currentTime, 0, audio.duration, 0, 1));
-            // }
-          });
-          // audio.addEventListener('progress', function(e) {
-          //   var x = +lap.bufferFormatted();
-          //   progress.css('width', x + '%');
-          // });
-          
-        });
-      }
-    };
-  }
-
-})();
+  })(Bus);
+
+  module.exports = Lap;
+
+  Lap[$$instances] = [];
+
+  Lap[$$audioExtensionRegExp] = /mp3|wav|ogg|aiff/i;
+
+  Lap[$$defaultSettings] = {
+    callbacks: {},
+    discogPlaylistExclusive: true,
+    plugins: [],
+    prependTrackNumbers: true,
+    replacementText: void 0,
+    startingAlbumIndex: 0,
+    startingTrackIndex: 0,
+    seekInterval: 5,
+    seekTime: 250,
+    selectors: {}, // see #initElements
+    selectorPrefix: 'lap',
+    trackNumberPostfix: ' - ',
+    useNativeProgress: false,
+    useNativeSeekRange: false,
+    useNativeVolumeRange: false,
+    volumeInterval: 0.05,
+    $: !(function () {
+      if (tooly && tooly.Frankie) return tooly.Frankie;
+      return jQuery || Zepto || Bondo || new Error('Could not find a default selector library');
+    })()
+  };
+
+  Lap[$$defaultSelectors] = {
+    state: {
+      playlistItemCurrent: 'lap__playlist__item--current',
+      playing: 'lap--playing',
+      paused: 'lap--paused',
+      hidden: 'lap--hidden'
+    },
+    album: 'lap__album',
+    artist: 'lap__artist',
+    buffered: 'lap__buffered',
+    cover: 'lap__cover',
+    currentTime: 'lap__current-time',
+    discog: 'lap__discog',
+    discogItem: 'lap__discog__item',
+    discogPanel: 'lap__discog__panel',
+    duration: 'lap__duration',
+    info: 'lap__info', // button
+    infoPanel: 'lap__info-panel',
+    next: 'lap__next',
+    nextAlbum: 'lap__next-album',
+    playPause: 'lap__play-pause',
+    playlist: 'lap__playlist', // button
+    playlistItem: 'lap__playlist__item', // list item
+    playlistPanel: 'lap__playlist__panel',
+    playlistTrackNumber: 'lap__playlist__track-number',
+    playlistTrackTitle: 'lap__playlist__track-title',
+    prev: 'lap__prev',
+    prevAlbum: 'lap__prev-album',
+    progress: 'lap__progress',
+    seekBackward: 'lap__seek-backward',
+    seekForward: 'lap__seek-forward',
+    seekRange: 'lap__seek-range',
+    trackNumber: 'lap__track-number', // the currently cued track
+    trackTitle: 'lap__track-title',
+    volumeButton: 'lap__volume-button',
+    volumeDown: 'lap__volume-down',
+    volumeRead: 'lap__volume-read',
+    volumeRange: 'lap__volume-range',
+    volumeUp: 'lap__volume-up'
+  };
+});
+//# sourceMappingURL=lap.js.map

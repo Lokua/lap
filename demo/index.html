@@ -1,53 +1,44 @@
 <!DOCTYPE html>
 <head>
-  <title>Lap | Angular Demo</title>
+  <title>Lap Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="lap-icons/style.css">
-  <script src="../deps/lo66er/dist/lo66er.js"></script>
-  <script src="../deps/dragdealer/src/dragdealer.js"></script>
-  <script src="../deps/angular/angular.js"></script>
-  <script src="../deps/tooly/dist/ng-tooly.js"></script>
-  <!-- <script src="../dist/lap.js"></script> -->
-  <script src="../dist/lap-debug.js"></script>
-  <script src="../src/lap-templates.js"></script>
-</head>
-<body ng-app="demo" ng-controller="DemoCtrl" style="margin-top:32px">
 
+  <script src="../deps/lo66er/dist/Logger.js"></script>
+  <script src="../deps/bus/dist/bus.js"></script>
+  <script src="../deps/tooly/dist/tooly.js"></script>
+  <script src="../dist/lap.js"></script>
+
+</head>
+<body style="margin-top:32px">
   <div class="demo__container">
-    <lap-container src="{{src}}"></lap-container>
-    <div class="lap__case">
-      <lap-playlist lap="lap" ng-show="!showDiscog_"></lap-playlist>
-      <lap-discog lap="lap" ng-show="showDiscog_"></lap-discog>
+
+    <div id="main-player">
+      <div class="lap__play-pause">
+        <i class="lap-i-play"></i>
+      </div>
     </div>
+
   </div>
 
-  <script>'use strict';/*global Lo66er*//*global alert*/
+  <script>'use strict';
 
+    var req = new XMLHttpRequest();
+    req.open('get', './resources/lib.json', true);
+    req.reponseType = 'json';
+    req.onload = () => {
+      if (req.readyState == 4 && req.status == 200) {
+        success(JSON.parse(req.response));
+      }
+    };
+    req.send();
 
-    var logger = new Lo66er('DemoCtrl', { level: 0 });
-
-    angular.module('demo', ['lnet.lap'])
-      .controller('DemoCtrl', ['$scope', 'Lap', function($scope) {
-        $scope.src = 'resources/lib.json';
-        $scope.showDiscog_ = false;
-        // $scope.src = [{ files: ['resources/sh.mp3'] }];
-        $scope.$on('lnet.lap.instanceInitialized', function(event, lap) {
-          logger.debug('broadcast received >> lap: %o', lap);
-          $scope.lap = lap;
-          lap.on('discogClick', function(e) {
-            /*>>*/
-            logger.debug('discogClick...');
-            /*<<*/
-            $scope.showDiscog_ = !$scope.showDiscog_;
-            $scope.$apply();
-          });
-        });
-
-        $scope.$on('lnet.lap.discogItemChosen', function(event, msg) {
-          if (msg) $scope.showDiscog_ = false;
-        });
-
-      }]);
+    function success(lib) {
+      const lap = new Lap('#main-player', lib, {
+        id: 'main-player'
+      });
+      console.log(lap);
+    }
   </script>
 </body>

@@ -1,8 +1,0 @@
-.lap__discog__panel
-
-  .lap__discog__item(ng-repeat='album in lib' 
-    ng-click='loadAlbum($index)'
-    ng-class='{active:$index===lap.albumIndex}')
-
-    img(ng-src='{{album.cover}}') 
-    aside {{album.album}}
