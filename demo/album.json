@@ -1,0 +1,37 @@
+{
+  "album": "Nostalgia Digest",
+  "objectName": "nostalgia-digest",
+  "artist": "Lokua",
+  "date": "2012.09.17",
+  "cover": "itercrop.jpg",
+  "download": [
+    {
+      "format": "mp3",
+      "type": "zip",
+      "path": "lokua.nostalgia-digest.mp3.zip"
+    },
+    {
+      "format": "wav",
+      "type": "zip",
+      "path": "lokua.nostalgia-digest.wav.zip"
+    }
+  ],
+  "files": [
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_A_Wrinkle_in_Time.mp3",
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Back_Beat.mp3",
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Gotcha!.mp3",
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_House_Heads.mp3",
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Pull_Me.mp3",
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Quick.mp3",
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Retro_Future.mp3",
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Sara.mp3",
+    "https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Strobe.mp3"
+  ],
+  "label": "Lokua.net",
+  "other": {},
+  "replacement": [
+    "[_-]|Lokua",
+    " "
+  ],
+  "epoch": 1347858000000
+}

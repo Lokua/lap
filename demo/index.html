@@ -1,44 +1,35 @@
 <!DOCTYPE html>
-<head>
-  <title>Lap Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="lap-icons/style.css">
-
-  <script src="../deps/lo66er/dist/Logger.js"></script>
-  <script src="../deps/bus/dist/bus.js"></script>
-  <script src="../deps/tooly/dist/tooly.js"></script>
-  <script src="../dist/lap.js"></script>
-
-</head>
-<body style="margin-top:32px">
-  <div class="demo__container">
-
-    <div id="main-player">
-      <div class="lap__play-pause">
-        <i class="lap-i-play"></i>
-      </div>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>LAP Demo</title>
+    <script src="../node_modules/bus/dist/bus.js"></script>
+    <script src="../dist/lap.js"></script>
+  </head>
+  <body>
+    <div id="player">
+      <div class="lap__play-pause"></div>
     </div>
+  </body>
+<script>'use strict';
 
-  </div>
-
-  <script>'use strict';
-
-    var req = new XMLHttpRequest();
-    req.open('get', './resources/lib.json', true);
-    req.reponseType = 'json';
-    req.onload = () => {
-      if (req.readyState == 4 && req.status == 200) {
-        success(JSON.parse(req.response));
-      }
-    };
-    req.send();
-
-    function success(lib) {
-      const lap = new Lap('#main-player', lib, {
-        id: 'main-player'
-      });
-      console.log(lap);
+function get(url, successHandler) {
+  const req = new XMLHttpRequest();
+  req.open('get', 'album.json', true);
+  req.reponseType = 'json';
+  req.onload = () => {
+    if (req.readyState == 4 && req.status == 200) {
+      successHandler(JSON.parse(req.response));
     }
-  </script>
-</body>
+  };
+  req.send();
+}
+
+get('album.json', album => {
+  const lap = new Lap('#player', album, {
+    id: 'main player'
+  });
+});
+
+</script>
+</html>
