@@ -8,7 +8,7 @@
   </head>
   <body>
     <div id="player">
-      <div class="lap__play-pause"></div>
+      <button class="lap__play-pause">play</button>
     </div>
   </body>
 <script>'use strict';
@@ -27,8 +27,10 @@ function get(url, successHandler) {
 
 get('album.json', album => {
   const lap = new Lap('#player', album, {
-    id: 'main player'
+    id: 'main player',
+    debug: true
   });
+  console.log(lap)
 });
 
 </script>

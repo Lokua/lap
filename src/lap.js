@@ -28,24 +28,46 @@ export default class Lap extends Bus {
 
     if (!postpone) this.initialize()
 
-    /*>>*/
-    const echo = e => {
-      this.on(e, () => console.info('%c%s handler called', 'color:#800080', e))
+    if (this.settings.debug) {
+      const echo = e => {
+        this.on(e, () => console.info('%c%s handler called', 'color:#800080', e))
+      }
+      echo('load')
+      echo('play')
+      echo('pause')
+      echo('seek')
+      echo('trackChange')
+      echo('albumChange')
+      echo('volumeChange')
     }
-    echo('load')
-    echo('play')
-    echo('pause')
-    echo('seek')
-    echo('trackChange')
-    echo('albumChange')
-    echo('volumeChange')
-    /*<<*/
 
     return this
   }
 
   static getInstance(id) {
     return Lap.$$instances[id]
+  }
+
+  static addClass(el, _class) {
+    if (!el) return console.warn(`${el} is not defined`)
+    if (!el.className) {
+      return (el.className += ' ' + _class)
+    }
+    const classNames = el.className
+    const newClasses = _class
+      .split(/\s+/)
+      .filter(n => classNames.indexOf(n) === -1)
+      .join(' ')
+    el.className += ' ' + newClasses
+    return Lap
+  }
+
+  static removeClass(el, _class) {
+    if (!el) return console.warn(`${el} is not defined`)
+    // const classes = `(${_class.split(/\s+/).join('|')})`
+    const re = new RegExp('\\s*' + _class + '\\s*(![\\w\\W])?', 'g')
+    el.className = el.className.replace(re, ' ').trim()
+    return Lap
   }
 
   setLib(lib) {
@@ -159,13 +181,14 @@ export default class Lap extends Bus {
   initElements() {
     this.els = {}
     this.selectors = {}
-    Object.keys(Lap.$$defaultSelectors, key => {
+    Object.keys(Lap.$$defaultSelectors).forEach(key => {
       if (this.settings.selectors.hasOwnProperty[key]) {
-        return (this.selectors[key] = this.settings.selectors[key])
+        this.selectors[key] = this.settings.selectors[key]
+      } else {
+        this.selectors[key] = Lap.$$defaultSelectors[key]
       }
-      this.selectors[key] = Lap.$$defaultSelectors[key]
     })
-    Object.keys(this.selectors, key => {
+    Object.keys(this.selectors).forEach(key => {
       if (typeof this.selectors[key] === 'object') return
       const el = this.element.querySelector(`.${this.selectors[key]}`)
       if (el) this.els[key] = el
@@ -177,34 +200,35 @@ export default class Lap extends Bus {
     const els = this.els
     const nativeProgress = !!(this.settings.useNativeProgress && els.progress)
 
-    if (els.buffered || (this.settings.useNativeProgress && els.progress)) {
-      audio.addEventListener('progress', () => {
-        // TODO: verify if this really needs to be type cast...
-        var buffered = +this.bufferFormatted()
-        if (els.buffered) els.buffered.html(buffered)
-        if (nativeProgress) els.progress[0].value = buffered
-      })
+    this.audioListeners = {}
+
+    const _addListener = (condition, event, fn) => {
+      if (condition) {
+        // stash handler for ease of removal in #destroy call
+        this.audioListeners[event] = fn.bind(this)
+        audio.addEventListener(event, this.audioListeners[event])
+      }
     }
-    if (els.currentTime) {
-      audio.addEventListener('timeupdate', () => {
-        els.currentTime.html(this.currentTimeFormatted())
-      })
-    }
-    if (els.duration) {
-      audio.addEventListener('durationchange', () => {
-        els.duration.html(this.durationFormatted())
-      })
-    }
-    if (!IS_MOBILE && els.volumeRead) {
-      audio.addEventListener('volumechange', () => {
-        els.volumeRead.html(this.volumeFormatted())
-      })
-    }
-    audio.addEventListener('ended', () => {
-      console.info('ended > this.audio.paused: %o', this.audio.paused)
+
+    _addListener(!!(els.buffered || nativeProgress), 'progress', () => {
+      // TODO: verify if this really needs to be type cast...
+      var buffered = +this.bufferFormatted()
+      if (els.buffered) els.buffered.innerHTML = buffered
+      if (nativeProgress) els.progress.value = buffered
+    })
+
+    _addListener(!!els.currentTime, 'timeupdate', () => {
+      els.currentTime.innerHTML = this.currentTimeFormatted()
+    })
+
+    _addListener(!!els.duration, 'durationchange', () => {
+      els.duration.innerHTML = this.durationFormatted()
+    })
+
+    _addListener(true, 'ended', () => {
       if (this.playing) {
         this.next()
-        this.audio.play()
+        audio.play()
       }
     })
 
@@ -213,54 +237,69 @@ export default class Lap extends Bus {
 
   addListeners() {
     const els = this.els
+    this.listeners = {}
 
-    if (els.playPause) els.playPause.on('click', () => this.togglePlay())
-    if (els.prev) els.prev.on('click', () => this.prev())
-    if (els.next) els.next.on('click', () => this.next())
-    if (!IS_MOBILE) {
-      if (els.volumeUp) els.volumeUp.on('click', () => this.incVolume())
-      if (els.volumeDown) els.volumeDown.on('click', () => this.decVolume())
-    }
-    if (els.prevAlbum) els.prevAlbum.on('click', () => this.prevAlbum())
-    if (els.nextAlbum) els.nextAlbum.on('click', () => this.nextAlbum())
-    if (els.discog) els.discog.on('click', () => this.trigger('discogClick'))
-    if (els.playlist) els.playlist.on('click', () => this.trigger('playlistClick'))
-
-    this
-      .on('load', () => {
-        if (els.trackTitle) this.updateTrackTitleEl()
-        if (els.trackNumber) this.updateTrackNumberEl()
-        if (els.artist) this.updateArtistEl()
-        if (els.album) this.updateAlbumEl()
-        if (els.cover) this.updateCover()
-        if (els.playPause) {
-          els.playPause.addClass(this.selectors.state.paused)
-          this
-            .on('play', () => {
-              els.playPause
-                .removeClass(this.selectors.state.paused)
-                .addClass(this.selectors.state.playing)
-            })
-            .on('pause', () => {
-              els.playPause
-                .removeClass(this.selectors.state.playing)
-                .addClass(this.selectors.state.paused)
-            })
+    const _addListener = (elementName, event, fn) => {
+      if (els[elementName]) {
+        // stash event name and handler for ease of removal in #destroy call
+        this.listeners[elementName] = {
+          event,
+          fn: this[fn].bind(this)
         }
+        els[elementName].addEventListener(event, this.listeners[elementName].fn)
+      }
+      return this
+    }
+
+    _addListener('playPause', 'click', 'togglePlay')
+    _addListener('prev', 'click', 'prev')
+    _addListener('next', 'click', 'next')
+    _addListener('volumeUp', 'click', 'incVolume')
+    _addListener('prevAlbum', 'click', 'prevAlbum')
+    _addListener('nextAlbum', 'click', 'nextAlbum')
+    _addListener('discog', 'click', 'discogClick')
+    _addListener('playlist', 'click', 'playlistClick')
+
+    const _if = (elementName, fn) => {
+      if (this.els[elementName]) {
+        if (typeof fn === 'string') {
+          this[fn]()
+        } else {
+          // anonymous
+          fn()
+        }
+      }
+    }
+
+    this.on('load', () => {
+      _if('trackTitle', 'updateTrackTitleEl')
+      _if('trackNumber', 'updateTrackNumberEl')
+      _if('artist', 'updateArtistEl')
+      _if('album', 'updateAlbumEl')
+      _if('cover', 'updateCover')
+      _if('playPause', () => {
+        const s = this.selectors.state
+        const pp = els.playPause
+        Lap.addClass(pp, s.paused)
+        this.on('play', () => Lap.removeClass(pp, s.paused).addClass(pp, s.playing))
+        this.on('pause', () => Lap.removeClass(pp, s.playing).addClass(pp, s.paused))
       })
-      .on('trackChange', () => {
-        if (els.trackTitle) this.updateTrackTitleEl()
-        if (els.trackNumber) this.updateTrackNumberEl()
-        if (els.currentTime) els.currentTime.html(this.currentTimeFormatted())
-        if (els.duration) els.duration.html(this.durationFormatted())
-      })
-      .on('albumChange', () => {
-        if (els.trackTitle) this.updateTrackTitleEl()
-        if (els.trackNumber) this.updateTrackNumberEl()
-        if (els.artist) this.updateArtistEl()
-        if (els.album) this.updateAlbumEl()
-        if (els.cover) this.updateCover()
-      })
+    })
+
+    this.on('trackChange', () => {
+      _if('trackTitle', 'updateTrackTitleEl')
+      _if('trackNumber', 'updateTrackNumberEl')
+      _if('currentTime', () => els.currentTime.innerHTML = this.currentTimeFormatted())
+      _if('duration', () => els.duration.innerHTML = this.durationFormatted())
+    })
+
+    this.on('albumChange', () => {
+      _if('trackTitle', 'updateTrackTitleEl')
+      _if('trackNumber', 'updateTrackNumberEl')
+      _if('artist', 'updateArtistEl')
+      _if('album', 'updateAlbumEl')
+      _if('cover', 'updateCover')
+    })
   }
 
   addSeekListeners() {
@@ -577,6 +616,28 @@ export default class Lap extends Bus {
     return this.lib[index === undefined ? this.albumIndex : index][key]
   }
 
+
+  destroy() {
+
+    // remove dom event handlers
+    Object.keys(this.listeners).forEach(elementName => {
+      let listener = this.listeners[elementName]
+      this.els[elementName].removeEventListener(listener.event, listener.fn)
+      listener = null
+      delete this.listeners[elementName]
+    })
+    delete this.listeners
+
+    // remove audio handlers
+    Object.keys(this.audioListeners).forEach(event => {
+      this.audio.removeEventListener(event, this.audioListeners[event])
+      delete this.audioListeners[event]
+    })
+    delete this.audioListeners
+
+    // remove all super handlers
+    this.remove()
+  }
 }
 
 Lap.$$instances = []
@@ -585,6 +646,7 @@ Lap.$$audioExtensionRegExp = /mp3|wav|ogg|aiff/i
 
 Lap.$$defaultSettings = {
   callbacks: {},
+  debug: false,
   discogPlaylistExclusive: true,
   plugins: [],
   prependTrackNumbers: true,
