@@ -78,10 +78,9 @@ export default class Lap extends Bus {
     } else if (type === 'object') {
       this.lib = [lib]
     } else if (type === 'string' && Lap.$$audioExtensionRegExp.test(lib)) {
-      this.lib = [{ files: lib }]
+      this.lib = [{ files: [lib] }]
     } else {
-      throw new Error(`${lib} is not an array of album configs, ` +
-        `a single album config object, or an audio file.`)
+      throw new Error(`${lib} must be an array, object, or string`)
     }
     return this
   }
@@ -141,9 +140,9 @@ export default class Lap extends Bus {
     // replacement === [regexp, replacement, optional_flags]
     if (this.replacement) {
       let re = this.replacement
-      /* for replacment without value specified, empty string */
+      // for replacment without value specified, empty string 
       if (typeof re === 'string') re = [re, '']
-      /* re may contain string-wrapped regexp (from json), convert if so */
+      // re may contain string-wrapped regexp (from json), convert if so
       if (re instanceof Array) {
         const flags = re[2]
         re[0] = new RegExp(re[0], flags !== undefined ? flags : 'g')
@@ -175,23 +174,33 @@ export default class Lap extends Bus {
 
   getFileType() {
     const f = this.files[this.trackIndex]
-    return f.substr(f.lastIndexOf('.')+1)
+    return f.slice(f.lastIndexOf('.')+1)
   }
 
   initElements() {
     this.els = {}
-    this.selectors = {}
+    this.selectors = { state: {} }
     Object.keys(Lap.$$defaultSelectors).forEach(key => {
-      if (this.settings.selectors.hasOwnProperty[key]) {
-        this.selectors[key] = this.settings.selectors[key]
+      if (key !== 'state') {
+        if (this.settings.selectors.hasOwnProperty[key]) {
+          this.selectors[key] = this.settings.selectors[key]
+        } else {
+          this.selectors[key] = Lap.$$defaultSelectors[key]
+        }
+
+        const el = this.element.querySelector(`.${this.selectors[key]}`)
+        if (el) this.els[key] = el
+
       } else {
-        this.selectors[key] = Lap.$$defaultSelectors[key]
+        const hasStateOverrides = !!this.settings.selectors.state
+        Object.keys(Lap.$$defaultSelectors.state).forEach(k => {
+          if (hasStateOverrides && this.settings.state.hasOwnProperty[k]) {
+            this.selectors.state[k] = this.settings.state[k]
+          } else {
+            this.selectors.state[k] = Lap.$$defaultSelectors.state[k]
+          }
+        })
       }
-    })
-    Object.keys(this.selectors).forEach(key => {
-      if (typeof this.selectors[key] === 'object') return
-      const el = this.element.querySelector(`.${this.selectors[key]}`)
-      if (el) this.els[key] = el
     })
   }
 
