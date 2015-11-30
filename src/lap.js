@@ -17,10 +17,9 @@ export default class Lap extends Bus {
 
     this.settings = {}
     if (options) {
-      // merge options defaults
-      Object.keys(Lap.$$defaultSettings).forEach(key => {
-        if (options.hasOwnProperty(key)) return (this.settings[key] = options[key])
-        this.settings[key] = Lap.$$defaultSettings[key]
+      Lap.each(Lap.$$defaultSettings, (val, key) => {
+        if (options.hasOwnProperty(key)) this.settings[key] = options[key]
+        else this.settings[key] = val
       })
     } else {
       this.settings = Lap.$$defaultSettings
@@ -64,10 +63,29 @@ export default class Lap extends Bus {
 
   static removeClass(el, _class) {
     if (!el) return console.warn(`${el} is not defined`)
-    // const classes = `(${_class.split(/\s+/).join('|')})`
+    // uncomment for multiple class removal
+    // _class = `(${_class.split(/\s+/).join('|')})`
+    
+    // TODO: cache?
     const re = new RegExp('\\s*' + _class + '\\s*(![\\w\\W])?', 'g')
     el.className = el.className.replace(re, ' ').trim()
     return Lap
+  }
+
+  static formatTime(time) {
+    let h = Math.floor(time / 3600)
+    let m = Math.floor((time - (h * 3600)) / 60)
+    let s = Math.floor(time - (h * 3600) - (m * 60))
+    if (h < 10) h = '0' + h
+    if (m < 10) m = '0' + m
+    if (s < 10) s = '0' + s
+    return h + ':' + m + ':' + s
+  }
+
+  static each(obj, fn, ctx) {
+    const keys = Object.keys(obj)
+    let i = 0, len = keys.length
+    for (; i < len; i++) fn.call(ctx, obj[keys[i]], keys[i], obj)
   }
 
   setLib(lib) {
@@ -95,29 +113,17 @@ export default class Lap extends Bus {
 
     this.plugins = this.settings.plugins
 
-    this.albumIndex = this.settings.startingAlbumIndex || 0
-    this.albumCount = this.lib.length
-
     this.update()
-    this.initAudio()
-    this.initElements()
-    this.addAudioListeners()
-    if (!IS_MOBILE) this.addVolumeListeners()
-    this.addSeekListeners()
-    this.addListeners()
-    Object.keys(this.settings.callbacks, key => this.on(key, this.settings.callbacks[key]))
-    this.activatePlugins()
+    this.$$initAudio()
+    this.$$initElements()
+    this.$$addAudioListeners()
+    if (!IS_MOBILE) this.$$addVolumeListeners()
+    this.$$addSeekListeners()
+    this.$$addListeners()
+    // Lap.each(this.settings.callbacks, (fn, key) => this.on(key, fn))
+    Object.keys(this.settings.callbacks).forEach(key => this.on(key, this.settings.callbacks[key]))
+    this.$$activatePlugins()
     this.trigger('load')
-  }
-
-  /**
-   * Instantiate every plugin's contructor with this Lap instance
-   *
-   * @return {Lap} this
-   */
-  activatePlugins() {
-    this.plugins.forEach((plugin, i) => this.plugins[i] = new plugin(this))
-    return this
   }
 
   /**
@@ -127,7 +133,9 @@ export default class Lap extends Bus {
    * @return {Lap} this
    */
   update() {
-    this.trackIndex = this.settings.startingTrackIndex
+    this.albumIndex = this.settings.startingAlbumIndex || 0
+    this.albumCount = this.lib.length
+    this.trackIndex = this.settings.startingTrackIndex || 0
     this.playlistPopulated = false
 
     const currentLibItem = this.lib[this.albumIndex]
@@ -153,13 +161,24 @@ export default class Lap extends Bus {
     return this
   }
 
-  initAudio() {
+  /**
+   * Instantiate every plugin's contructor with this Lap instance
+   *
+   * @return {Lap} this
+   */
+  $$activatePlugins() {
+    this.plugins.forEach((plugin, i) => this.plugins[i] = new plugin(this))
+    return this
+  }
+
+  $$initAudio() {
     this.audio = new Audio()
     this.audio.preload = 'auto'
-    const fileType = this.getFileType()
+    let fileType = this.files[this.trackIndex]
+    fileType = fileType.slice(fileType.lastIndexOf('.')+1)
     const canPlay = this.audio.canPlayType('audio/' + fileType)
     if (canPlay === 'probably' || canPlay === 'maybe') {
-      this.setSource()
+      this.$$updateSource()
       this.audio.volume = 1
     } else {
       // TODO: return a flag to signal skipping the rest of the initialization process
@@ -167,19 +186,36 @@ export default class Lap extends Bus {
     }
   }
 
-  setSource() {
+  $$updateSource() {
     this.audio.src = this.files[this.trackIndex]
     return this
   }
 
-  getFileType() {
-    const f = this.files[this.trackIndex]
-    return f.slice(f.lastIndexOf('.')+1)
-  }
-
-  initElements() {
+  $$initElements() {
     this.els = {}
     this.selectors = { state: {} }
+    // Lap.each(Lap.$$defaultSelectors, (selector, key) => {
+    //   if (key !== 'state') {
+
+    //     this.selectors[key] = this.settings.selectors.hasOwnProperty(key)
+    //       ? this.settings.selectors[key]
+    //       : selector
+
+    //     const el = this.element.querySelector(`.${this.selectors[key]}`)
+    //     if (el) this.els[key] = el
+
+    //   } else {
+    //     const hasStateOverrides = !!this.settings.selectors.state
+    //     if (!hasStateOverrides) return
+    //     Lap.each(Lap.$$defaultSelectors.state, (sel, k) => {
+    //       if (this.settings.selectors.hasOwnProperty(k)) {
+    //         this.selectors.state[k] = this.settings.state[k]
+    //       } else {
+    //         this.selectors.state[k] = sel
+    //       }
+    //     })
+    //   }
+    // })
     Object.keys(Lap.$$defaultSelectors).forEach(key => {
       if (key !== 'state') {
         if (this.settings.selectors.hasOwnProperty[key]) {
@@ -204,19 +240,28 @@ export default class Lap extends Bus {
     })
   }
 
-  addAudioListeners() {
+  /**
+   * A wrapper around this Lap instances `audio.addEventListener` that 
+   * ensures handlers are cached for later removal in the `Lap#destroy` call
+   */
+  addAudioListener(event, listener) {
+    this.audioListeners = this.audioListeners || {}
+    this.audioListeners[event] = this.audioListeners[event] || []
+
+    const bound = listener.bind(this)
+    this.audioListeners[event].push(bound)
+    this.audio.addEventListener(event, bound)
+  }
+
+  $$addAudioListeners() {
     const audio = this.audio
     const els = this.els
     const nativeProgress = !!(this.settings.useNativeProgress && els.progress)
 
     this.audioListeners = {}
 
-    const _addListener = (condition, event, fn) => {
-      if (condition) {
-        // stash handler for ease of removal in #destroy call
-        this.audioListeners[event] = fn.bind(this)
-        audio.addEventListener(event, this.audioListeners[event])
-      }
+    const _addListener = (condition, event, listener) => {
+      if (condition) this.addAudioListener(event, listener)
     }
 
     _addListener(!!(els.buffered || nativeProgress), 'progress', () => {
@@ -244,30 +289,35 @@ export default class Lap extends Bus {
     return this
   }
 
-  addListeners() {
+  addListener(elementName, event, listener) {
+    // ie. listeners = { seekRange: { click: [handlers], mousedown: [handlers], ... }, ... }
+    this.listeners = this.listeners || {}
+    this.listeners[elementName] = this.listeners[elementName] || {}
+    this.listeners[elementName][event] = this.listeners[elementName][event] || []
+
+    const bound = listener.bind(this)
+    this.listeners[elementName][event].push(bound)
+    this.els[elementName].addEventListener(event, bound)
+  }
+
+  $$addListeners() {
     const els = this.els
     this.listeners = {}
 
-    const _addListener = (elementName, event, fn) => {
-      if (els[elementName]) {
-        // stash event name and handler for ease of removal in #destroy call
-        this.listeners[elementName] = {
-          event,
-          fn: this[fn].bind(this)
-        }
-        els[elementName].addEventListener(event, this.listeners[elementName].fn)
-      }
-      return this
+    // helper. ensure we aren't adding listeners to non-existent elements
+    const _addListener = (elementName, event, listener) => {
+      if (els[elementName]) this.addListener(elementName, event, this[listener])
     }
 
     _addListener('playPause', 'click', 'togglePlay')
     _addListener('prev', 'click', 'prev')
     _addListener('next', 'click', 'next')
-    _addListener('volumeUp', 'click', 'incVolume')
     _addListener('prevAlbum', 'click', 'prevAlbum')
     _addListener('nextAlbum', 'click', 'nextAlbum')
-    _addListener('discog', 'click', 'discogClick')
-    _addListener('playlist', 'click', 'playlistClick')
+    _addListener('volumeUp', 'click', 'incVolume')
+    _addListener('volumeDown', 'click', 'decVolume')
+    // _addListener('discog', 'click', 'discogClick')
+    // _addListener('playlist', 'click', 'playlistClick')
 
     const _if = (elementName, fn) => {
       if (this.els[elementName]) {
@@ -311,51 +361,52 @@ export default class Lap extends Bus {
     })
   }
 
-  addSeekListeners() {
+  $$addSeekListeners() {
     const els = this.els
     const audio = this.audio
     const seekRange = els.seekRange
-    const nativeSeek = this.settings.useNativeSeekRange && seekRange && seekRange.els.length
+    const nativeSeek = !!(this.settings.useNativeSeekRange && seekRange && seekRange.els.length)
 
     if (nativeSeek) {
+      // TODO: put us in listeners cache...
       audio.addEventListener('timeupdate', e => {
         if (!this.seeking) {
           seekRange.get(0).value = _.scale(audio.currentTime, 0, audio.duration, 0, 100)
         }
       })
-      seekRange
-        .on('mousedown', e => {
-          this.seeking = true
-        })
-        .on('mouseup', e => {
-          var el = seekRange.get(0)
-          if (!el.value) this.logger.debug('what the fuck! ' + el)
-          audio.currentTime = _.scale(el.value, 0, el.max, 0, audio.duration)
-          this.trigger('seek')
-          this.seeking = false
-        })
+      seekRange.addEventListener('mousedown', e => {
+        this.seeking = true
+      })
+      seekRange.addEventListener('mouseup', e => {
+        var el = seekRange.get(0)
+        if (!el.value) this.logger.debug('what the fuck! ' + el)
+        audio.currentTime = _.scale(el.value, 0, el.max, 0, audio.duration)
+        this.trigger('seek')
+        this.seeking = false
+      })
 
     } else { // using buttons
       [els.seekForward, els.seekBackward].forEach(el => {
         if (!el) return
-        el
-          .on('mousedown', e => {
-            this.seeking = true
-            if ($(e.target).hasClass(this.selectors.seekForward)) {
-              this.seekForward()
-            } else {
-              this.seekBackward()
-            }
-          })
-          .on('mouseup', e => {
-            this.seeking = false
-            clearTimeout(this.mouseDownTimer)
-          })
+        // TODO: put me in listeners cache...
+        el.addEventListener('mousedown', e => {
+          this.seeking = true
+          // if ($(e.target).hasClass(this.selectors.seekForward)) {
+          if (e.target.className.indexOf(this.selectors.seekForward) > -1) {
+            this.seekForward()
+          } else {
+            this.seekBackward()
+          }
+        })
+        el.addEventListener('mouseup', e => {
+          this.seeking = false
+          clearTimeout(this.mouseDownTimer)
+        })
       })
     }
   }
 
-  addVolumeListeners() {
+  $$addVolumeListeners() {
     if (IS_MOBILE) return this
 
     const lap = this
@@ -413,38 +464,28 @@ export default class Lap extends Bus {
     return Math.round(this.audio.volume * 100)
   }
 
-  /**
-   * Add a plug-in instance to the plugins hash
-   * @param  {String} key    the plugin instance identifier
-   * @param  {Object} plugin the plugin instance (not the class)
-   * @return {Lap}           this
-   */
-  registerPlugin(key, plugin) {
-    this.plugins[key] = plugin
-  }
-
   updateTrackTitleEl() {
-    this.els.trackTitle.html(this.tracklist[this.trackIndex])
+    this.els.trackTitle.innerHTML = this.tracklist[this.trackIndex]
     return this
   }
 
   updateTrackNumberEl() {
-    this.els.trackNumber.html(+this.trackIndex+1)
+    this.els.trackNumber.innerHTML = +this.trackIndex+1
     return this
   }
 
   updateArtistEl() {
-    this.els.artist.html(this.artist)
+    this.els.artist.innerHTML = this.artist
     return this
   }
 
   updateAlbumEl() {
-    this.els.album.html(this.album)
+    this.els.album.innerHTML = this.album
     return this
   }
 
   updateCover() {
-    this.els.cover.get(0).src = this.cover
+    this.els.cover.src = this.cover
     return this
   }
 
@@ -477,7 +518,7 @@ export default class Lap extends Bus {
       this.trackIndex = index
     }
     const wasPlaying = !this.audio.paused
-    this.setSource()
+    this.$$updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('trackChange')
     return this
@@ -486,7 +527,7 @@ export default class Lap extends Bus {
   prev() {
     const wasPlaying = !this.audio.paused
     this.trackIndex = (this.trackIndex-1 < 0) ? this.trackCount-1 : this.trackIndex-1
-    this.setSource()
+    this.$$updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('trackChange')
     return this
@@ -495,7 +536,7 @@ export default class Lap extends Bus {
   next() {
     const wasPlaying = !this.audio.paused
     this.trackIndex = (this.trackIndex+1 >= this.trackCount) ? 0 : this.trackIndex+1
-    this.setSource()
+    this.$$updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('trackChange')
     return this
@@ -506,21 +547,23 @@ export default class Lap extends Bus {
     this.albumIndex = (this.albumIndex-1 < 0) ? this.albumCount-1 : this.albumIndex-1
     this.update()
     this.trackIndex = 0
-    this.setSource()
+    this.$$updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('albumChange')
     return this
   }
+
   nextAlbum() {
     const wasPlaying= !this.audio.paused
     this.albumIndex = (this.albumIndex+1 > this.albumCount-1) ? 0 : this.albumIndex+1
     this.update()
     this.trackIndex = 0
-    this.setSource()
+    this.$$updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('albumChange')
     return this
   }
+
   setAlbum(index) {
     if (index <= 0) {
       this.albumIndex = 0
@@ -583,69 +626,74 @@ export default class Lap extends Bus {
     } catch(e) {
       return 0
     }
-    var formatted = Math.round(_.scale(buffered, 0, audio.duration, 0, 100))
+
+    const formatted = Math.round((buffered/audio.duration)*100)
+    // var formatted = Math.round(_.scale(buffered, 0, audio.duration, 0, 100))
     return isNaN(formatted) ? 0 : formatted
   }
 
-  currentTimeFormatted() {
-    if (isNaN(this.audio.duration)) {
-      return '00:00'
-    }
-    var formatted = _.formatTime(Math.floor(this.audio.currentTime.toFixed(1)))
+  /** internal helper */
+  $$getAudioTimeFormatted(audioProp) {
+    if (isNaN(this.audio.duration)) return '00:00'
+    let formatted = Lap.formatTime(Math.floor(this.audio[audioProp].toFixed(1)))
     if (this.audio.duration < 3600 || formatted === '00:00:00') {
-      return formatted.slice(3) // nn:nn
+      formatted = formatted.slice(3) // nn:nn
     }
     return formatted
+  }
+
+  currentTimeFormatted() {
+    return this.$$getAudioTimeFormatted('currentTime')
+    // if (isNaN(this.audio.duration)) return '00:00'
+    // let formatted = Lap.formatTime(Math.floor(this.audio.currentTime.toFixed(1)))
+    // if (this.audio.duration < 3600 || formatted === '00:00:00') {
+    //   formatted = formatted.slice(3) // nn:nn
+    // }
+    // return formatted
   }
 
   durationFormatted() {
-    if (isNaN(this.audio.duration)) {
-      return '00:00'
-    }
-    var formatted = _.formatTime(Math.floor(this.audio.duration.toFixed(1)))
-    if (this.audio.duration < 3600 || formatted === '00:00:00') {
-      return formatted.slice(3) // nn:nn
-    }
-    return formatted
+    return this.$$getAudioTimeFormatted('duration')
+    // if (isNaN(this.audio.duration)) return '00:00'
+    // let formatted = Lap.formatTime(Math.floor(this.audio.duration.toFixed(1)))
+    // if (this.audio.duration < 3600 || formatted === '00:00:00') {
+    //   formatted = formatted.slice(3) // nn:nn
+    // }
+    // return formatted
   }
 
   trackNumberFormatted(n) {
-    var count = (''+this.trackCount).length - (''+n).length
-    return _.repeat('0', count) + n + this.settings.trackNumberPostfix
+    var count = String(this.trackCount).length - String(n).length
+    return '0'.repeat(count) + n + this.settings.trackNumberPostfix
+    // return _.repeat('0', count) + n + this.settings.trackNumberPostfix
   }
 
-  /**
-   * Convenience method to grab a property from the currently cued album. A
-   * second argument can be passed to choose a specific album.
-   * @method get
-   * @param  {String} what the property
-   * @return {[type]}      [description]
-   */
   get(key, index) {
     return this.lib[index === undefined ? this.albumIndex : index][key]
   }
 
-
-  destroy() {
+  /**
+   * Removes all dom, audio, and internal event handlers, then deletes all properties
+   * @param  {Lap} lap the Lap instance
+   */
+  static destroy(lap) {
 
     // remove dom event handlers
-    Object.keys(this.listeners).forEach(elementName => {
-      let listener = this.listeners[elementName]
-      this.els[elementName].removeEventListener(listener.event, listener.fn)
-      listener = null
-      delete this.listeners[elementName]
-    })
-    delete this.listeners
+    Lap.each(lap.listeners, (events, elementName) => delete lap.listeners[elementName])
 
-    // remove audio handlers
-    Object.keys(this.audioListeners).forEach(event => {
-      this.audio.removeEventListener(event, this.audioListeners[event])
-      delete this.audioListeners[event]
-    })
-    delete this.audioListeners
+    // remove audio events
+    Lap.each(lap.audioListeners, (listeners, event) => delete lap.audioListeners[event])
 
     // remove all super handlers
-    this.remove()
+    lap.remove()
+
+    // nullify elements
+    Lap.each(lap.els, (element, elName) => delete lap.els[elName])
+
+    // everything else just in case
+    Lap.each(lap, (val, key) => delete lap[key])
+
+    return null
   }
 }
 
@@ -664,7 +712,7 @@ Lap.$$defaultSettings = {
   startingTrackIndex: 0,
   seekInterval: 5,
   seekTime: 250,
-  selectors: {}, // see #initElements
+  selectors: {}, // see #$$initElements
   selectorPrefix: 'lap',
   trackNumberPostfix: ' - ',
   useNativeProgress: false,
