@@ -39,15 +39,15 @@ h2 {
   height: 128px;
 }
 
-.lap--playing:after {
+#discog-player .lap--playing:after {
   background: inherit;
   content: 'pause';
 }
-.lap--paused:after {
+#discog-player .lap--paused:after {
   background: inherit;
   content: 'play';
 }
-.lap__buffered:after {
+#discog-player .lap__buffered:after {
   content: '%';
 }
 
@@ -63,4 +63,22 @@ tr {
 }
 td {
   padding: 3px;
+}
+
+#simple-player i,
+#simple-player i:before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+}
+#simple-player .lap--paused:before {
+  content: '\f04b';
+}
+#simple-player .lap--playing:before {
+  content: '\f04c';
+}
+#simple-player .lap__seek-backward:before {
+  content: '\f049';
+}
+#simple-player .lap__seek-forward:before {
+  content: '\f050';
 }

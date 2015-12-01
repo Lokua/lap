@@ -5,7 +5,8 @@
     <title>LAP Demo</title>
     <script src="../node_modules/bus/dist/bus.js"></script>
     <script src="../dist/lap.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
@@ -110,13 +111,15 @@
 
     <hr></hr>
 
-    <!-- <h2>Single Track Player</h2>
-     <div id="simple-player">
-      <button class="lap__play-pause"></button>
+    <h2>Single Track Player</h2>
+    <div id="simple-player">
+      <i class="lap__seek-backward"></i>
+      <i class="lap__play-pause"></i>
+      <i class="lap__seek-forward"></i>
       <span class="lap__current-time"></span>
       <span>/</span>
       <span class="lap__duration"></span>
-    </div> -->
+    </div>
   </body>
 
 <script>'use strict';
@@ -132,9 +135,9 @@ get('discog.json', discog => {
     debug: true
   });
 
-  // const simpleLap = new Lap('#simple-player', discog[0].files[0], {
-  //   debug: true
-  // });
+  const simpleLap = new Lap('#simple-player', discog[0].files[0], {
+    debug: true
+  });
 });
 
 function get(url, successHandler) {
