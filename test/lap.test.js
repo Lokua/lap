@@ -130,7 +130,7 @@ describe('lap.js', () => {
     })
     it('should init current album variables', () => {
       lap.albumIndex = 0
-      spyOn(Lap.prototype, 'formatTracklist')
+      spyOn(Lap.prototype, '$$formatTracklist')
       lap.update()
       expect(lap.trackIndex).toEqual(0)
       expect(lap.playlistPopulated).toBe(false)
@@ -140,7 +140,7 @@ describe('lap.js', () => {
       expect(lap.cover).toEqual('dang.png')
       expect(lap.replacement.length).toEqual(2)
       expect(lap.replacement[0] instanceof RegExp).toBe(true)
-      expect(Lap.prototype.formatTracklist).toHaveBeenCalled()
+      expect(Lap.prototype.$$formatTracklist).toHaveBeenCalled()
     })
   })
 
@@ -235,11 +235,11 @@ describe('lap.js', () => {
     it('should add outside listener to audioListeners cache', () => {
       let fn = function fn() {}
       lap.addAudioListener('timeupdate', fn)
-      expect(lap.audioListeners).toBeDefined()
-      expect(Object.keys(lap.audioListeners)).toEqual(['timeupdate'])
-      expect(typeof lap.audioListeners.timeupdate[0]).toEqual('function')
+      expect(lap.$$audioListeners).toBeDefined()
+      expect(Object.keys(lap.$$audioListeners)).toEqual(['timeupdate'])
+      expect(typeof lap.$$audioListeners.timeupdate[0]).toEqual('function')
       lap.addAudioListener('timeupdate', fn)
-      expect(lap.audioListeners.timeupdate.length).toEqual(2)
+      expect(lap.$$audioListeners.timeupdate.length).toEqual(2)
     });
   })
 
@@ -270,10 +270,10 @@ describe('lap.js', () => {
       lap.$$addListeners()
     })
     it('should populate audioListeners object', () => {
-      expect(lap.audioListeners.progress instanceof Array).toBe(true)
-      expect(lap.audioListeners.timeupdate instanceof Array).toBe(true)
-      expect(lap.audioListeners.durationchange instanceof Array).toBe(true)
-      expect(lap.audioListeners.ended instanceof Array).toBe(true)
+      expect(lap.$$audioListeners.progress instanceof Array).toBe(true)
+      expect(lap.$$audioListeners.timeupdate instanceof Array).toBe(true)
+      expect(lap.$$audioListeners.durationchange instanceof Array).toBe(true)
+      expect(lap.$$audioListeners.ended instanceof Array).toBe(true)
 
       let t = 0
       lap.addAudioListener('timeupdate', () => t++)
@@ -285,13 +285,13 @@ describe('lap.js', () => {
       lap.next()
       setTimeout(() => expect(d).toBeGreaterThan(0))
 
-      expect(Object.keys(lap.audioListeners)).toEqual(
+      expect(Object.keys(lap.$$audioListeners)).toEqual(
         ['progress', 'timeupdate', 'durationchange', 'ended']
       )
-      expect(lap.audioListeners.progress.length).toEqual(1)
-      expect(lap.audioListeners.timeupdate.length).toEqual(2)
-      expect(lap.audioListeners.durationchange.length).toEqual(2)
-      expect(lap.audioListeners.ended.length).toEqual(1)
+      expect(lap.$$audioListeners.progress.length).toEqual(1)
+      expect(lap.$$audioListeners.timeupdate.length).toEqual(2)
+      expect(lap.$$audioListeners.durationchange.length).toEqual(2)
+      expect(lap.$$audioListeners.ended.length).toEqual(1)
     });
   })
 
@@ -303,11 +303,11 @@ describe('lap.js', () => {
     })
     afterEach(tearDown)
     it('should setup listener cache and add handler to it', () => {
-      expect(lap.listeners).toBeUndefined()
+      expect(lap.$$listeners).toBeUndefined()
       lap.addListener('playPause', 'click', () => {})
-      expect(lap.listeners).toBeDefined()
-      expect(lap.listeners.playPause.click.length).toEqual(1)
-      expect(typeof lap.listeners.playPause.click[0]).toEqual('function')
+      expect(lap.$$listeners).toBeDefined()
+      expect(lap.$$listeners.playPause.click.length).toEqual(1)
+      expect(typeof lap.$$listeners.playPause.click[0]).toEqual('function')
     })
   })
 
@@ -332,10 +332,10 @@ describe('lap.js', () => {
         'volumeUp',
         'volumeDown'
       ]
-      expect(Object.keys(lap.listeners)).toEqual(elNames)
+      expect(Object.keys(lap.$$listeners)).toEqual(elNames)
       elNames.forEach(name => {
-        expect(lap.listeners[name].click.length).toEqual(1)
-        expect(typeof lap.listeners[name].click[0]).toEqual('function')
+        expect(lap.$$listeners[name].click.length).toEqual(1)
+        expect(typeof lap.$$listeners[name].click[0]).toEqual('function')
       })
     })
     it('should setup lap super handlers', () => {
@@ -354,13 +354,32 @@ describe('lap.js', () => {
     afterEach(tearDown)
     it('should remove all dom, audio, and bus handlers', () => {
       Lap.destroy(lap)
-      expect(lap.listeners).toBeUndefined()
-      expect(lap.audioListeners).toBeUndefined()
+      expect(lap.$$listeners).toBeUndefined()
+      expect(lap.$$audioListeners).toBeUndefined()
       expect(lap.handlers).toBeUndefined()
       expect(lap.els).toBeUndefined()
       expect(lap.element).toBeUndefined()
       expect(Object.keys(lap)).toEqual([])
     });
+  })
+
+  describe('$$formatTracklist', () => {
+    xit('should exec replacement value', () => {
+      const lib = albumLib
+      lib.replacement = ['Lokua_-_']
+      lap = new Lap('#player', lib, null, true)
+      lap.update()
+      expect(lap.replacement[0]).toEqual(/Lokua_-_/g)
+      expect(lap.tracklist).toEqual(['Strobe', 'Quick'])
+    })
+    it('should ignore replacement when tracklist is supplied', () => {
+      const lib = albumLib
+      lib.replacement = ['Lokua_-_']
+      lib.tracklist = ['foo', 'bar']
+      lap = new Lap('#player', lib, null, true)
+      lap.update()
+      expect(lap.tracklist).toEqual(['foo', 'bar'])
+    })
   })
   
 })

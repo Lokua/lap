@@ -1,0 +1,84 @@
+[
+  {
+    "album": "Steroids",
+    "objectName": "steroids",
+    "artist": "Lokua",
+    "cover": "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/cover.jpg",
+    "date": "2013.01.15",
+    "download": [
+      {
+        "format": "mp3",
+        "type": "zip",
+        "path": "lokua.steroids.mp3.zip"
+      },
+      {
+        "format": "wav",
+        "type": "zip",
+        "path": "lokua.steroids.wav.zip"
+      }
+    ],
+    "files": [
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_01_-_Fog_Inside.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_02_-_Dirt_Dirt_Dirt_Dirt.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_03_-_Beat_Up.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_04_-_Mod_Stat.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_05_-_Clicks_Filters_and_Delays.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_06_-_The_Get.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_07_-_Ptone_3.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_08_-_Floor_(Sink_Into_The).mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_09_-_Journey_To_Digitar.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_10_-_L13.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_11_-_Robert_Henke.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_12_-_Lost_In_Abstraction.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_13_-_Odhrm.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_14_-_Grain_Drops.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_15_-_The_Future_Is_On_Steroids.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/steroids/Lokua_-_Steroids_-_16_-_Velvet_Elevator.mp3"
+    ],
+    "label": "Don't Trust Humans",
+    "other": {},
+    "replacement": [
+      "^(\\w+-_){2}\\d+_-_|_",
+      " "
+    ],
+    "epoch": 1358229600000
+  },
+  {
+    "album": "Trails",
+    "objectName": "trails",
+    "artist": "Lokua",
+    "date": "2008.04.07",
+    "cover": "https://s3.amazonaws.com/lokua.net.audio/albums/trails/cover.jpg",
+    "download": [
+      {
+        "format": "mp3",
+        "type": "zip",
+        "path": "lokua.trails.mp3.zip"
+      }
+    ],
+    "files": [
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_01_-_A_Thousand_Pages.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_02_-_Bub_Sag.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_03_-_Crystal_Ball.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_04_-_Burning_Money.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_05_-_Coupe_Deville.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_06_-_Ghostrider.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_07_-_Grasshopper.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_08_-_Taxi.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_09_-_Interlude.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_10_-_Tai_Chi.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_11_-_Trails.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_12_-_Thanks_Raining.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_13_-_Crystal_Coupe.mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_14_-_Y.E.A..mp3",
+      "https://s3.amazonaws.com/lokua.net.audio/albums/trails/Lokua_-_Trails_-_15_-_Coupe_Deville_(Reprise).mp3"
+    ],
+    "label": "Moment Sound",
+    "other": {},
+    "replacement": [
+      "[a-zA-Z].+_-_[a-zA-Z].+_-_\\d{2}_-_|(_)(?=[a-zA-Z])*",
+      " "
+    ],
+    "epoch": 1207544400000
+  }
+]

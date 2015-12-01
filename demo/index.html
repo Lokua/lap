@@ -5,17 +5,141 @@
     <title>LAP Demo</title>
     <script src="../node_modules/bus/dist/bus.js"></script>
     <script src="../dist/lap.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
+
   <body>
-    <div id="player">
-      <button class="lap__play-pause">play</button>
-    </div>
+
+    <header>
+      <h1>Lap.js Demo</h1>
+    </header>
+
+    <h2>Full Discography Player</h2>
+
+    <div id="discog-player">
+      <table>
+        <tr>
+          <th>class</th><th>implementation</th>
+        </tr>
+        <tr>
+          <td>lap__cover</td>
+          <td><img class="lap__cover"></img></td>
+        </tr>
+        <tr>
+          <td>lap__play-pause</td>
+          <td><button class="lap__play-pause"></button></td>
+        </tr>
+        <tr>
+          <td>lap__artist</td>
+          <td class="lap__artist"></td>
+        </tr>
+        <tr>
+          <td>lap__album</td>
+          <td class="lap__album"></td>
+        </tr>
+        <tr>
+          <td>lap__prev-album</td>
+          <td><button class="lap__prev-album">prev album</button></td>
+        </tr>
+       <tr>
+          <td>lap__next-album</td>
+          <td><button class="lap__next-album">next album</button></td>
+        </tr>
+        <tr>
+          <td>lap__track-number</td>
+          <td class="lap__track-number"></td>
+        </tr>
+        <tr>
+          <td>lap__track-title</td>
+          <td class="lap__track-title"></td>
+        </tr>
+        <tr>
+          <td>lap__prev</td>
+          <td><button class="lap__prev">prev</button></td>
+        </tr>
+        <tr>
+          <td>lap__next</td>
+          <td><button class="lap__next">next</button></td>
+        </tr>
+        <tr>
+          <td>lap__current-time</td>
+          <td class="lap__current-time"></td>
+        </tr>
+        <tr>
+          <td>lap__seek-range</td>
+          <td><input type="range" min="0" max="100" value="0" class="lap__seek-range"></td>
+        </tr>
+        <tr>
+          <td>lap__seek-backward</td>
+          <td><button class="lap__seek-backward">seek &lt;&lt;</button></td>
+        </tr>
+        <tr>
+          <td>lap__seek-forward</td>
+          <td><button class="lap__seek-forward">seek &gt;&gt;</button></td>
+        </tr>
+        <tr>
+          <td>lap__buffered</td>
+          <td class="lap__buffered"></td>
+        </tr>
+        <tr>
+          <td>lap__progress</td>
+          <td><progress min="0" max="100" value="0" class="lap__progress"></progress></td>
+        </tr>
+        <tr>
+          <td>lap__duration</td>
+          <td class="lap__duration"></td>
+        </tr>
+        <tr>
+          <td>lap__volume-read</td>
+          <td class="lap__volume-read"></td>
+        </tr>
+        <tr>
+          <td>lap__volume-range</td>
+          <td><input type="range" min="0" max="100" value="0" class="lap__volume-range"></td>
+        </tr>
+        <tr>
+          <td>lap__volume-up</td>
+          <td><button class="lap__volume-up">vol +</button></td>
+        </tr>
+        <tr>
+          <td>lap__volume-down</td>
+          <td><button class="lap__volume-down">vol -</button></td>
+        </tr>
+      </table>
+    </div> <!-- end #player -->
+
+    <hr></hr>
+
+    <!-- <h2>Single Track Player</h2>
+     <div id="simple-player">
+      <button class="lap__play-pause"></button>
+      <span class="lap__current-time"></span>
+      <span>/</span>
+      <span class="lap__duration"></span>
+    </div> -->
   </body>
+
 <script>'use strict';
+
+Lap.exclusiveMode = true;
+
+get('discog.json', discog => {
+
+  const lap = new Lap('#discog-player', discog, {
+    useNativeProgress: true,
+    useNativeSeekRange: true,
+    useNativeVolumeRange: true,
+    debug: true
+  });
+
+  // const simpleLap = new Lap('#simple-player', discog[0].files[0], {
+  //   debug: true
+  // });
+});
 
 function get(url, successHandler) {
   const req = new XMLHttpRequest();
-  req.open('get', 'album.json', true);
+  req.open('get', url, true);
   req.reponseType = 'json';
   req.onload = () => {
     if (req.readyState == 4 && req.status == 200) {
@@ -24,14 +148,6 @@ function get(url, successHandler) {
   };
   req.send();
 }
-
-get('album.json', album => {
-  const lap = new Lap('#player', album, {
-    id: 'main player',
-    debug: true
-  });
-  console.log(lap)
-});
 
 </script>
 </html>

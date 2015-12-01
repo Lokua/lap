@@ -29,9 +29,6 @@
   ],
   "label": "Lokua.net",
   "other": {},
-  "replacement": [
-    "[_-]|Lokua",
-    " "
-  ],
+  "replacement": ["Lokua_-_|_", " "],
   "epoch": 1347858000000
 }

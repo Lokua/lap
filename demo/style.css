@@ -1,0 +1,66 @@
+@import url(https://fonts.googleapis.com/css?family=Federo);
+
+*,
+*:before,
+*:after {
+  font-family: Federo, Helvetica, 'Segoe UI', Arial, sans-serif;
+  box-sizing: border-box;
+  color: #666;
+}
+
+button {
+  background: white;
+  border: 1px solid #888;
+}
+
+progress,
+progress::-webkit-progress-bar {
+  background: #ccc;
+}
+progress[value],
+progress::-webkit-progress-value {
+  background: #444;
+  height: 4px;
+}
+
+h1,
+h2 {
+  text-align: center;
+  font-weight: normal;
+}
+
+#discog-player {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+#discog-player .lap__cover {
+  width: 128px;
+  height: 128px;
+}
+
+.lap--playing:after {
+  background: inherit;
+  content: 'pause';
+}
+.lap--paused:after {
+  background: inherit;
+  content: 'play';
+}
+.lap__buffered:after {
+  content: '%';
+}
+
+table {
+  display: inline-block;
+  border-collapse: collapse;
+}
+th {
+  font-weight: normal;
+}
+tr {
+  border-bottom: 1px solid #ddd;
+}
+td {
+  padding: 3px;
+}
