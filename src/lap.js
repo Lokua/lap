@@ -647,7 +647,7 @@ export default class Lap extends Bus {
   }
 
   $$updateDurationEl() {
-    this.els.duration.innerHTML = this.durationFormatted()
+    this.els.duration.innerHTML = this.$$durationFormatted()
     return this
   }
 
@@ -818,7 +818,7 @@ export default class Lap extends Bus {
     return this.$$getAudioTimeFormatted('currentTime')
   }
 
-  durationFormatted() {
+  $$durationFormatted() {
     return this.$$getAudioTimeFormatted('duration')
   }
 
