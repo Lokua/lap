@@ -5,8 +5,7 @@
   "main": "dist/lap.js",
   "bugs": "dev@lokua.net",
   "scripts": {
-    "test": "karma start karma.conf.js",
-    "postinstall": "bower install"
+    "test": "karma start karma.conf.js"
   },
   "repository": {
     "type": "git",
