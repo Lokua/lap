@@ -1,5 +1,5 @@
 /*!
- * lap.js version 0.6.0
+ * lap.js version 0.8.0
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -501,14 +501,25 @@ export default class Lap extends Bus {
 
     if (useNative) {
       this.addAudioListener('timeupdate', () => {
-        if (!this.seeking) seekRange.value = Lap.scale(audio.currentTime, 0, audio.duration, 0, 100)
+        if (!this.seeking) {
+          seekRange.value = Lap.scale(
+            audio.currentTime, 0, audio.duration, 0, 100)
+        }
       })
-      this.addListener('seekRange', 'mousedown', () => this.seeking = true)
-      this.addListener('seekRange', 'mouseup', () => {
-        audio.currentTime = Lap.scale(seekRange.value, 0, seekRange.max, 0, audio.duration)
+      this.addListener('seekRange', 'input', () => {
+        this.seeking = true
+        audio.currentTime = Lap.scale(
+          seekRange.value, 0, seekRange.max, 0, audio.duration)
         this.trigger('seek')
         this.seeking = false
       })
+      // this.addListener('seekRange', 'mousedown', () => this.seeking = true)
+      // this.addListener('seekRange', 'mouseup', () => {
+      //   audio.currentTime = Lap.scale(
+      //     seekRange.value, 0, seekRange.max, 0, audio.duration)
+      //   this.trigger('seek')
+      //   this.seeking = false
+      // })
     }
 
     const maybeWarn = () => {
