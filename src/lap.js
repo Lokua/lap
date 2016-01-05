@@ -17,14 +17,14 @@ export default class Lap extends Bus {
    * @param  {Array|Object|String} lib a Lap "library", which can be an array of
    *                                   album objects, a single album object, or a url to a
    *                                   single audio file
-   * @param  {Object} options  settings hash that will be merged with Lap.$$defaultSettings
+   * @param  {Object} options  settings hash that will be merged with Lap._defaultSettings
    */
   constructor(element, lib, options, postpone=false) {
     super()
 
     // default id to zero-based index incrementer
-    this.id = options && options.id ? options.id : Lap.$$instances.length
-    Lap.$$instances[this.id] = this
+    this.id = options && options.id ? options.id : Lap._instances.length
+    Lap._instances[this.id] = this
 
     this.element = typeof element === 'string'
       ? document.querySelector(element)
@@ -34,12 +34,12 @@ export default class Lap extends Bus {
 
     this.settings = {}
     if (options) {
-      Lap.each(Lap.$$defaultSettings, (val, key) => {
+      Lap.each(Lap._defaultSettings, (val, key) => {
         if (options.hasOwnProperty(key)) this.settings[key] = options[key]
         else this.settings[key] = val
       })
     } else {
-      this.settings = Lap.$$defaultSettings
+      this.settings = Lap._defaultSettings
     }
 
     this.debug = this.settings.debug
@@ -47,10 +47,10 @@ export default class Lap extends Bus {
 
     if (this.debug) {
       this.on('load', () => console.info('%cLap(%s) [DEBUG]:%c %o',
-        Lap.$$debugSignature, this.id, 'color:inherit', this))
+        Lap._debugSignature, this.id, 'color:inherit', this))
       const echo = e => {
         this.on(e, () => console.info('%cLap(%s) [DEBUG]:%c %s handler called',
-          Lap.$$debugSignature, this.id, 'color:inherit', e))
+          Lap._debugSignature, this.id, 'color:inherit', e))
       }
       echo('load')
       echo('play')
@@ -74,7 +74,7 @@ export default class Lap extends Bus {
    * @return {Lap} the instance
    */
   static getInstance(id) {
-    return Lap.$$instances[id]
+    return Lap._instances[id]
   }
 
   /**
@@ -168,10 +168,10 @@ export default class Lap extends Bus {
   static destroy(lap) {
 
     // remove dom event handlers
-    Lap.each(lap.$$listeners, (events, elementName) => delete lap.$$listeners[elementName])
+    Lap.each(lap._listeners, (events, elementName) => delete lap._listeners[elementName])
 
     // remove audio events
-    Lap.each(lap.$$audioListeners, (listeners, event) => delete lap.$$audioListeners[event])
+    Lap.each(lap._audioListeners, (listeners, event) => delete lap._audioListeners[event])
 
     // remove all super handlers
     lap.remove()
@@ -200,7 +200,7 @@ export default class Lap extends Bus {
       this.lib = lib
     } else if (type === 'object') {
       this.lib = [lib]
-    } else if (type === 'string' && Lap.$$audioExtensionRegExp.test(lib)) {
+    } else if (type === 'string' && Lap._audioExtensionRegExp.test(lib)) {
       this.lib = [{ files: [lib] }]
     } else {
       throw new Error(`${lib} must be an array, object, or string`)
@@ -224,13 +224,13 @@ export default class Lap extends Bus {
     this.playing = false
 
     this.update()
-    this.$$initAudio()
-    this.$$initElements()
-    this.$$addAudioListeners()
-    this.$$addVolumeListeners()
-    this.$$addSeekListeners()
-    this.$$addListeners()
-    this.$$activatePlugins()
+    this._initAudio()
+    this._initElements()
+    this._addAudioListeners()
+    this._addVolumeListeners()
+    this._addSeekListeners()
+    this._addListeners()
+    this._activatePlugins()
 
     Lap.each(this.settings.callbacks, (fn, key) => this.on(key, fn.bind(this)))
 
@@ -251,7 +251,6 @@ export default class Lap extends Bus {
     this.albumIndex = this.albumIndex || this.settings.startingAlbumIndex || 0
     this.trackIndex = this.trackIndex || this.settings.startingTrackIndex || 0
     this.albumCount = this.lib.length
-    this.playlistPopulated = false
 
     const currentLibItem = this.lib[this.albumIndex]
 
@@ -280,7 +279,7 @@ export default class Lap extends Bus {
       }
     }
 
-    this.$$formatTracklist()
+    this._formatTracklist()
 
     return this
   }
@@ -291,7 +290,7 @@ export default class Lap extends Bus {
    * @return {Lap} this
    * @private
    */
-  $$activatePlugins() {
+  _activatePlugins() {
     this.plugins = []
     this.settings.plugins.forEach((plugin, i) => this.plugins[i] = new plugin(this))
     return this
@@ -301,14 +300,14 @@ export default class Lap extends Bus {
    * @return {Lap} this
    * @private
    */
-  $$initAudio() {
+  _initAudio() {
     this.audio = new Audio()
     this.audio.preload = 'auto'
     let fileType = this.files[this.trackIndex]
     fileType = fileType.slice(fileType.lastIndexOf('.')+1)
     const canPlay = this.audio.canPlayType('audio/' + fileType)
     if (canPlay === 'probably' || canPlay === 'maybe') {
-      this.$$updateSource()
+      this._updateSource()
       this.audio.volume = 1
     } else {
       // TODO: return a flag to signal skipping the rest of the initialization process
@@ -321,7 +320,7 @@ export default class Lap extends Bus {
    * @return {Lap} this
    * @private
    */
-  $$updateSource() {
+  _updateSource() {
     this.audio.src = this.files[this.trackIndex]
     return this
   }
@@ -330,10 +329,10 @@ export default class Lap extends Bus {
    * @return {Lap} this
    * @private
    */
-  $$initElements() {
+  _initElements() {
     this.els = {}
     this.selectors = { state: {} }
-    Lap.each(Lap.$$defaultSelectors, (selector, key) => {
+    Lap.each(Lap._defaultSelectors, (selector, key) => {
       if (key !== 'state') {
 
         this.selectors[key] = this.settings.selectors.hasOwnProperty(key)
@@ -346,9 +345,9 @@ export default class Lap extends Bus {
       } else {
         const hasCustomState = this.settings.selectors.state
 
-        if (!hasCustomState) return (this.selectors.state = Lap.$$defaultSelectors.state)
+        if (!hasCustomState) return (this.selectors.state = Lap._defaultSelectors.state)
 
-        Lap.each(Lap.$$defaultSelectors.state, (sel, k) => {
+        Lap.each(Lap._defaultSelectors.state, (sel, k) => {
           this.selectors.state[k] = this.settings.selectors.state.hasOwnProperty(k)
             ? this.settings.selectors.state[k]
             : sel
@@ -366,11 +365,11 @@ export default class Lap extends Bus {
    * @return {Lap} this
    */
   addAudioListener(event, listener) {
-    this.$$audioListeners = this.$$audioListeners || {}
-    this.$$audioListeners[event] = this.$$audioListeners[event] || []
+    this._audioListeners = this._audioListeners || {}
+    this._audioListeners[event] = this._audioListeners[event] || []
 
     const bound = listener.bind(this)
-    this.$$audioListeners[event].push(bound)
+    this._audioListeners[event].push(bound)
     this.audio.addEventListener(event, bound)
     return this
   }
@@ -379,7 +378,7 @@ export default class Lap extends Bus {
    * @return {Lap} this
    * @private
    */
-  $$addAudioListeners() {
+  _addAudioListeners() {
     const audio = this.audio
     const els = this.els
     const nativeProgress = !!(this.settings.useNativeProgress && els.progress)
@@ -389,13 +388,13 @@ export default class Lap extends Bus {
     }
 
     _addListener(!!(els.buffered || nativeProgress), 'progress', () => {
-      var buffered = this.$$bufferFormatted()
+      var buffered = this._bufferFormatted()
       if (els.buffered) els.buffered.innerHTML = buffered
       if (nativeProgress) els.progress.value = buffered
     })
 
-    _addListener(!!els.currentTime, 'timeupdate', () => this.$$updateCurrentTimeEl())
-    _addListener(!!els.duration, 'durationchange', () => this.$$updateDurationEl())
+    _addListener(!!els.currentTime, 'timeupdate', () => this._updateCurrentTimeEl())
+    _addListener(!!els.duration, 'durationchange', () => this._updateDurationEl())
 
     _addListener(true, 'ended', () => {
       if (this.playing) {
@@ -420,12 +419,12 @@ export default class Lap extends Bus {
     if (!this.els[elementName]) return this
 
     // ie. listeners = { seekRange: { click: [handlers], mousedown: [handlers], ... }, ... }
-    this.$$listeners = this.$$listeners || {}
-    this.$$listeners[elementName] = this.$$listeners[elementName] || {}
-    this.$$listeners[elementName][event] = this.$$listeners[elementName][event] || []
+    this._listeners = this._listeners || {}
+    this._listeners[elementName] = this._listeners[elementName] || {}
+    this._listeners[elementName][event] = this._listeners[elementName][event] || []
 
     const bound = listener.bind(this)
-    this.$$listeners[elementName][event].push(bound)
+    this._listeners[elementName][event].push(bound)
     this.els[elementName].addEventListener(event, bound)
     return this
   }
@@ -434,7 +433,7 @@ export default class Lap extends Bus {
    * @return {Lap} this
    * @private
    */
-  $$addListeners() {
+  _addListeners() {
     const els = this.els
 
     this.addListener('playPause', 'click', this.togglePlay)
@@ -442,8 +441,8 @@ export default class Lap extends Bus {
     this.addListener('next', 'click', this.next)
     this.addListener('prevAlbum', 'click', this.prevAlbum)
     this.addListener('nextAlbum', 'click', this.nextAlbum)
-    this.addListener('volumeUp', 'click', this.$$incVolume)
-    this.addListener('volumeDown', 'click', this.$$decVolume)
+    this.addListener('volumeUp', 'click', this._incVolume)
+    this.addListener('volumeDown', 'click', this._decVolume)
 
     const _if = (elementName, fn) => {
       if (this.els[elementName]) {
@@ -457,13 +456,13 @@ export default class Lap extends Bus {
     }
 
     this.on('load', () => {
-      _if('trackTitle', '$$updateTrackTitleEl')
-      _if('trackNumber', '$$updateTrackNumberEl')
-      _if('artist', '$$updateArtistEl')
-      _if('album', '$$updateAlbumEl')
-      _if('cover', '$$updateCover')
-      _if('currentTime', '$$updateCurrentTimeEl')
-      _if('duration', '$$updateDurationEl')
+      _if('trackTitle', '_updateTrackTitleEl')
+      _if('trackNumber', '_updateTrackNumberEl')
+      _if('artist', '_updateArtistEl')
+      _if('album', '_updateAlbumEl')
+      _if('cover', '_updateCover')
+      _if('currentTime', '_updateCurrentTimeEl')
+      _if('duration', '_updateDurationEl')
       _if('playPause', () => {
         const s = this.selectors.state
         const pp = els.playPause
@@ -474,18 +473,18 @@ export default class Lap extends Bus {
     })
 
     this.on('trackChange', () => {
-      _if('trackTitle', '$$updateTrackTitleEl')
-      _if('trackNumber', '$$updateTrackNumberEl')
-      _if('currentTime', '$$updateCurrentTimeEl')
-      _if('duration', '$$updateDurationEl')
+      _if('trackTitle', '_updateTrackTitleEl')
+      _if('trackNumber', '_updateTrackNumberEl')
+      _if('currentTime', '_updateCurrentTimeEl')
+      _if('duration', '_updateDurationEl')
     })
 
     this.on('albumChange', () => {
-      _if('trackTitle', '$$updateTrackTitleEl')
-      _if('trackNumber', '$$updateTrackNumberEl')
-      _if('artist', '$$updateArtistEl')
-      _if('album', '$$updateAlbumEl')
-      _if('cover', '$$updateCover')
+      _if('trackTitle', '_updateTrackTitleEl')
+      _if('trackNumber', '_updateTrackNumberEl')
+      _if('artist', '_updateArtistEl')
+      _if('album', '_updateAlbumEl')
+      _if('cover', '_updateCover')
     })
   }
 
@@ -493,7 +492,7 @@ export default class Lap extends Bus {
    * @return {Lap} this
    * @private
    */
-  $$addSeekListeners() {
+  _addSeekListeners() {
     const els = this.els
     const seekRange = els.seekRange
     const audio = this.audio
@@ -513,13 +512,6 @@ export default class Lap extends Bus {
         this.trigger('seek')
         this.seeking = false
       })
-      // this.addListener('seekRange', 'mousedown', () => this.seeking = true)
-      // this.addListener('seekRange', 'mouseup', () => {
-      //   audio.currentTime = Lap.scale(
-      //     seekRange.value, 0, seekRange.max, 0, audio.duration)
-      //   this.trigger('seek')
-      //   this.seeking = false
-      // })
     }
 
     const maybeWarn = () => {
@@ -532,7 +524,7 @@ export default class Lap extends Bus {
           %cLap#els.seekForward|seekBackward%c is redundant.
           Consider choosing one or the other.
           `.split('\n').map(s => s.trim()).join(' '),
-          Lap.$$debugSignature, this.id, r, c, r, c, r
+          Lap._debugSignature, this.id, r, c, r, c, r
         )
       }
     }
@@ -541,7 +533,7 @@ export default class Lap extends Bus {
       maybeWarn()
       this.addListener('seekForward', 'mousedown', () => {
         this.seeking = true
-        this.$$seekForward()
+        this._seekForward()
       })
       this.addListener('seekForward', 'mouseup', () => {
         this.seeking = false
@@ -554,7 +546,7 @@ export default class Lap extends Bus {
       maybeWarn()
       this.addListener('seekBackward', 'mousedown', () => {
         this.seeking = true
-        this.$$seekBackward()
+        this._seekBackward()
       })
       this.addListener('seekBackward', 'mouseup', () => {
         this.seeking = false
@@ -564,7 +556,7 @@ export default class Lap extends Bus {
     }
   }
 
-  $$seekBackward() {
+  _seekBackward() {
     if (!this.seeking) return this
     this.mouseDownTimer = setInterval(() => {
       const x = this.audio.currentTime + (this.settings.seekInterval * -1)
@@ -573,7 +565,7 @@ export default class Lap extends Bus {
     return this
   }
 
-  $$seekForward() {
+  _seekForward() {
     if (!this.seeking) return this
     this.mouseDownTimer = setInterval(() => {
       const x = this.audio.currentTime + this.settings.seekInterval
@@ -582,7 +574,7 @@ export default class Lap extends Bus {
     return this
   }
 
-  $$addVolumeListeners() {
+  _addVolumeListeners() {
     const els = this.els
     const volumeRange = els.volumeRange
     const volumeRead = els.volumeRead
@@ -621,22 +613,22 @@ export default class Lap extends Bus {
           %cLap#els.volumeUp|volumeDown%c is redundant.
           Consider choosing one or the other.
           `.split('\n').map(s => s.trim()).join(' '),
-          Lap.$$debugSignature, this.id, r, c, r, c, r
+          Lap._debugSignature, this.id, r, c, r, c, r
         )
       }
     }
 
     if (volumeUp) {
       maybeWarn()
-      this.addListener('volumeUp', 'click', () => this.$$incVolume())
+      this.addListener('volumeUp', 'click', () => this._incVolume())
     }
     if (volumeDown) {
       maybeWarn()
-      this.addListener('volumeDown', 'click', () => this.$$decVolume())
+      this.addListener('volumeDown', 'click', () => this._decVolume())
     }
   }
 
-  $$incVolume() {
+  _incVolume() {
     const v = this.audio.volume
     const i = this.settings.volumeInterval
     this.audio.volume = v+i > 1 ? 1 : v+i
@@ -644,7 +636,7 @@ export default class Lap extends Bus {
     return this
   }
 
-  $$decVolume() {
+  _decVolume() {
     const v = this.audio.volume
     const i = this.settings.volumeInterval
     this.audio.volume = v-i < 0 ? 0 : v-i
@@ -652,37 +644,37 @@ export default class Lap extends Bus {
     return this
   }
 
-  $$updateCurrentTimeEl() {
-    this.els.currentTime.innerHTML = this.$$currentTimeFormatted()
+  _updateCurrentTimeEl() {
+    this.els.currentTime.innerHTML = this._currentTimeFormatted()
     return this
   }
 
-  $$updateDurationEl() {
-    this.els.duration.innerHTML = this.$$durationFormatted()
+  _updateDurationEl() {
+    this.els.duration.innerHTML = this._durationFormatted()
     return this
   }
 
-  $$updateTrackTitleEl() {
+  _updateTrackTitleEl() {
     this.els.trackTitle.innerHTML = this.tracklist[this.trackIndex]
     return this
   }
 
-  $$updateTrackNumberEl() {
+  _updateTrackNumberEl() {
     this.els.trackNumber.innerHTML = +this.trackIndex+1
     return this
   }
 
-  $$updateArtistEl() {
+  _updateArtistEl() {
     this.els.artist.innerHTML = this.artist
     return this
   }
 
-  $$updateAlbumEl() {
+  _updateAlbumEl() {
     this.els.album.innerHTML = this.album
     return this
   }
 
-  $$updateCover() {
+  _updateCover() {
     this.els.cover.src = this.cover
     return this
   }
@@ -694,7 +686,7 @@ export default class Lap extends Bus {
   }
 
   play() {
-    if (Lap.exclusiveMode) Lap.each(Lap.$$instances, instance => instance.pause())
+    if (Lap.exclusiveMode) Lap.each(Lap._instances, instance => instance.pause())
     this.audio.play()
     this.playing = true
     this.trigger('play')
@@ -717,7 +709,7 @@ export default class Lap extends Bus {
       this.trackIndex = index
     }
     const wasPlaying = !this.audio.paused
-    this.$$updateSource()
+    this._updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('trackChange')
     return this
@@ -726,7 +718,7 @@ export default class Lap extends Bus {
   prev() {
     const wasPlaying = !this.audio.paused
     this.trackIndex = (this.trackIndex-1 < 0) ? this.trackCount-1 : this.trackIndex-1
-    this.$$updateSource()
+    this._updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('trackChange')
     return this
@@ -735,7 +727,7 @@ export default class Lap extends Bus {
   next() {
     const wasPlaying = !this.audio.paused
     this.trackIndex = (this.trackIndex+1 >= this.trackCount) ? 0 : this.trackIndex+1
-    this.$$updateSource()
+    this._updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('trackChange')
     return this
@@ -746,7 +738,7 @@ export default class Lap extends Bus {
     this.albumIndex = (this.albumIndex-1 < 0) ? this.albumCount-1 : this.albumIndex-1
     this.update()
     this.trackIndex = 0
-    this.$$updateSource()
+    this._updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('albumChange')
     return this
@@ -757,7 +749,7 @@ export default class Lap extends Bus {
     this.albumIndex = (this.albumIndex+1 > this.albumCount-1) ? 0 : this.albumIndex+1
     this.update()
     this.trackIndex = 0
-    this.$$updateSource()
+    this._updateSource()
     if (wasPlaying) this.audio.play()
     this.trigger('albumChange')
     return this
@@ -777,7 +769,7 @@ export default class Lap extends Bus {
     return this
   }
 
-  $$formatTracklist() {
+  _formatTracklist() {
     if (this.tracklist && this.tracklist.length) return this
 
     const re = this.replacement
@@ -795,7 +787,7 @@ export default class Lap extends Bus {
     return this
   }
 
-  $$bufferFormatted() {
+  _bufferFormatted() {
     if (!this.audio) return 0
 
     const audio = this.audio
@@ -816,7 +808,7 @@ export default class Lap extends Bus {
    * @return {Lap} this
    * @private
    */
-  $$getAudioTimeFormatted(audioProp) {
+  _getAudioTimeFormatted(audioProp) {
     if (isNaN(this.audio.duration)) return '00:00'
     let formatted = Lap.formatTime(Math.floor(this.audio[audioProp].toFixed(1)))
     if (this.audio.duration < 3600 || formatted === '00:00:00') {
@@ -825,18 +817,17 @@ export default class Lap extends Bus {
     return formatted
   }
 
-  $$currentTimeFormatted() {
-    return this.$$getAudioTimeFormatted('currentTime')
+  _currentTimeFormatted() {
+    return this._getAudioTimeFormatted('currentTime')
   }
 
-  $$durationFormatted() {
-    return this.$$getAudioTimeFormatted('duration')
+  _durationFormatted() {
+    return this._getAudioTimeFormatted('duration')
   }
 
   trackNumberFormatted(n) {
     var count = String(this.trackCount).length - String(n).length
     return '0'.repeat(count) + n + this.settings.trackNumberPostfix
-    // return _.repeat('0', count) + n + this.settings.trackNumberPostfix
   }
 
   get(key, index) {
@@ -856,7 +847,7 @@ Lap.exclusiveMode = false
  * @private
  * @type {String}
  */
-Lap.$$debugSignature = 'color:teal;font-weight:bold'
+Lap._debugSignature = 'color:teal;font-weight:bold'
 
 /**
  * Lap instance cache
@@ -864,19 +855,19 @@ Lap.$$debugSignature = 'color:teal;font-weight:bold'
  * @private
  * @type {Object}
  */
-Lap.$$instances = {}
+Lap._instances = {}
 
 /**
  * @private
  * @type {RegExp}
  */
-Lap.$$audioExtensionRegExp = /mp3|wav|ogg|aiff/i
+Lap._audioExtensionRegExp = /mp3|wav|ogg|aiff/i
 
 /**
  * @private
  * @type {Object}
  */
-Lap.$$defaultSettings = {
+Lap._defaultSettings = {
 
   /**
    * Register callbacks for any custom Lap event, where the object key
@@ -942,7 +933,7 @@ Lap.$$defaultSettings = {
 
   /**
    * Provide your own custom selectors for each element
-   * in the Lap#els hash. Otherwise Lap.$$defaultSelectors are used
+   * in the Lap#els hash. Otherwise Lap._defaultSelectors are used
    *
    * @type {Object}
    */
@@ -988,41 +979,28 @@ Lap.$$defaultSettings = {
   volumeInterval: 0.05
 }
 
-Lap.$$defaultSelectors = {
+Lap._defaultSelectors = {
   state: {
-    playlistItemCurrent:  'lap__playlist__item--current',
     playing:              'lap--playing',
-    paused:               'lap--paused',
-    hidden:               'lap--hidden'
+    paused:               'lap--paused'
   },
   album:               'lap__album',
   artist:              'lap__artist',
   buffered:            'lap__buffered',
   cover:               'lap__cover',
   currentTime:         'lap__current-time',
-  discog:              'lap__discog',
-  discogItem:          'lap__discog__item',
-  discogPanel:         'lap__discog__panel',
   duration:            'lap__duration',
-  info:                'lap__info', // button
-  infoPanel:           'lap__info-panel',
   next:                'lap__next',
   nextAlbum:           'lap__next-album',
   playPause:           'lap__play-pause',
-  playlist:            'lap__playlist', // button
-  playlistItem:        'lap__playlist__item', // list item
-  playlistPanel:       'lap__playlist__panel',
-  playlistTrackNumber: 'lap__playlist__track-number',
-  playlistTrackTitle:  'lap__playlist__track-title',
   prev:                'lap__prev',
   prevAlbum:           'lap__prev-album',
   progress:            'lap__progress',
   seekBackward:        'lap__seek-backward',
   seekForward:         'lap__seek-forward',
   seekRange:           'lap__seek-range',
-  trackNumber:         'lap__track-number', // the currently cued track
+  trackNumber:         'lap__track-number',
   trackTitle:          'lap__track-title',
-  volumeButton:        'lap__volume-button',
   volumeDown:          'lap__volume-down',
   volumeRead:          'lap__volume-read',
   volumeRange:         'lap__volume-range',
