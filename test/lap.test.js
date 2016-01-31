@@ -4,7 +4,7 @@ describe('lap.js', () => {
 
   let albumLib = {
     files: [
-      'https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Strobe.mp3', 
+      'https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Strobe.mp3',
       'https://s3.amazonaws.com/lokua.net.audio/albums/nostalgia-digest/Lokua_-_Quick.mp3'
     ]
   }
@@ -60,7 +60,7 @@ describe('lap.js', () => {
     })
   })
 
-  describe('setLib', () => {
+  xdescribe('setLib', () => {
     it('should make lib an array regardless of str, obj, ', () => {
       // string
       lap = new Lap('#player', 'file.mp3')
@@ -74,7 +74,7 @@ describe('lap.js', () => {
     })
   })
 
-  describe('initialize', () => {
+  xdescribe('initialize', () => {
     it('should prepare state variables', () => {
       lap = new Lap('#player', albumLib)
       expect(lap.seeking).toBe(false)
@@ -117,7 +117,7 @@ describe('lap.js', () => {
     })
   })
 
-  describe('update', () => {
+  xdescribe('update', () => {
     beforeEach(() => {
       // skip init
       lap = new Lap('#player', {
@@ -144,7 +144,7 @@ describe('lap.js', () => {
     })
   })
 
-  describe('$$initAudio', () => {
+  xdescribe('$$initAudio', () => {
     it('should create audio element', () => {
       spyOn(Lap.prototype, '$$updateSource')
       // skip init
@@ -173,7 +173,7 @@ describe('lap.js', () => {
     })
   })
 
-  describe('$$initElements', () => {
+  xdescribe('$$initElements', () => {
     it('should not create elements if they aren\'t found in container', () => {
       lap = new Lap('#player', 'file.mp3', null, true)
       lap.update()
@@ -208,10 +208,10 @@ describe('lap.js', () => {
       Object.keys(Lap.$$defaultSelectors).forEach(key => {
         if (key !== 'state') expect(lap.els[key].nodeType).toEqual(1)
       })
-    });    
+    });
   })
 
-  describe('addAudioListener', () => {
+  xdescribe('addAudioListener', () => {
     beforeEach(() => {
       document.body.removeChild(document.getElementById('player'))
       document.body.insertAdjacentHTML('afterBegin', `
@@ -243,7 +243,7 @@ describe('lap.js', () => {
     });
   })
 
-  describe('$$addAudioListeners', () => {
+  xdescribe('$$addAudioListeners', () => {
     beforeEach(() => {
       document.body.removeChild(document.getElementById('player'))
       document.body.insertAdjacentHTML('afterBegin', `
@@ -279,7 +279,7 @@ describe('lap.js', () => {
       lap.addAudioListener('timeupdate', () => t++)
       lap.play()
       setTimeout(() => expect(t).toBeGreaterThan(0))
-      
+
       let d = 0
       lap.addAudioListener('durationchange', () => d++)
       lap.next()
@@ -295,7 +295,7 @@ describe('lap.js', () => {
     });
   })
 
-  describe('addListener', () => {
+  xdescribe('addListener', () => {
     beforeEach(() => {
       setupFullPlayer()
       lap = new Lap('#player', albumLib, null, true)
@@ -311,7 +311,7 @@ describe('lap.js', () => {
     })
   })
 
-  describe('$$addListeners', () => {
+  xdescribe('$$addListeners', () => {
     beforeEach(() => {
       setupFullPlayer()
       lap = new Lap('#player', albumLib, null, true)
@@ -346,7 +346,7 @@ describe('lap.js', () => {
     })
   })
 
-  describe('destroy', () => {
+  xdescribe('destroy', () => {
     beforeEach(() => {
       setupFullPlayer()
       lap = new Lap('#player', albumLib)
@@ -363,7 +363,7 @@ describe('lap.js', () => {
     });
   })
 
-  describe('$$formatTracklist', () => {
+  xdescribe('$$formatTracklist', () => {
     xit('should exec replacement value', () => {
       const lib = albumLib
       lib.replacement = ['Lokua_-_']
@@ -381,5 +381,5 @@ describe('lap.js', () => {
       expect(lap.tracklist).toEqual(['foo', 'bar'])
     })
   })
-  
+
 })

@@ -163,9 +163,10 @@ export default class Lap extends Bus {
    * then deletes all properties
    *
    * @param  {Lap} lap the Lap instance
-   * @return {null}
    */
   static destroy(lap) {
+
+    const id = lap.id
 
     // remove dom event handlers
     Lap.each(lap._listeners, (events, elementName) => delete lap._listeners[elementName])
@@ -182,7 +183,8 @@ export default class Lap extends Bus {
     // everything else just in case
     Lap.each(lap, (val, key) => delete lap[key])
 
-    return null
+    delete Lap._instances[id]
+    lap = null
   }
 
   /**
