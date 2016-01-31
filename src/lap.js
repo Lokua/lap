@@ -1,5 +1,5 @@
 /*!
- * lap.js version 0.8.0
+ * lap.js version 0.8.2
  * HTML5 audio player
  *
  * https://github.com/Lokua/lap.git
@@ -250,9 +250,18 @@ export default class Lap extends Bus {
    * @return {Lap} this
    */
   update() {
-    this.albumIndex = this.albumIndex || this.settings.startingAlbumIndex || 0
-    this.trackIndex = this.trackIndex || this.settings.startingTrackIndex || 0
-    this.albumCount = this.lib.length
+    if (this.albumIndex === undefined) {
+      this.albumIndex = this.settings.startingAlbumIndex === undefined
+        ? 0
+        : this.settings.startingAlbumIndex
+    }
+    if (this.trackIndex === undefined) {
+      this.trackIndex = this.settings.startingTrackIndex === undefined
+        ? 0
+        : this.settings.startingAlbumIndex
+    }
+
+    this.albumCount = this.lib.length;
 
     const currentLibItem = this.lib[this.albumIndex]
 
