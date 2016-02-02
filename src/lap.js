@@ -251,14 +251,10 @@ export default class Lap extends Bus {
    */
   update() {
     if (this.albumIndex === undefined) {
-      this.albumIndex = this.settings.startingAlbumIndex === undefined
-        ? 0
-        : this.settings.startingAlbumIndex
+      this.albumIndex = this.settings.startingAlbumIndex || 0
     }
     if (this.trackIndex === undefined) {
-      this.trackIndex = this.settings.startingTrackIndex === undefined
-        ? 0
-        : this.settings.startingAlbumIndex
+      this.trackIndex = this.settings.startingTrackIndex || 0
     }
 
     this.albumCount = this.lib.length;
